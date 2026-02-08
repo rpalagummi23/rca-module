@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agricultural Agentic AI Platform Architecture</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-teal: #1a6b5c;
+            --accent-teal: #2d8a7a;
+            --soft-mint: #e8f4f0;
+            --mint-border: #5a9a8a;
+            --dark-teal: #0d4a40;
+            --navy: #1e3a5f;
+            --soft-blue: #3d7ea6;
+            --cream: #fefdfb;
+            --charcoal: #2c3e50;
+            --muted: #5a6c7a;
+            --text-dark: #2c3e50;
+            --box-bg: #e9f3ef;
+            --box-border: #4a8a7a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        /* Subtle pattern overlay - minimal for white background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: none;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 10px 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 5px;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary-teal) 0%, var(--navy) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 0.8rem;
+            color: var(--muted);
+            font-weight: 400;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        /* Beneficiaries Banner */
+        .beneficiaries-banner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            background: linear-gradient(90deg, rgba(26, 107, 92, 0.08), rgba(45, 138, 122, 0.12), rgba(26, 107, 92, 0.08));
+            border: 1px solid rgba(45, 138, 122, 0.2);
+            border-radius: 20px;
+            padding: 6px 16px;
+            margin-bottom: 10px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .beneficiaries-label {
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: var(--primary-teal);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .beneficiaries-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+
+        .beneficiaries-list span {
+            background: var(--primary-teal);
+            color: #ffffff;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.55rem;
+            font-weight: 600;
+        }
+
+        /* Main Architecture Container */
+        .architecture {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Pillars Container */
+        .pillars-container {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            height: 420px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Center LLM Hub */
+        .center-hub {
+            position: absolute;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            background: linear-gradient(145deg, #ffffff, var(--box-bg));
+            border: 3px solid var(--box-border);
+            box-shadow: 
+                0 0 30px rgba(45, 138, 122, 0.2),
+                0 0 60px rgba(45, 138, 122, 0.1),
+                0 6px 20px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 30px rgba(45, 138, 122, 0.2), 0 0 60px rgba(45, 138, 122, 0.1), 0 6px 20px rgba(0, 0, 0, 0.08); }
+            50% { box-shadow: 0 0 50px rgba(45, 138, 122, 0.3), 0 0 80px rgba(45, 138, 122, 0.15), 0 10px 30px rgba(0, 0, 0, 0.1); }
+        }
+
+        .center-hub .icon {
+            font-size: 1.6rem;
+            margin-bottom: 4px;
+        }
+
+        .center-hub h2 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-align: center;
+            color: var(--primary-teal);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .center-hub .tagline {
+            font-size: 0.5rem;
+            color: var(--accent-teal);
+            text-align: center;
+            margin-top: 3px;
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        .center-statement {
+            position: absolute;
+            top: calc(50% + 100px);
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--primary-teal);
+            text-align: center;
+            white-space: nowrap;
+            z-index: 11;
+            letter-spacing: 0.3px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .plus-sign {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary-teal);
+            line-height: 1;
+            margin-bottom: 1px;
+        }
+
+        /* Pillar Wrapper - Positions the title + card */
+        .pillar-wrapper {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 185px;
+            z-index: 5;
+        }
+
+        .pillar-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--primary-teal);
+            text-align: center;
+            margin-bottom: 5px;
+            line-height: 1.3;
+        }
+
+        .pillar-subtitle {
+            display: block;
+            font-size: 0.5rem;
+            font-weight: 500;
+            color: var(--muted);
+            margin-top: 1px;
+        }
+
+        /* Pillar Cards - Compact for slide */
+        .pillar {
+            width: 100%;
+            background: var(--box-bg);
+            border-radius: 10px;
+            padding: 8px 10px;
+            border: 2px solid var(--box-border);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .pillar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            border-color: var(--primary-teal);
+        }
+
+        .pillar-number {
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            width: 22px;
+            height: 22px;
+            background: var(--primary-teal);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            font-size: 0.7rem;
+            color: #ffffff;
+            box-shadow: 0 2px 6px rgba(26, 107, 92, 0.3);
+        }
+
+        .pillar-details {
+            font-size: 0.55rem;
+            color: var(--muted);
+            line-height: 1.3;
+            margin-top: 5px;
+        }
+
+        .pillar-details span {
+            display: inline-block;
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin: 1px 1px 1px 0;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.5rem;
+            color: var(--text-dark);
+            background: rgba(45, 138, 122, 0.12);
+            font-weight: 600;
+        }
+
+        /* Position Pillar Wrappers - Closer together */
+        .pillar-wrapper.pillar-1 { top: 0px; left: 10px; }
+        .pillar-wrapper.pillar-2 { top: 0px; right: 10px; }
+        .pillar-wrapper.pillar-3 { bottom: 0px; right: 10px; }
+        .pillar-wrapper.pillar-4 { bottom: 0px; left: 10px; }
+
+        /* Connection Lines */
+        .connections {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .connections svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .connection-line {
+            stroke: var(--box-border);
+            stroke-width: 2;
+            stroke-dasharray: 6, 3;
+            fill: none;
+            opacity: 0.5;
+            animation: flowDash 20s linear infinite;
+        }
+
+        @keyframes flowDash {
+            to { stroke-dashoffset: -100; }
+        }
+
+        /* Foundation Layer */
+        .foundation {
+            width: 100%;
+            max-width: 850px;
+            background: var(--box-bg);
+            border-radius: 10px;
+            padding: 12px 18px;
+            border: 2px solid var(--box-border);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .foundation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-teal), var(--accent-teal), var(--soft-blue), var(--navy), var(--primary-teal));
+            background-size: 200% 100%;
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .foundation-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .foundation-header .icon {
+            font-size: 1.2rem;
+        }
+
+        .foundation h2 {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--primary-teal);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .foundation-subtitle {
+            font-size: 0.6rem;
+            color: var(--muted);
+            margin-left: auto;
+            font-style: italic;
+        }
+
+        /* Foundation Pipeline */
+        .pipeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 4px;
+            position: relative;
+        }
+
+        .pipeline::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 35px;
+            right: 35px;
+            height: 1.5px;
+            background: linear-gradient(90deg, var(--primary-teal), var(--accent-teal), var(--soft-blue), var(--accent-teal), var(--primary-teal));
+            transform: translateY(-50%);
+            z-index: 0;
+            border-radius: 2px;
+            opacity: 0.5;
+        }
+
+        .pipeline-stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stage-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: #ffffff;
+            border: 1.5px solid var(--box-border);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+        }
+
+        .stage-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .pipeline-stage:hover .stage-icon {
+            transform: scale(1.1);
+            border-color: var(--primary-teal);
+            box-shadow: 0 3px 8px rgba(26, 107, 92, 0.2);
+            background: var(--box-bg);
+        }
+
+        .stage-label {
+            font-size: 0.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 0.2px;
+        }
+
+        .stage-sublabel {
+            font-size: 0.4rem;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        /* Flow Arrows */
+        .flow-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.8;
+            animation: arrowPulse 1.5s ease-in-out infinite;
+        }
+
+        .flow-arrow:nth-of-type(2) { animation-delay: 0.3s; }
+        .flow-arrow:nth-of-type(3) { animation-delay: 0.6s; }
+        .flow-arrow:nth-of-type(4) { animation-delay: 0.9s; }
+        .flow-arrow:nth-of-type(5) { animation-delay: 1.2s; }
+
+        @keyframes arrowPulse {
+            0%, 100% { opacity: 0.4; transform: translateX(0); }
+            50% { opacity: 1; transform: translateX(3px); }
+        }
+
+        .header-icon {
+            flex-shrink: 0;
+        }
+
+        /* Security & Governance Layer */
+        .security-layer {
+            width: 100%;
+            max-width: 850px;
+            background: linear-gradient(90deg, var(--primary-teal), var(--accent-teal));
+            border-radius: 8px;
+            padding: 6px 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 8px rgba(26, 107, 92, 0.2);
+        }
+
+        .security-icon {
+            flex-shrink: 0;
+            width: 16px;
+            height: 16px;
+        }
+
+        .security-title {
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .security-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-left: auto;
+        }
+
+        .security-items span {
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 0.45rem;
+            font-weight: 600;
+            font-family: 'Space Mono', monospace;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(45, 138, 122, 0.2);
+        }
+
+        footer p {
+            font-size: 0.55rem;
+            color: var(--muted);
+            font-weight: 400;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .pillars-container {
+                height: 800px;
+            }
+            
+            .pillar {
+                width: 200px;
+                padding: 20px 15px;
+            }
+
+            .pillar-1 { left: 20px; }
+            .pillar-2 { right: 20px; }
+            .pillar-3 { right: 20px; }
+            .pillar-4 { left: 20px; }
+        }
+
+        @media (max-width: 900px) {
+            h1 { font-size: 2rem; }
+            
+            .pillars-container {
+                height: auto;
+                flex-direction: column;
+                padding: 300px 20px 20px;
+                gap: 20px;
+            }
+
+            .center-hub {
+                position: absolute;
+                top: 20px;
+                width: 220px;
+                height: 220px;
+            }
+
+            .pillar {
+                position: relative;
+                width: 100%;
+                max-width: 350px;
+                top: auto !important;
+                left: auto !important;
+                right: auto !important;
+                bottom: auto !important;
+                transform: none !important;
+            }
+
+            .pipeline {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .pipeline::before {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <svg class="logo-icon" viewBox="0 0 60 60" fill="none">
+                <circle cx="30" cy="30" r="28" stroke="#4a8a7a" stroke-width="2" fill="none"/>
+                <path d="M30 10 C30 10 45 25 45 35 C45 45 38 50 30 50 C22 50 15 45 15 35 C15 25 30 10 30 10Z" fill="#2d8a7a" stroke="#1a6b5c" stroke-width="1.5"/>
+                <path d="M30 18 L30 42 M24 28 L30 22 M36 28 L30 22" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <h1>Agricultural Agentic AI Platform</h1>
+            <p class="subtitle">Seed-to-Harvest Decision Intelligence</p>
+        </header>
+
+        <!-- Beneficiaries Banner -->
+        <div class="beneficiaries-banner">
+            <span class="beneficiaries-label">Beneficiaries:</span>
+            <div class="beneficiaries-list">
+                <span>Farmers</span>
+                <span>Agronomists</span>
+                <span>Seed Companies</span>
+                <span>Researchers</span>
+                <span>Industry Leaders</span>
+            </div>
+        </div>
+
+        <div class="architecture">
+            <!-- Pillars Container -->
+            <div class="pillars-container">
+                <!-- Connection Lines SVG -->
+                <svg class="connections" viewBox="0 0 900 420" preserveAspectRatio="xMidYMid meet">
+                    <!-- Pillar 1 (top-left) to Center -->
+                    <path class="connection-line" d="M195 110 Q330 160 380 185"/>
+                    <!-- Pillar 2 (top-right) to Center -->
+                    <path class="connection-line" d="M705 110 Q570 160 520 185"/>
+                    <!-- Pillar 3 (bottom-right) to Center -->
+                    <path class="connection-line" d="M705 310 Q570 260 520 235"/>
+                    <!-- Pillar 4 (bottom-left) to Center -->
+                    <path class="connection-line" d="M195 310 Q330 260 380 235"/>
+                </svg>
+
+                <!-- Center Hub - Seed LLM -->
+                <div class="center-hub">
+                    <div class="icon">🌱</div>
+                    <h2>Custom Seed LLM</h2>
+                    <p class="tagline">First of its kind<br>Powering Agentic Intelligence<br>Multi-modal Foundation Model</p>
+                </div>
+                <div class="center-statement"><span class="plus-sign">+</span>Paired with Agricultural LLMs</div>
+
+                <!-- Pillar 1: Seed Intelligence -->
+                <div class="pillar-wrapper pillar-1">
+                    <h3 class="pillar-title">Seed Intelligence</h3>
+                    <div class="pillar">
+                        <div class="pillar-number">1</div>
+                        <div class="pillar-details">
+                            <span>Genetics</span>
+                            <span>Agronomy</span>
+                            <span>Research</span>
+                            <span>Certifications</span>
+                            <span>Knowledge Graphs</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pillar 2: Field Intelligence -->
+                <div class="pillar-wrapper pillar-2">
+                    <h3 class="pillar-title">Field Intelligence <span class="pillar-subtitle">(Agro-Environmental & Geospatial)</span></h3>
+                    <div class="pillar">
+                        <div class="pillar-number">2</div>
+                        <div class="pillar-details">
+                            <span>Soil</span>
+                            <span>Climate</span>
+                            <span>Weather</span>
+                            <span>Satellite/Drone</span>
+                            <span>IoT Sensors</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pillar 3: Insight Intelligence -->
+                <div class="pillar-wrapper pillar-3">
+                    <h3 class="pillar-title">Insight Intelligence <span class="pillar-subtitle">(Conversational Analytics)</span></h3>
+                    <div class="pillar">
+                        <div class="pillar-number">3</div>
+                        <div class="pillar-details">
+                            <span>NL Query</span>
+                            <span>Predictions</span>
+                            <span>Reporting</span>
+                            <span>What-If</span>
+                            <span>Dashboards</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pillar 4: Decision Intelligence -->
+                <div class="pillar-wrapper pillar-4">
+                    <h3 class="pillar-title">Decision Intelligence <span class="pillar-subtitle">(Prescriptive & Root Cause Analysis)</span></h3>
+                    <div class="pillar">
+                        <div class="pillar-number">4</div>
+                        <div class="pillar-details">
+                            <span>Diagnostics</span>
+                            <span>Risk Analysis</span>
+                            <span>Recommendations</span>
+                            <span>Anomaly Detection</span>
+                            <span>Alerts</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Foundation Layer -->
+            <div class="foundation">
+                <div class="foundation-header">
+                    <svg class="header-icon" viewBox="0 0 40 40" fill="none" width="36" height="36">
+                        <circle cx="20" cy="20" r="18" stroke="#1a6b5c" stroke-width="2" fill="none"/>
+                        <path d="M20 8 L20 14 M20 26 L20 32 M8 20 L14 20 M26 20 L32 20" stroke="#2d8a7a" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="20" cy="20" r="6" fill="#1a6b5c"/>
+                        <path d="M12 12 L16 16 M24 24 L28 28 M12 28 L16 24 M24 16 L28 12" stroke="#2d8a7a" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <h2>Agriculture AI Platform Foundation</h2>
+                    <span class="foundation-subtitle">End-to-End ML & GenAI Pipeline</span>
+                </div>
+                
+                <div class="pipeline">
+                    <!-- Data Ingestion -->
+                    <div class="pipeline-stage">
+                        <div class="stage-icon">
+                            <svg viewBox="0 0 40 40" fill="none" width="36" height="36">
+                                <rect x="8" y="6" width="24" height="6" rx="2" fill="#1a6b5c" opacity="0.3"/>
+                                <rect x="8" y="14" width="24" height="6" rx="2" fill="#1a6b5c" opacity="0.5"/>
+                                <rect x="8" y="22" width="24" height="6" rx="2" fill="#1a6b5c" opacity="0.7"/>
+                                <path d="M20 30 L20 38 M16 34 L20 38 L24 34" stroke="#1a6b5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <circle cx="32" cy="10" r="3" fill="#2d8a7a"/>
+                                <circle cx="32" cy="18" r="3" fill="#2d8a7a"/>
+                            </svg>
+                        </div>
+                        <span class="stage-label">Data Ingestion</span>
+                        <span class="stage-sublabel">Multi-source ETL</span>
+                    </div>
+
+                    <span class="flow-arrow">
+                        <svg viewBox="0 0 24 24" width="10" height="10" fill="none">
+                            <path d="M5 12 L19 12 M14 7 L19 12 L14 17" stroke="#1a6b5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+
+                    <!-- Enrichment -->
+                    <div class="pipeline-stage">
+                        <div class="stage-icon">
+                            <svg viewBox="0 0 40 40" fill="none" width="36" height="36">
+                                <circle cx="20" cy="20" r="12" stroke="#1a6b5c" stroke-width="2" fill="none"/>
+                                <circle cx="20" cy="20" r="6" fill="#2d8a7a" opacity="0.4"/>
+                                <path d="M20 8 L20 4 M20 36 L20 32 M8 20 L4 20 M36 20 L32 20" stroke="#1a6b5c" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M28 12 L31 9 M12 28 L9 31 M28 28 L31 31 M12 12 L9 9" stroke="#2d8a7a" stroke-width="1.5" stroke-linecap="round"/>
+                                <circle cx="20" cy="20" r="2" fill="#1a6b5c"/>
+                            </svg>
+                        </div>
+                        <span class="stage-label">Enrichment</span>
+                        <span class="stage-sublabel">Feature Engineering</span>
+                    </div>
+
+                    <span class="flow-arrow">
+                        <svg viewBox="0 0 24 24" width="10" height="10" fill="none">
+                            <path d="M5 12 L19 12 M14 7 L19 12 L14 17" stroke="#1a6b5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+
+                    <!-- ML Modeling - Neural Network -->
+                    <div class="pipeline-stage">
+                        <div class="stage-icon">
+                            <svg viewBox="0 0 40 40" fill="none" width="36" height="36">
+                                <!-- Input layer -->
+                                <circle cx="8" cy="12" r="3" fill="#1a6b5c"/>
+                                <circle cx="8" cy="20" r="3" fill="#1a6b5c"/>
+                                <circle cx="8" cy="28" r="3" fill="#1a6b5c"/>
+                                <!-- Hidden layer -->
+                                <circle cx="20" cy="10" r="3" fill="#2d8a7a"/>
+                                <circle cx="20" cy="20" r="3" fill="#2d8a7a"/>
+                                <circle cx="20" cy="30" r="3" fill="#2d8a7a"/>
+                                <!-- Output layer -->
+                                <circle cx="32" cy="16" r="3" fill="#1a6b5c"/>
+                                <circle cx="32" cy="24" r="3" fill="#1a6b5c"/>
+                                <!-- Connections -->
+                                <path d="M11 12 L17 10 M11 12 L17 20 M11 20 L17 10 M11 20 L17 20 M11 20 L17 30 M11 28 L17 20 M11 28 L17 30" stroke="#2d8a7a" stroke-width="0.8" opacity="0.6"/>
+                                <path d="M23 10 L29 16 M23 10 L29 24 M23 20 L29 16 M23 20 L29 24 M23 30 L29 16 M23 30 L29 24" stroke="#2d8a7a" stroke-width="0.8" opacity="0.6"/>
+                            </svg>
+                        </div>
+                        <span class="stage-label">ML Modeling</span>
+                        <span class="stage-sublabel">Algorithm Design</span>
+                    </div>
+
+                    <span class="flow-arrow">
+                        <svg viewBox="0 0 24 24" width="10" height="10" fill="none">
+                            <path d="M5 12 L19 12 M14 7 L19 12 L14 17" stroke="#1a6b5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+
+                    <!-- Training -->
+                    <div class="pipeline-stage">
+                        <div class="stage-icon">
+                            <svg viewBox="0 0 40 40" fill="none" width="36" height="36">
+                                <!-- Graph background -->
+                                <path d="M8 32 L8 8 M8 32 L32 32" stroke="#1a6b5c" stroke-width="1.5" stroke-linecap="round"/>
+                                <!-- Learning curve -->
+                                <path d="M10 28 Q14 26 16 22 Q18 18 22 14 Q26 10 30 9" stroke="#2d8a7a" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+                                <!-- Data points -->
+                                <circle cx="12" cy="26" r="2" fill="#1a6b5c"/>
+                                <circle cx="18" cy="18" r="2" fill="#1a6b5c"/>
+                                <circle cx="24" cy="12" r="2" fill="#1a6b5c"/>
+                                <circle cx="30" cy="9" r="2" fill="#2d8a7a"/>
+                                <!-- Iteration arrows -->
+                                <path d="M32 20 C36 20 36 26 32 26 L30 26" stroke="#1a6b5c" stroke-width="1.5" fill="none"/>
+                                <path d="M31 24 L30 26 L31 28" stroke="#1a6b5c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <span class="stage-label">Training</span>
+                        <span class="stage-sublabel">Optimization</span>
+                    </div>
+
+                    <span class="flow-arrow">
+                        <svg viewBox="0 0 24 24" width="10" height="10" fill="none">
+                            <path d="M5 12 L19 12 M14 7 L19 12 L14 17" stroke="#1a6b5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+
+                    <!-- Inferencing -->
+                    <div class="pipeline-stage">
+                        <div class="stage-icon">
+                            <svg viewBox="0 0 40 40" fill="none" width="36" height="36">
+                                <!-- CPU/Chip base -->
+                                <rect x="10" y="10" width="20" height="20" rx="3" fill="#e9f3ef" stroke="#1a6b5c" stroke-width="2"/>
+                                <!-- Chip pins -->
+                                <path d="M14 10 L14 6 M20 10 L20 6 M26 10 L26 6 M14 30 L14 34 M20 30 L20 34 M26 30 L26 34" stroke="#2d8a7a" stroke-width="2" stroke-linecap="round"/>
+                                <path d="M10 14 L6 14 M10 20 L6 20 M10 26 L6 26 M30 14 L34 14 M30 20 L34 20 M30 26 L34 26" stroke="#2d8a7a" stroke-width="2" stroke-linecap="round"/>
+                                <!-- Lightning bolt -->
+                                <path d="M22 14 L18 20 L21 20 L19 26 L24 19 L21 19 L22 14Z" fill="#1a6b5c"/>
+                            </svg>
+                        </div>
+                        <span class="stage-label">Inferencing</span>
+                        <span class="stage-sublabel">Real-time Predictions</span>
+                    </div>
+
+                    <span class="flow-arrow">
+                        <svg viewBox="0 0 24 24" width="10" height="10" fill="none">
+                            <path d="M5 12 L19 12 M14 7 L19 12 L14 17" stroke="#1a6b5c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+
+                    <!-- Generative AI -->
+                    <div class="pipeline-stage">
+                        <div class="stage-icon">
+                            <svg viewBox="0 0 40 40" fill="none" width="36" height="36">
+                                <!-- AI Brain outline -->
+                                <path d="M20 6 C12 6 8 12 8 18 C8 22 10 25 12 27 L12 32 L16 32 L16 28 C18 29 22 29 24 28 L24 32 L28 32 L28 27 C30 25 32 22 32 18 C32 12 28 6 20 6Z" fill="#e9f3ef" stroke="#1a6b5c" stroke-width="2"/>
+                                <!-- Brain details -->
+                                <path d="M14 16 C14 14 16 13 18 14 C20 15 20 13 22 13 C24 13 26 14 26 16" stroke="#2d8a7a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                                <path d="M14 20 C16 21 18 19 20 20 C22 21 24 19 26 20" stroke="#2d8a7a" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+                                <!-- Eyes -->
+                                <circle cx="15" cy="18" r="2" fill="#1a6b5c"/>
+                                <circle cx="25" cy="18" r="2" fill="#1a6b5c"/>
+                                <!-- Pulse/signal -->
+                                <path d="M34 14 C36 14 36 12 38 12" stroke="#2d8a7a" stroke-width="1.5" stroke-linecap="round"/>
+                                <path d="M34 18 C37 18 37 18 39 18" stroke="#2d8a7a" stroke-width="1.5" stroke-linecap="round"/>
+                                <path d="M34 22 C36 22 36 24 38 24" stroke="#2d8a7a" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <span class="stage-label">Generative AI</span>
+                        <span class="stage-sublabel">LLM + RAG + Fine-Tune</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security & Governance Layer -->
+            <div class="security-layer">
+                <svg class="security-icon" viewBox="0 0 40 40" fill="none" width="28" height="28">
+                    <path d="M20 4 L6 10 L6 20 C6 28 12 34 20 36 C28 34 34 28 34 20 L34 10 L20 4Z" fill="#e9f3ef" stroke="#1a6b5c" stroke-width="2"/>
+                    <path d="M15 20 L18 23 L26 15" stroke="#1a6b5c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="security-title">Security & Governance</span>
+                <div class="security-items">
+                    <span>Data Privacy</span>
+                    <span>Access Control</span>
+                    <span>Compliance</span>
+                    <span>Audit Trails</span>
+                    <span>Policy Enforcement</span>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Agricultural AI Platform Architecture • Seed-to-Harvest Decision Intelligence Framework</p>
+        </footer>
+    </div>
+</body>
+</html>
