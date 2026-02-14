@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subeej LLM Customization Architecture</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-teal: #1e3a5f;
+            --accent-teal: #2c5282;
+            --soft-mint: #ffffff;
+            --mint-border: #4a6fa5;
+            --dark-teal: #0f2744;
+            --navy: #1e3a5f;
+            --soft-blue: #4a7ab0;
+            --cream: #fefdfb;
+            --charcoal: #1e293b;
+            --muted: #5a6c7a;
+            --text-dark: #1e293b;
+            --box-bg: #eef4f9;
+            --box-border: #4a6fa5;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ============================================ */
+        /* LLM CUSTOMIZATION STYLES */
+        /* ============================================ */
+        
+        .customization-container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Section Headers */
+        .custom-section {
+            background: var(--box-bg);
+            border-radius: 12px;
+            padding: 18px 22px;
+            border: 2px solid var(--box-border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .custom-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--primary-teal), var(--accent-teal));
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .section-number {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary-teal), var(--accent-teal));
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #ffffff;
+            flex-shrink: 0;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary-teal);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-subtitle {
+            font-size: 0.7rem;
+            color: var(--muted);
+            font-weight: 500;
+            margin-left: auto;
+        }
+
+        /* Knowledge Foundation Grid */
+        .knowledge-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .knowledge-card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 14px;
+            border: 1px solid rgba(74, 122, 176, 0.25);
+            transition: all 0.3s ease;
+        }
+
+        .knowledge-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(30, 58, 95, 0.12);
+            border-color: var(--primary-teal);
+        }
+
+        .knowledge-card .card-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--primary-teal);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .knowledge-card .card-title .icon {
+            font-size: 1rem;
+        }
+
+        .knowledge-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .knowledge-card ul li {
+            font-size: 0.6rem;
+            color: var(--text-dark);
+            padding: 3px 0;
+            padding-left: 12px;
+            position: relative;
+            line-height: 1.4;
+        }
+
+        .knowledge-card ul li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            color: var(--soft-blue);
+            font-weight: 700;
+        }
+
+        /* Training Pipeline */
+        .training-pipeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            gap: 8px;
+            position: relative;
+        }
+
+        .training-pipeline::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 40px;
+            right: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-teal), var(--accent-teal), var(--soft-blue), var(--accent-teal));
+            transform: translateY(-50%);
+            z-index: 0;
+            border-radius: 2px;
+            opacity: 0.4;
+        }
+
+        .training-stage {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 14px 12px;
+            border: 2px solid var(--box-border);
+            text-align: center;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .training-stage:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(30, 58, 95, 0.12);
+            border-color: var(--primary-teal);
+        }
+
+        .training-stage .stage-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-teal), var(--accent-teal));
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 10px;
+            font-size: 1.2rem;
+        }
+
+        .training-stage .stage-name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--primary-teal);
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        .training-stage .stage-desc {
+            font-size: 0.55rem;
+            color: var(--muted);
+            line-height: 1.4;
+        }
+
+        .training-arrow {
+            display: flex;
+            align-items: center;
+            color: var(--soft-blue);
+            font-size: 1.2rem;
+            z-index: 2;
+            animation: arrowPulseRight 1.5s ease-in-out infinite;
+        }
+
+        @keyframes arrowPulseRight {
+            0%, 100% { opacity: 0.5; transform: translateX(0); }
+            50% { opacity: 1; transform: translateX(4px); }
+        }
+
+        /* Two Column Section */
+        .two-column-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .column-card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 16px;
+            border: 1px solid rgba(74, 122, 176, 0.25);
+        }
+
+        .column-card .card-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(74, 122, 176, 0.15);
+        }
+
+        .column-card .card-icon {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--primary-teal), var(--accent-teal));
+            border-radius: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .column-card .card-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--primary-teal);
+            text-transform: uppercase;
+        }
+
+        .column-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .column-card ul li {
+            font-size: 0.65rem;
+            color: var(--text-dark);
+            padding: 5px 0;
+            padding-left: 16px;
+            position: relative;
+            line-height: 1.4;
+            border-bottom: 1px dashed rgba(74, 122, 176, 0.1);
+        }
+
+        .column-card ul li:last-child {
+            border-bottom: none;
+        }
+
+        .column-card ul li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--soft-blue);
+            font-weight: 700;
+        }
+
+        /* Pillars Output */
+        .pillars-output {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .pillar-output-card {
+            background: linear-gradient(145deg, var(--primary-teal), var(--accent-teal));
+            border-radius: 10px;
+            padding: 14px;
+            text-align: center;
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+
+        .pillar-output-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(30, 58, 95, 0.3);
+        }
+
+        .pillar-output-card .pillar-icon {
+            font-size: 1.4rem;
+            margin-bottom: 6px;
+        }
+
+        .pillar-output-card .pillar-name {
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+        }
+
+        .pillar-output-card .pillar-desc {
+            font-size: 0.5rem;
+            opacity: 0.9;
+            line-height: 1.3;
+        }
+
+        /* Flow Connection */
+        .flow-connector {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 8px 0;
+        }
+
+        .flow-connector .arrow-down {
+            width: 40px;
+            height: 40px;
+            background: var(--box-bg);
+            border: 2px solid var(--box-border);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: bounceDown 1.5s ease-in-out infinite;
+        }
+
+        @keyframes bounceDown {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(5px); }
+        }
+
+        .flow-connector .arrow-down svg {
+            width: 20px;
+            height: 20px;
+            color: var(--primary-teal);
+        }
+
+        /* Continuous Loop Indicator */
+        .continuous-loop {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: linear-gradient(90deg, rgba(30, 58, 95, 0.05), rgba(44, 82, 130, 0.1), rgba(30, 58, 95, 0.05));
+            border-radius: 25px;
+            margin: 0 auto;
+            max-width: 400px;
+        }
+
+        .continuous-loop .loop-icon {
+            font-size: 1.2rem;
+            animation: spin 3s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .continuous-loop .loop-text {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--primary-teal);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .knowledge-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .training-pipeline {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .training-pipeline::before {
+                display: none;
+            }
+
+            .training-arrow {
+                transform: rotate(90deg);
+            }
+
+            .two-column-section {
+                grid-template-columns: 1fr;
+            }
+
+            .pillars-output {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="customization-container">
+            
+            <!-- Section 1: Knowledge Foundation -->
+            <div class="custom-section">
+                <div class="section-header">
+                    <span class="section-number">1</span>
+                    <span class="section-title">Knowledge Foundation</span>
+                    <span class="section-subtitle">What We Feed Into Subeej</span>
+                </div>
+                <div class="knowledge-grid">
+                    <div class="knowledge-card">
+                        <div class="card-title">Industry Knowledge</div>
+                        <ul>
+                            <li>Years of seed research & expertise</li>
+                            <li>Germplasm databases</li>
+                            <li>Global variety trial results</li>
+                            <li>Breeding program archives</li>
+                        </ul>
+                    </div>
+                    <div class="knowledge-card">
+                        <div class="card-title">Domain Expertise</div>
+                        <ul>
+                            <li>Agronomic best practices</li>
+                            <li>Crop management science</li>
+                            <li>Soil & climate science</li>
+                            <li>Pest & disease literature</li>
+                        </ul>
+                    </div>
+                    <div class="knowledge-card">
+                        <div class="card-title">Proprietary Data</div>
+                        <ul>
+                            <li>Internal R&D findings</li>
+                            <li>Customer field data</li>
+                            <li>Supply chain insights</li>
+                            <li>Market intelligence</li>
+                        </ul>
+                    </div>
+                    <div class="knowledge-card">
+                        <div class="card-title">External Sources</div>
+                        <ul>
+                            <li>Scientific publications</li>
+                            <li>Regulatory frameworks</li>
+                            <li>Certification standards</li>
+                            <li>Agricultural databases</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flow Arrow -->
+            <div class="flow-connector">
+                <div class="arrow-down">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5 L12 19 M5 12 L12 19 L19 12"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Section 2: Training Pipeline -->
+            <div class="custom-section">
+                <div class="section-header">
+                    <span class="section-number">2</span>
+                    <span class="section-title">Training Pipeline</span>
+                    <span class="section-subtitle">How We Customize & Train Subeej</span>
+                </div>
+                <div class="training-pipeline">
+                    <div class="training-stage">
+                        <div class="stage-icon">
+                            <!-- Data/Corpus Icon -->
+                            <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+                                <rect x="4" y="3" width="16" height="4" rx="1" fill="#ffffff" opacity="0.9"/>
+                                <rect x="4" y="9" width="16" height="4" rx="1" fill="#ffffff" opacity="0.7"/>
+                                <rect x="4" y="15" width="16" height="4" rx="1" fill="#ffffff" opacity="0.5"/>
+                                <path d="M12 19 L12 22 M9 21 L12 22 L15 21" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div class="stage-name">Pre-Training</div>
+                        <div class="stage-desc">Large-scale agricultural corpus<br>Multi-modal learning<br>Text + Images + Data</div>
+                    </div>
+                    <span class="training-arrow">→</span>
+                    <div class="training-stage">
+                        <div class="stage-icon">
+                            <!-- Fine-Tuning/Target Icon -->
+                            <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+                                <circle cx="12" cy="12" r="9" stroke="#ffffff" stroke-width="2" fill="none"/>
+                                <circle cx="12" cy="12" r="5" stroke="#ffffff" stroke-width="2" fill="none"/>
+                                <circle cx="12" cy="12" r="2" fill="#ffffff"/>
+                                <path d="M12 2 L12 5 M12 19 L12 22 M2 12 L5 12 M19 12 L22 12" stroke="#ffffff" stroke-width="1.5" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div class="stage-name">Fine-Tuning</div>
+                        <div class="stage-desc">Seed-specific datasets<br>Crop-specific adaptation<br>Instruction tuning</div>
+                    </div>
+                    <span class="training-arrow">→</span>
+                    <div class="training-stage">
+                        <div class="stage-icon">
+                            <!-- RAG/Knowledge Graph Icon -->
+                            <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+                                <circle cx="12" cy="5" r="3" fill="#ffffff"/>
+                                <circle cx="5" cy="18" r="3" fill="#ffffff"/>
+                                <circle cx="19" cy="18" r="3" fill="#ffffff"/>
+                                <path d="M12 8 L12 12 M12 12 L6 16 M12 12 L18 16" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+                                <circle cx="12" cy="12" r="2" fill="#ffffff" opacity="0.6"/>
+                            </svg>
+                        </div>
+                        <div class="stage-name">RAG Enhancement</div>
+                        <div class="stage-desc">Knowledge graph integration<br>Vector embeddings<br>Retrieval optimization</div>
+                    </div>
+                    <span class="training-arrow">→</span>
+                    <div class="training-stage">
+                        <div class="stage-icon">
+                            <!-- RLHF/Human Feedback Icon -->
+                            <svg viewBox="0 0 24 24" fill="none" width="22" height="22">
+                                <circle cx="12" cy="7" r="4" fill="#ffffff"/>
+                                <path d="M4 21 C4 16 8 13 12 13 C16 13 20 16 20 21" stroke="#ffffff" stroke-width="2" fill="none" stroke-linecap="round"/>
+                                <path d="M17 8 L19 10 L23 6" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="stage-name">RLHF</div>
+                        <div class="stage-desc">Expert agronomist feedback<br>Preference ranking<br>Quality alignment</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flow Arrow -->
+            <div class="flow-connector">
+                <div class="arrow-down">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5 L12 19 M5 12 L12 19 L19 12"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Section 3: Two Columns - Prompt Engineering & Continuous Evolution -->
+            <div class="custom-section">
+                <div class="section-header">
+                    <span class="section-number">3</span>
+                    <span class="section-title">Optimization & Evolution</span>
+                    <span class="section-subtitle">Continuous Improvement Cycle</span>
+                </div>
+                <div class="two-column-section">
+                    <div class="column-card">
+                        <div class="card-header">
+                            <span class="card-icon"></span>
+                            <span class="card-title">Prompt Engineering</span>
+                        </div>
+                        <ul>
+                            <li>1000+ curated agricultural prompts</li>
+                            <li>Task-specific templates (seed selection, yield prediction, disease diagnosis)</li>
+                            <li>Chain-of-thought prompts for complex reasoning</li>
+                            <li>Few-shot examples for accuracy</li>
+                            <li>A/B testing & continuous refinement</li>
+                            <li>Version-controlled prompt library</li>
+                        </ul>
+                    </div>
+                    <div class="column-card">
+                        <div class="card-header">
+                            <span class="card-icon"></span>
+                            <span class="card-title">Continuous Evolution</span>
+                        </div>
+                        <ul>
+                            <li>Feedback loop from user interactions</li>
+                            <li>Regular model versioning & updates</li>
+                            <li>A/B deployment & performance benchmarks</li>
+                            <li>Real-time knowledge refresh</li>
+                            <li>Seasonal pattern updates</li>
+                            <li>New research & regulatory compliance</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Continuous Loop -->
+            <div class="continuous-loop">
+                <span class="loop-icon"></span>
+                <span class="loop-text">Constantly Learning • Always Improving • Forever Evolving</span>
+            </div>
+
+            <!-- Flow Arrow -->
+            <div class="flow-connector">
+                <div class="arrow-down">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5 L12 19 M5 12 L12 19 L19 12"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Section 4: Powers the 4 Pillars -->
+            <div class="custom-section">
+                <div class="section-header">
+                    <span class="section-number">4</span>
+                    <span class="section-title">Powers the 4 Pillars</span>
+                    <span class="section-subtitle">Intelligent Enablement</span>
+                </div>
+                <div class="pillars-output">
+                    <div class="pillar-output-card">
+                        <div class="pillar-icon"></div>
+                        <div class="pillar-name">Seed Intelligence</div>
+                        <div class="pillar-desc">Genetic insights<br>Breeding recommendations<br>Variety optimization</div>
+                    </div>
+                    <div class="pillar-output-card">
+                        <div class="pillar-icon"></div>
+                        <div class="pillar-name">Field Intelligence</div>
+                        <div class="pillar-desc">Environmental analysis<br>Precision agriculture<br>Geospatial insights</div>
+                    </div>
+                    <div class="pillar-output-card">
+                        <div class="pillar-icon"></div>
+                        <div class="pillar-name">Insight Intelligence</div>
+                        <div class="pillar-desc">Pattern recognition<br>Trend analysis<br>Predictive analytics</div>
+                    </div>
+                    <div class="pillar-output-card">
+                        <div class="pillar-icon"></div>
+                        <div class="pillar-name">Decision Intelligence</div>
+                        <div class="pillar-desc">Root cause analysis<br>Prescriptive actions<br>Risk mitigation</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>
