@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crop Monitoring Indices Extraction Guide - Copernicus Data Space</title>
+    <style>
+        :root {
+            --primary-color: #1a5f7a;
+            --secondary-color: #57837b;
+            --accent-color: #c38e70;
+            --light-bg: #f7f7f7;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #e0e0e0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--light-bg);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 40px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .section {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .section h2 {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .section h3 {
+            color: var(--secondary-color);
+            margin: 20px 0 10px 0;
+            font-size: 1.2rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        tr:hover {
+            background-color: #f0f7fa;
+        }
+        
+        .highlight-box {
+            background: linear-gradient(135deg, #e8f4f8, #f0f9fb);
+            border-left: 4px solid var(--primary-color);
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #fff8e1, #fffde7);
+            border-left: 4px solid #ff9800;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .success-box {
+            background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+            border-left: 4px solid #4caf50;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .formula-box {
+            background: #263238;
+            color: #e0e0e0;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+        
+        .formula-box .formula-name {
+            color: #4fc3f7;
+            font-weight: bold;
+        }
+        
+        .code-block {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 15px 0;
+            white-space: pre-wrap;
+        }
+        
+        .code-block .keyword {
+            color: #569cd6;
+        }
+        
+        .code-block .function {
+            color: #dcdcaa;
+        }
+        
+        .code-block .string {
+            color: #ce9178;
+        }
+        
+        .code-block .comment {
+            color: #6a9955;
+        }
+        
+        .code-block .number {
+            color: #b5cea8;
+        }
+        
+        ul, ol {
+            margin: 10px 0 10px 25px;
+        }
+        
+        li {
+            margin: 8px 0;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin: 2px;
+        }
+        
+        .badge-direct {
+            background-color: #4caf50;
+            color: white;
+        }
+        
+        .badge-calculated {
+            background-color: #ff9800;
+            color: white;
+        }
+        
+        .badge-script {
+            background-color: #9c27b0;
+            color: white;
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .step-list {
+            counter-reset: step-counter;
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        .step-list li {
+            counter-increment: step-counter;
+            position: relative;
+            padding-left: 50px;
+            margin-bottom: 15px;
+        }
+        
+        .step-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 35px;
+            height: 35px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+            color: var(--secondary-color);
+        }
+        
+        .link-card {
+            display: block;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 10px 0;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .link-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            text-decoration: none;
+            color: white;
+        }
+        
+        .toc {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .toc h3 {
+            margin-top: 0;
+        }
+        
+        .toc ul {
+            list-style: none;
+            margin-left: 0;
+        }
+        
+        .toc li {
+            margin: 8px 0;
+        }
+        
+        .satellite-card {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 10px 0;
+        }
+        
+        .satellite-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Crop Monitoring Indices Extraction Guide</h1>
+            <p>Using Copernicus Data Space Browser with ESA Sentinel Satellites</p>
+        </header>
+
+        <!-- Table of Contents -->
+        <div class="toc section">
+            <h3>Table of Contents</h3>
+            <ul>
+                <li><a href="#summary">1. Executive Summary</a></li>
+                <li><a href="#available">2. What is Available (Direct from Copernicus)</a></li>
+                <li><a href="#calculated">3. What Needs to be Calculated</a></li>
+                <li><a href="#formulas">4. All Formulas Reference</a></li>
+                <li><a href="#step-by-step">5. Step-by-Step Process</a></li>
+                <li><a href="#external">6. External Requirements & KML Sources</a></li>
+                <li><a href="#scripts">7. Custom EvalScripts</a></li>
+                <li><a href="#checklist">8. Quick Reference Checklist</a></li>
+            </ul>
+        </div>
+
+        <!-- Section 1: Executive Summary -->
+        <section id="summary" class="section">
+            <h2>1. Executive Summary</h2>
+            <p>This document outlines the process for extracting crop monitoring indices from European Space Agency (ESA) satellite data using the Copernicus Data Space Browser. The goal is to retrieve vegetation, moisture, thermal, and structural indicators for farm polygons defined by KML files.</p>
+            
+            <div class="highlight-box">
+                <strong>Key Platform:</strong> Copernicus Data Space Browser<br>
+                <strong>Data Sources:</strong> Sentinel-2 (Optical), Sentinel-3 (Thermal), Sentinel-1 (Radar - SAR)
+            </div>
+
+            <h3>Indices Overview</h3>
+            <table>
+                <tr>
+                    <th>Category</th>
+                    <th>Indices</th>
+                    <th>Purpose</th>
+                </tr>
+                <tr>
+                    <td>Vegetation</td>
+                    <td>NDVI, SAVI, MSAVI, NDRE, LAI</td>
+                    <td>Assess plant health and growth</td>
+                </tr>
+                <tr>
+                    <td>Moisture</td>
+                    <td>NDMI</td>
+                    <td>Monitor water content in vegetation</td>
+                </tr>
+                <tr>
+                    <td>Chlorophyll</td>
+                    <td>GCI</td>
+                    <td>Estimate chlorophyll concentration</td>
+                </tr>
+                <tr>
+                    <td>Senescence</td>
+                    <td>PSRI</td>
+                    <td>Detect plant stress/aging</td>
+                </tr>
+                <tr>
+                    <td>Thermal</td>
+                    <td>LST</td>
+                    <td>Land Surface Temperature</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Section 2: What is Available -->
+        <section id="available" class="section">
+            <h2>2. What is Available (Direct from Copernicus Browser)</h2>
+            <p>These indices can be retrieved <strong>directly</strong> from the Copernicus Browser without manual calculation:</p>
+
+            <div class="success-box">
+                <h3>Direct Retrieval Indices <span class="badge badge-direct">DIRECT</span></h3>
+                <table>
+                    <tr>
+                        <th>Index</th>
+                        <th>Full Name</th>
+                        <th>Data Source</th>
+                        <th>How to Access</th>
+                    </tr>
+                    <tr>
+                        <td><strong>NDVI</strong></td>
+                        <td>Normalized Difference Vegetation Index</td>
+                        <td>Sentinel-2 L2A</td>
+                        <td>Agriculture/Vegetation Theme > Statistical Information</td>
+                    </tr>
+                    <tr>
+                        <td><strong>SAVI</strong></td>
+                        <td>Soil Adjusted Vegetation Index</td>
+                        <td>Sentinel-2 L2A</td>
+                        <td>Agriculture/Vegetation Theme > Statistical Information</td>
+                    </tr>
+                    <tr>
+                        <td><strong>NDMI</strong></td>
+                        <td>Normalized Difference Moisture Index</td>
+                        <td>Sentinel-2 L2A</td>
+                        <td>Agriculture/Vegetation Theme > Statistical Information</td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3>What Values Come from Copernicus Browser:</h3>
+            <ul>
+                <li><strong>Mean index values</strong> for selected farm polygons (NDVI, SAVI, NDMI)</li>
+                <li><strong>Spectral band reflectance values</strong> (B02, B03, B04, B05, B08, B11) via Spectral Explorer</li>
+                <li><strong>Brightness Temperature values</strong> (S8, S9 bands) from Sentinel-3 SLSTR</li>
+            </ul>
+        </section>
+
+        <!-- Section 3: What Needs to be Calculated -->
+        <section id="calculated" class="section">
+            <h2>3. What Needs to be Calculated</h2>
+            <p>These indices require <strong>manual calculation</strong> using spectral band values retrieved from Copernicus:</p>
+
+            <div class="warning-box">
+                <h3>Calculated Indices <span class="badge badge-calculated">CALCULATED</span></h3>
+                <table>
+                    <tr>
+                        <th>Index</th>
+                        <th>Full Name</th>
+                        <th>Required Bands</th>
+                        <th>Calculation Method</th>
+                    </tr>
+                    <tr>
+                        <td><strong>MSAVI</strong></td>
+                        <td>Modified Soil Adjusted Vegetation Index</td>
+                        <td>B04 (Red), B08 (NIR)</td>
+                        <td>Spreadsheet formula</td>
+                    </tr>
+                    <tr>
+                        <td><strong>NDRE</strong></td>
+                        <td>Normalized Difference Red Edge</td>
+                        <td>B05 (Red Edge), B08 (NIR)</td>
+                        <td>Spreadsheet formula</td>
+                    </tr>
+                    <tr>
+                        <td><strong>GCI</strong></td>
+                        <td>Green Chlorophyll Index</td>
+                        <td>B03 (Green), B08 (NIR)</td>
+                        <td>Spreadsheet formula</td>
+                    </tr>
+                    <tr>
+                        <td><strong>PSRI</strong></td>
+                        <td>Plant Senescence Reflectance Index</td>
+                        <td>B03 (Green), B04 (Red), B08 (NIR)</td>
+                        <td>Spreadsheet formula</td>
+                    </tr>
+                    <tr>
+                        <td><strong>LAI</strong></td>
+                        <td>Leaf Area Index</td>
+                        <td>B02 (Blue), B04 (Red), B08 (NIR)</td>
+                        <td>Via EVI calculation</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="highlight-box">
+                <h3>Custom Script Required <span class="badge badge-script">SCRIPT</span></h3>
+                <table>
+                    <tr>
+                        <th>Index</th>
+                        <th>Full Name</th>
+                        <th>Data Source</th>
+                        <th>Method</th>
+                    </tr>
+                    <tr>
+                        <td><strong>LST</strong></td>
+                        <td>Land Surface Temperature</td>
+                        <td>Sentinel-3 SLSTR L1B</td>
+                        <td>Custom EvalScript (Split Window Algorithm)</td>
+                    </tr>
+                </table>
+            </div>
+
+            <h3>Spectral Bands Required from Copernicus (Sentinel-2):</h3>
+            <table>
+                <tr>
+                    <th>Band</th>
+                    <th>Name</th>
+                    <th>Wavelength</th>
+                    <th>Used For</th>
+                </tr>
+                <tr><td>B02</td><td>Blue</td><td>490 nm</td><td>EVI/LAI calculation</td></tr>
+                <tr><td>B03</td><td>Green</td><td>560 nm</td><td>GCI, PSRI</td></tr>
+                <tr><td>B04</td><td>Red</td><td>665 nm</td><td>MSAVI, PSRI, EVI</td></tr>
+                <tr><td>B05</td><td>Red Edge</td><td>705 nm</td><td>NDRE</td></tr>
+                <tr><td>B08</td><td>NIR</td><td>842 nm</td><td>All vegetation indices</td></tr>
+                <tr><td>B11</td><td>SWIR</td><td>1610 nm</td><td>Moisture indices</td></tr>
+            </table>
+
+            <h3>Thermal Bands Required (Sentinel-3 SLSTR):</h3>
+            <table>
+                <tr>
+                    <th>Band</th>
+                    <th>Wavelength</th>
+                    <th>Measurement</th>
+                </tr>
+                <tr><td>S8</td><td>10.85 um</td><td>Brightness Temperature (Kelvin)</td></tr>
+                <tr><td>S9</td><td>12.0 um</td><td>Brightness Temperature (Kelvin)</td></tr>
+            </table>
+        </section>
+
+        <!-- Section 4: All Formulas -->
+        <section id="formulas" class="section">
+            <h2>4. All Formulas Reference</h2>
+            <p>All formulas below are <strong>standard scientific formulas</strong> readily available in remote sensing literature.</p>
+
+            <h3>Vegetation Indices (Sentinel-2)</h3>
+            
+            <div class="formula-box">
+                <span class="formula-name">NDRE</span> (Normalized Difference Red Edge)<br>
+                = (NIR - RedEdge) / (NIR + RedEdge)<br>
+                = (B08 - B05) / (B08 + B05)
+            </div>
+
+            <div class="formula-box">
+                <span class="formula-name">GCI</span> (Green Chlorophyll Index)<br>
+                = (NIR / Green) - 1<br>
+                = (B08 / B03) - 1
+            </div>
+
+            <div class="formula-box">
+                <span class="formula-name">PSRI</span> (Plant Senescence Reflectance Index)<br>
+                = (Red - Green) / NIR<br>
+                = (B04 - B03) / B08
+            </div>
+
+            <div class="formula-box">
+                <span class="formula-name">MSAVI</span> (Modified Soil Adjusted Vegetation Index)<br>
+                = (2 * NIR + 1 - sqrt((2 * NIR + 1)^2 - 8 * (NIR - Red))) / 2<br>
+                = (2 * B08 + 1 - sqrt((2 * B08 + 1)^2 - 8 * (B08 - B04))) / 2
+            </div>
+
+            <div class="formula-box">
+                <span class="formula-name">EVI</span> (Enhanced Vegetation Index) - Intermediate for LAI<br>
+                = 2.5 * (NIR - Red) / (NIR + 6 * Red - 7.5 * Blue + 1)<br>
+                = 2.5 * (B08 - B04) / (B08 + 6 * B04 - 7.5 * B02 + 1)
+            </div>
+
+            <div class="formula-box">
+                <span class="formula-name">LAI</span> (Leaf Area Index)<br>
+                = 3.618 * EVI - 0.118<br>
+                <em>Note: Uses empirical EVI-based relationship</em>
+            </div>
+
+            <h3>Thermal Index (Sentinel-3)</h3>
+            
+            <div class="formula-box">
+                <span class="formula-name">LST(K)</span> - Land Surface Temperature in Kelvin<br>
+                = T8 + 1.06 * (T8 - T9) + 0.46 * (T8 - T9)^2 + 54.3 * (1 - epsilon)<br><br>
+                <span class="formula-name">LST(C)</span> - Convert to Celsius<br>
+                = LST(K) - 273.15<br><br>
+                Where:<br>
+                - T8 = Brightness Temperature at S8 band (Kelvin)<br>
+                - T9 = Brightness Temperature at S9 band (Kelvin)<br>
+                - epsilon = Land surface emissivity (~0.97 for general land)<br><br>
+                <em>Algorithm: Sobrino et al. (2004) Split Window Algorithm</em>
+            </div>
+
+            <div class="success-box">
+                <strong>Formula Availability:</strong> All formulas are standard remote sensing indices available in scientific literature. The LAI formula uses an empirical relationship derived from EVI. The LST formula implements the Sobrino et al. (2004) Split Window Algorithm.
+            </div>
+        </section>
+
+        <!-- Section 5: Step-by-Step Process -->
+        <section id="step-by-step" class="section">
+            <h2>5. Step-by-Step Process</h2>
+
+            <h3>Phase 1: Prerequisites & Setup</h3>
+            <ol class="step-list">
+                <li><strong>Create Copernicus Account</strong><br>
+                    Go to <a href="https://dataspace.copernicus.eu/" target="_blank">https://dataspace.copernicus.eu/</a> and register for a free account</li>
+                <li><strong>Prepare KML Files</strong><br>
+                    Create or obtain KML files defining your farm polygon boundaries (see Section 6 for sources)</li>
+                <li><strong>Set Up Spreadsheet</strong><br>
+                    Prepare Excel/Google Sheets with columns for all band values and formula calculations</li>
+            </ol>
+
+            <h3>Phase 2: Data Selection in Copernicus Browser</h3>
+            <ol class="step-list">
+                <li><strong>Open Copernicus Browser</strong><br>
+                    Navigate to <a href="https://browser.dataspace.copernicus.eu/" target="_blank">https://browser.dataspace.copernicus.eu/</a></li>
+                <li><strong>Upload KML File</strong><br>
+                    Use the upload/import polygon feature to load your farm boundary KML</li>
+                <li><strong>Select Dataset</strong><br>
+                    For vegetation indices: Choose <strong>Sentinel-2 Level-2A</strong> (Surface Reflectance)<br>
+                    For LST: Choose <strong>Sentinel-3 SLSTR L1B</strong></li>
+                <li><strong>Apply Filters</strong><br>
+                    Set cloud cover filter to ≤ 20%<br>
+                    Select date/time window corresponding to crop stage (e.g., 30 DAS, 60 DAS)</li>
+            </ol>
+
+            <h3>Phase 3: Direct Index Retrieval (NDVI, SAVI, NDMI)</h3>
+            <ol class="step-list">
+                <li><strong>Select Index Layer</strong><br>
+                    Go to Agriculture/Vegetation theme and select the desired index (NDVI, SAVI, or NDMI)</li>
+                <li><strong>Open Statistical Information</strong><br>
+                    Click on "Statistical Information" panel</li>
+                <li><strong>Record Mean Value</strong><br>
+                    Note the mean value displayed for your selected farm polygon</li>
+                <li><strong>Export Data</strong><br>
+                    Export or manually tabulate the values to your spreadsheet</li>
+            </ol>
+
+            <h3>Phase 4: Band Value Retrieval (for Calculated Indices)</h3>
+            <ol class="step-list">
+                <li><strong>Open Spectral Explorer</strong><br>
+                    Navigate to "Spectral Explorer - Values" in the browser</li>
+                <li><strong>Retrieve Band Values</strong><br>
+                    Record mean reflectance values for: B02, B03, B04, B05, B08, B11</li>
+                <li><strong>Enter Values in Spreadsheet</strong><br>
+                    Input all band values into your prepared spreadsheet</li>
+                <li><strong>Apply Formulas</strong><br>
+                    Use the formulas from Section 4 to calculate MSAVI, NDRE, GCI, PSRI, and LAI</li>
+            </ol>
+
+            <h3>Phase 5: LST Calculation (Custom Script)</h3>
+            <ol class="step-list">
+                <li><strong>Switch to Sentinel-3 SLSTR L1B</strong><br>
+                    Select Sentinel-3 SLSTR L1B dataset with cloud filter ≤ 20%</li>
+                <li><strong>Open Custom Script Editor</strong><br>
+                    Navigate to the custom script/EvalScript editor in the browser</li>
+                <li><strong>Paste LST Script</strong><br>
+                    Copy and paste the EvalScript provided in Section 7 of this document</li>
+                <li><strong>Run and Visualize</strong><br>
+                    Execute the script to generate the LST visualization map</li>
+                <li><strong>Extract Values</strong><br>
+                    Use statistical tools to extract mean LST values for your polygon</li>
+            </ol>
+        </section>
+
+        <!-- Section 6: External Requirements -->
+        <section id="external" class="section">
+            <h2>6. External Requirements & KML Test Files</h2>
+
+            <div class="warning-box">
+                <h3>What You Need to Obtain Externally:</h3>
+                <ul>
+                    <li><strong>KML Files</strong> - Farm polygon boundary files defining areas of interest</li>
+                    <li><strong>Copernicus Account</strong> - Free registration required at dataspace.copernicus.eu</li>
+                    <li><strong>Spreadsheet Software</strong> - Excel, Google Sheets, or similar for formula calculations</li>
+                    <li><strong>Crop Stage Information</strong> - Days After Sowing (DAS) for proper image timing</li>
+                </ul>
+            </div>
+
+            <h3>Where to Get KML Files for Testing:</h3>
+            
+            <div class="two-column">
+                <div class="satellite-card">
+                    <h4>Option 1: Create Your Own</h4>
+                    <p>Use Google Earth Pro (free) to draw farm boundaries:</p>
+                    <ol>
+                        <li>Download Google Earth Pro</li>
+                        <li>Navigate to your area of interest</li>
+                        <li>Add > Polygon</li>
+                        <li>Draw boundary</li>
+                        <li>Save Place As > KML</li>
+                    </ol>
+                    <a href="https://www.google.com/earth/versions/#earth-pro" target="_blank" class="link-card">Download Google Earth Pro</a>
+                </div>
+                
+                <div class="satellite-card">
+                    <h4>Option 2: Sample Agricultural KMLs</h4>
+                    <p>Sources for sample farm/agricultural KML files:</p>
+                    <ul>
+                        <li>FAO GeoNetwork</li>
+                        <li>USDA CropScape</li>
+                        <li>OpenStreetMap exports</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>KML Test File Resources:</h3>
+            
+            <table>
+                <tr>
+                    <th>Source</th>
+                    <th>Description</th>
+                    <th>Link</th>
+                </tr>
+                <tr>
+                    <td>Google Earth Gallery</td>
+                    <td>Community-shared KML files including agricultural areas</td>
+                    <td><a href="https://earth.google.com/gallery/" target="_blank">earth.google.com/gallery</a></td>
+                </tr>
+                <tr>
+                    <td>FAO GeoNetwork</td>
+                    <td>Agricultural land boundaries, crop data</td>
+                    <td><a href="https://data.apps.fao.org/" target="_blank">data.apps.fao.org</a></td>
+                </tr>
+                <tr>
+                    <td>USDA CropScape</td>
+                    <td>US crop data layers (convert to KML)</td>
+                    <td><a href="https://nassgeodata.gmu.edu/CropScape/" target="_blank">nassgeodata.gmu.edu/CropScape</a></td>
+                </tr>
+                <tr>
+                    <td>Natural Earth</td>
+                    <td>Free vector/raster map data</td>
+                    <td><a href="https://www.naturalearthdata.com/" target="_blank">naturalearthdata.com</a></td>
+                </tr>
+                <tr>
+                    <td>OpenStreetMap</td>
+                    <td>Export farmland areas as KML via Overpass</td>
+                    <td><a href="https://overpass-turbo.eu/" target="_blank">overpass-turbo.eu</a></td>
+                </tr>
+            </table>
+
+            <div class="highlight-box">
+                <h3>Quick KML Creation via Copernicus Browser:</h3>
+                <p>The Copernicus Browser itself allows you to draw polygons directly on the map interface. You can:</p>
+                <ol>
+                    <li>Use the polygon drawing tool in the browser</li>
+                    <li>Draw your area of interest</li>
+                    <li>Export as KML/GeoJSON for future use</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Section 7: Custom Scripts -->
+        <section id="scripts" class="section">
+            <h2>7. Custom EvalScripts for Copernicus Browser</h2>
+
+            <h3>LST (Land Surface Temperature) - Split Window Algorithm</h3>
+            <p><strong>Dataset:</strong> Sentinel-3 SLSTR L1B<br>
+            <strong>Algorithm:</strong> Sobrino et al. (2004) Split Window</p>
+            
+            <div class="code-block">//VERSION=3
+//LST (Land Surface Temperature) - Split Window Algorithm
+//Dataset: Sentinel-3 SLSTR L1B
+//Bands used: S8 (10.85 um) and S9 (12.0 um) - Brightness Temperature in Kelvin
+//Algorithm: Sobrino et al. (2004) Split Window
+//Color scale: Blue=0C, Green=20C, Yellow=35C, Red=50C+
+
+function setup() {
+  return {
+    input: ["S8", "S9", "dataMask"],
+    output: { bands: 4 }
+  };
+}
+
+function evaluatePixel(sample) {
+  var T8 = sample.S8;  // Brightness Temperature at S8 (10.85 um) in Kelvin
+  var T9 = sample.S9;  // Brightness Temperature at S9 (12.0 um) in Kelvin
+  
+  var epsilon = 0.97;  // Fixed land emissivity
+  var dT = T8 - T9;    // Split window difference
+  
+  var LST_K = T8 + 1.06 * dT + 0.46 * dT * dT + 54.3 * (1 - epsilon);
+  var LST_C = LST_K - 273.15;  // Convert to Celsius
+  
+  // Color ramp: 0C=blue, 20C=green, 35C=yellow, 50C+=red
+  var t = Math.max(0, Math.min(1, (LST_C - 0) / 50.0));
+  var r, g, b;
+  
+  if (t < 0.25) { r = 0; g = t * 4; b = 1; }
+  else if (t < 0.5) { r = 0; g = 1; b = 1 - (t - 0.25) * 4; }
+  else if (t < 0.75) { r = (t - 0.5) * 4; g = 1; b = 0; }
+  else { r = 1; g = 1 - (t - 0.75) * 4; b = 0; }
+  
+  return [r, g, b, sample.dataMask];
+}</div>
+
+            <h3>LST Color Interpretation:</h3>
+            <table>
+                <tr>
+                    <th>Color</th>
+                    <th>Temperature Range</th>
+                    <th>Typical Surface</th>
+                </tr>
+                <tr>
+                    <td style="background: blue; color: white;">Blue</td>
+                    <td>0-20C (32-68F)</td>
+                    <td>Water bodies, reservoirs</td>
+                </tr>
+                <tr>
+                    <td style="background: green; color: white;">Green</td>
+                    <td>20-30C (68-86F)</td>
+                    <td>Vegetation, forests</td>
+                </tr>
+                <tr>
+                    <td style="background: yellow;">Yellow</td>
+                    <td>30-40C (86-104F)</td>
+                    <td>Mixed areas</td>
+                </tr>
+                <tr>
+                    <td style="background: orange;">Orange</td>
+                    <td>40-45C (104-113F)</td>
+                    <td>Urban areas, bare soil</td>
+                </tr>
+                <tr>
+                    <td style="background: red; color: white;">Red</td>
+                    <td>45-50C+ (113F+)</td>
+                    <td>Hot surfaces, urban heat islands</td>
+                </tr>
+            </table>
+        </section>
+
+        <!-- Section 8: Quick Reference Checklist -->
+        <section id="checklist" class="section">
+            <h2>8. Quick Reference Checklist</h2>
+
+            <div class="two-column">
+                <div>
+                    <h3>Before Starting:</h3>
+                    <ul>
+                        <li>[ ] Copernicus account created</li>
+                        <li>[ ] KML file(s) prepared</li>
+                        <li>[ ] Spreadsheet template ready</li>
+                        <li>[ ] Crop stage dates identified</li>
+                    </ul>
+
+                    <h3>Data Selection:</h3>
+                    <ul>
+                        <li>[ ] Sentinel-2 L2A selected (vegetation indices)</li>
+                        <li>[ ] Sentinel-3 SLSTR L1B selected (LST)</li>
+                        <li>[ ] Cloud cover ≤ 20%</li>
+                        <li>[ ] Correct date range selected</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3>Values to Retrieve:</h3>
+                    <table>
+                        <tr><th>Item</th><th>Source</th></tr>
+                        <tr><td>NDVI mean</td><td>Direct</td></tr>
+                        <tr><td>SAVI mean</td><td>Direct</td></tr>
+                        <tr><td>NDMI mean</td><td>Direct</td></tr>
+                        <tr><td>B02 (Blue)</td><td>Spectral Explorer</td></tr>
+                        <tr><td>B03 (Green)</td><td>Spectral Explorer</td></tr>
+                        <tr><td>B04 (Red)</td><td>Spectral Explorer</td></tr>
+                        <tr><td>B05 (Red Edge)</td><td>Spectral Explorer</td></tr>
+                        <tr><td>B08 (NIR)</td><td>Spectral Explorer</td></tr>
+                        <tr><td>B11 (SWIR)</td><td>Spectral Explorer</td></tr>
+                        <tr><td>LST</td><td>Custom Script</td></tr>
+                    </table>
+                </div>
+            </div>
+
+            <h3>Spreadsheet Formulas (Copy-Paste Ready):</h3>
+            <div class="code-block">
+// Assuming columns: A=B02, B=B03, C=B04, D=B05, E=B08, F=B11
+
+NDRE = (E2 - D2) / (E2 + D2)
+
+GCI = (E2 / B2) - 1
+
+PSRI = (C2 - B2) / E2
+
+MSAVI = (2 * E2 + 1 - SQRT((2 * E2 + 1)^2 - 8 * (E2 - C2))) / 2
+
+EVI = 2.5 * (E2 - C2) / (E2 + 6 * C2 - 7.5 * A2 + 1)
+
+LAI = 3.618 * [EVI_cell] - 0.118
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="section" style="text-align: center; background: var(--primary-color); color: white;">
+            <p><strong>Important Links:</strong></p>
+            <p>
+                <a href="https://dataspace.copernicus.eu/" style="color: white;">Copernicus Data Space</a> |
+                <a href="https://browser.dataspace.copernicus.eu/" style="color: white;">Copernicus Browser</a> |
+                <a href="https://documentation.dataspace.copernicus.eu/" style="color: white;">Documentation</a>
+            </p>
+            <p style="margin-top: 15px; opacity: 0.8;">
+                <em>Document generated for Crop Monitoring Indices Extraction Process</em>
+            </p>
+        </footer>
+    </div>
+</body>
+</html>
