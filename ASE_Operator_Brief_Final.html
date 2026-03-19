@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Internal Search Assistant — ASE Operator Brief</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #1a1a2e;
+    --accent: #0f3460;
+    --accent-light: #e8eef6;
+    --border: #d0d7e3;
+    --critical: #c0392b;
+    --high: #e67e22;
+    --medium: #d4a017;
+    --ok: #27ae60;
+    --code-bg: #f4f6f9;
+    --policy: #3498db;
+    --inventory: #e67e22;
+    --mixed: #9b59b6;
+    --openai: #c0392b;
+    --retrieval: #27ae60;
+    --overhead: #95a5a6;
+    --surface: #fafbfd;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    color: var(--fg);
+    background: var(--bg);
+    line-height: 1.7;
+    max-width: 1060px;
+    margin: 0 auto;
+    padding: 48px 28px 100px;
+  }
+  h1 { font-size: 2rem; color: var(--accent); margin-bottom: 6px; letter-spacing: -0.02em; }
+  h2 {
+    font-size: 1.45rem; color: var(--accent);
+    margin-top: 56px; margin-bottom: 18px;
+    border-bottom: 2px solid var(--accent); padding-bottom: 8px;
+  }
+  h3 { font-size: 1.15rem; margin-top: 36px; margin-bottom: 12px; color: var(--fg); }
+  h4 { font-size: 1.02rem; margin-top: 24px; margin-bottom: 10px; color: #444; }
+  p, li { margin-bottom: 10px; }
+  ul, ol { padding-left: 24px; }
+  .subtitle { color: #555; font-size: 1rem; margin-bottom: 4px; }
+  .meta { color: #888; font-size: 0.88rem; margin-bottom: 40px; line-height: 1.8; }
+  table {
+    width: 100%; border-collapse: collapse;
+    margin: 16px 0 24px; font-size: 0.92rem;
+  }
+  th, td {
+    border: 1px solid var(--border);
+    padding: 10px 14px; text-align: left; vertical-align: top;
+  }
+  th { background: var(--accent-light); font-weight: 600; color: var(--accent); }
+  tr:nth-child(even) { background: var(--surface); }
+  code {
+    background: var(--code-bg); padding: 2px 6px;
+    border-radius: 3px; font-size: 0.88em;
+    font-family: 'Consolas', 'Fira Code', 'SF Mono', monospace;
+    color: #c0392b;
+  }
+  .bottom-line {
+    background: linear-gradient(135deg, #0f3460 0%, #1a5276 100%);
+    color: #fff;
+    padding: 22px 28px;
+    border-radius: 10px;
+    margin: 28px 0 36px;
+    font-size: 1.02rem;
+    line-height: 1.75;
+    box-shadow: 0 4px 16px rgba(15,52,96,0.15);
+  }
+  .bottom-line strong { color: #f9e79f; }
+  .callout {
+    border-left: 4px solid var(--accent);
+    background: var(--accent-light);
+    padding: 14px 20px; margin: 18px 0;
+    border-radius: 0 8px 8px 0;
+  }
+  .callout-warn {
+    border-left-color: var(--critical);
+    background: #fdf0ef;
+  }
+  .callout-ok {
+    border-left-color: var(--ok);
+    background: #eafaf1;
+  }
+  .callout-info {
+    border-left-color: var(--policy);
+    background: #eaf2fa;
+  }
+  .badge {
+    display: inline-block; padding: 3px 12px;
+    border-radius: 4px; font-size: 0.75rem;
+    font-weight: 700; color: #fff;
+    text-transform: uppercase; letter-spacing: 0.04em;
+    vertical-align: middle;
+  }
+  .badge-critical { background: var(--critical); }
+  .badge-high { background: var(--high); }
+  .badge-medium { background: var(--medium); }
+  .badge-ok { background: var(--ok); }
+  .badge-phase { background: var(--accent); font-size: 0.72rem; }
+  .toc {
+    background: var(--accent-light);
+    padding: 24px 32px;
+    border-radius: 10px;
+    margin: 28px 0 44px;
+    columns: 2;
+    column-gap: 36px;
+  }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin-bottom: 5px; break-inside: avoid; font-size: 0.93rem; }
+  .toc a { color: var(--accent); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .finding {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px 26px;
+    margin: 22px 0;
+    background: var(--surface);
+  }
+  .finding-title {
+    font-size: 1.08rem;
+    font-weight: 600;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .action-card {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 18px 0;
+    background: #fff;
+    border-left: 4px solid var(--accent);
+  }
+  .action-card.phase1 { border-left-color: var(--critical); }
+  .action-card.phase2 { border-left-color: var(--high); }
+  .action-card.phase3 { border-left-color: var(--policy); }
+  .action-title {
+    font-weight: 700;
+    font-size: 1.02rem;
+    margin-bottom: 10px;
+    color: var(--fg);
+  }
+  .diagram-container {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px 20px;
+    margin: 24px 0;
+    overflow-x: auto;
+  }
+  .diagram-container svg { display: block; margin: 0 auto; }
+  .trace-block {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 22px;
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: 0.88rem;
+    line-height: 2;
+    margin: 16px 0;
+    overflow-x: auto;
+  }
+  .trace-block .label { color: #555; display: inline-block; width: 100px; }
+  .trace-block .val { font-weight: 700; color: var(--accent); }
+  .risk-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 20px 0;
+  }
+  .risk-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    background: #fff;
+  }
+  .risk-card h4 {
+    margin: 0 0 8px 0;
+    font-size: 0.95rem;
+  }
+  .risk-card p { margin: 0; font-size: 0.9rem; color: #555; }
+  .question-list {
+    counter-reset: q;
+    list-style: none;
+    padding-left: 0;
+  }
+  .question-list li {
+    counter-increment: q;
+    padding: 12px 16px 12px 56px;
+    position: relative;
+    border-bottom: 1px solid #eee;
+  }
+  .question-list li::before {
+    content: "Q" counter(q);
+    position: absolute;
+    left: 12px;
+    top: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    font-size: 0.85rem;
+    background: var(--accent-light);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .wave-table td:first-child { font-weight: 700; white-space: nowrap; }
+  .metric-table td:nth-child(2) { color: var(--critical); font-weight: 600; }
+  .metric-table td:nth-child(3) { color: var(--ok); font-weight: 600; }
+  .metric-table td:nth-child(4) { color: var(--ok); font-weight: 600; }
+  .decision-box {
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px 26px;
+    margin: 20px 0;
+    background: #fff;
+  }
+  .decision-box h4 { margin-top: 0; color: var(--accent); }
+  .option { margin: 12px 0; padding: 12px 16px; background: var(--surface); border-radius: 6px; }
+  .option strong { color: var(--accent); }
+  .rec { background: #eafaf1; border-left: 3px solid var(--ok); padding: 10px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; }
+  .separator { border: none; border-top: 2px solid var(--accent-light); margin: 48px 0 0; }
+  .appendix-table th { font-size: 0.85rem; }
+  .appendix-table td { font-size: 0.88rem; }
+  .flow-title { font-weight: 600; color: var(--accent); margin-bottom: 8px; font-size: 0.95rem; }
+  @media (max-width: 750px) {
+    .toc { columns: 1; }
+    .risk-grid { grid-template-columns: 1fr; }
+    body { padding: 24px 16px 60px; }
+  }
+  @media print {
+    body { max-width: 100%; padding: 20px; font-size: 11px; }
+    .diagram-container { break-inside: avoid; }
+    .finding, .action-card, .decision-box { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<h1>Internal Search Assistant</h1>
+<p class="subtitle">ASE Operator Brief</p>
+<p class="meta">
+  <strong>Prepared by:</strong> [Your Name], AI Success Engineer, OpenAI<br>
+  <strong>Audience:</strong> CIO, CTO, and Senior Technical Leadership<br>
+  <strong>Scope:</strong> 14-day production review (June 1&ndash;14, 2024) &middot; 10% user sample (1,200 requests) &middot; 5 telemetry files
+</p>
+
+<div class="bottom-line">
+  <strong>Bottom line:</strong> This system has two independent problems. First, something is adding ~86 tokens/day to every prompt, <strong>doubling API costs in two weeks</strong>. Second, the inventory service degraded overnight on June 9, <strong>tripling latency</strong> on half of all requests and introducing new errors. Neither is self-healing. Both must be resolved before expanding to three new teams.
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <strong style="display:block;margin-bottom:10px;font-size:1.05rem;">Table of Contents</strong>
+  <ol>
+    <li><a href="#s1">What Is Happening Today</a>
+      <ol>
+        <li><a href="#s1-1">System &amp; Adoption State</a></li>
+        <li><a href="#s1-2">Current Architecture</a></li>
+        <li><a href="#s1-3">Problem 1: Prompt Token Growth</a></li>
+        <li><a href="#s1-4">Problem 2: Inventory Degradation</a></li>
+        <li><a href="#s1-5">Error Analysis</a></li>
+        <li><a href="#s1-6">Response Quality</a></li>
+        <li><a href="#s1-7">Retry Behavior</a></li>
+        <li><a href="#s1-8">Lambda Cold Starts</a></li>
+        <li><a href="#s1-9">Adoption Risk</a></li>
+        <li><a href="#s1-10">Additional Context</a></li>
+        <li><a href="#s1-11">Biggest Risks</a></li>
+        <li><a href="#s1-12">Key Questions</a></li>
+        <li><a href="#s1-13">Documented Assumptions</a></li>
+      </ol>
+    </li>
+    <li><a href="#s2">What I Would Do Next</a>
+      <ol>
+        <li><a href="#s2-1">Phase 1 &mdash; Stabilize</a></li>
+        <li><a href="#s2-2">Phase 2 &mdash; Optimize</a></li>
+        <li><a href="#s2-3">Phase 3 &mdash; Expand</a></li>
+        <li><a href="#s2-4">Features Not Recommended</a></li>
+      </ol>
+    </li>
+    <li><a href="#s3">Proposed Architecture</a></li>
+    <li><a href="#s4">How I Would Advise on Tradeoffs</a></li>
+    <li><a href="#s5">How I Would Ensure Deployment</a></li>
+    <li><a href="#appA">Appendix A: OpenAI Platform Features</a></li>
+    <li><a href="#appB">Appendix B: Request Flow Diagrams</a></li>
+    <li><a href="#appC">Appendix C: Root Cause Pattern</a></li>
+  </ol>
+</div>
+
+<!-- ====================================================================== -->
+<h2 id="s1">1. What Is Happening Today</h2>
+
+<!-- 1.1 -->
+<h3 id="s1-1">1.1 System and Adoption State</h3>
+
+<p>The assistant serves approximately <strong>860 requests/day</strong> from <strong>~750 stores</strong> via a widget in the OneStore employee app. The pipeline is strictly sequential &mdash; confirmed by timestamp ordering across all 587 multi-span traces:</p>
+
+<p style="text-align:center;font-weight:600;color:var(--accent);margin:16px 0;">
+  Vector Store Retrieval (70ms) &rarr; Inventory Lookup (200&ndash;550ms, if needed) &rarr; GPT-4o (750ms)
+</p>
+
+<table>
+  <tr><th>Route</th><th>% of Traffic</th><th>What It Does</th><th>Tool Calls</th></tr>
+  <tr><td><code>policy_only</code></td><td>49.1% (589)</td><td>Retrieval + GPT-4o only</td><td>87.4% zero; 12.6% unexpectedly do</td></tr>
+  <tr><td><code>mixed</code></td><td>26.8% (321)</td><td>Retrieval + Inventory + GPT-4o</td><td>100% use tool calls (1&ndash;2/req)</td></tr>
+  <tr><td><code>inventory</code></td><td>24.2% (290)</td><td>Retrieval + Inventory + GPT-4o</td><td>100% use tool calls (1&ndash;2/req)</td></tr>
+</table>
+
+<p>Volume is <strong>completely flat</strong> &mdash; no adoption growth visible in 14 days. Each sampled user made exactly one request, suggesting broad but shallow usage for ad-hoc lookups rather than extended sessions.</p>
+
+<div class="callout callout-warn">
+  <strong>Critical adoption signal:</strong> 1.0 queries per user over 14 days means employees try the tool once and never return. Traffic peaks at 11&ndash;13h (lunch rush) and 16&ndash;18h (end of shift), consistent with retail store patterns.
+</div>
+
+<p>Caching exists but is barely effective:</p>
+<table>
+  <tr><th>Cache</th><th>Hit Rate</th><th>Detail</th></tr>
+  <tr><td>Policy/retrieval</td><td><strong>5.8%</strong></td><td>70 / 1,200 requests</td></tr>
+  <tr><td>Inventory</td><td><strong>5.6%</strong></td><td>34 / 611 inventory-route requests</td></tr>
+  <tr><td>OpenAI response</td><td><strong>0.0%</strong></td><td>0 / 1,200 requests</td></tr>
+  <tr><td colspan="2"><strong>91.4% of requests hit neither cache</strong></td><td>No dedicated caching infra (Redis/ElastiCache) visible</td></tr>
+</table>
+
+<!-- 1.2 Architecture -->
+<h3 id="s1-2">1.2 Current Architecture and Request Flow</h3>
+
+<div class="diagram-container">
+<svg viewBox="0 0 1000 520" width="1000" height="520" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, system-ui, sans-serif" font-size="12">
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#555"/></marker>
+    <marker id="arr-r" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#c0392b"/></marker>
+    <marker id="arr-g" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#27ae60"/></marker>
+    <marker id="arr-o" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#e67e22"/></marker>
+    <filter id="shadow" x="-2%" y="-2%" width="104%" height="104%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <!-- Title -->
+  <text x="500" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#0f3460">Current State Architecture &mdash; Problems Annotated</text>
+
+  <!-- Employee Widget -->
+  <rect x="20" y="180" width="120" height="80" rx="10" fill="#e8eef6" stroke="#0f3460" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="80" y="210" text-anchor="middle" fill="#0f3460" font-weight="700" font-size="12">Employee</text>
+  <text x="80" y="228" text-anchor="middle" fill="#555" font-size="10">OneStore Widget</text>
+  <!-- Widget problems -->
+  <text x="80" y="290" text-anchor="middle" fill="#c0392b" font-size="9" font-weight="600">&cross; No streaming</text>
+  <text x="80" y="303" text-anchor="middle" fill="#c0392b" font-size="9" font-weight="600">&cross; No feedback</text>
+  <text x="80" y="316" text-anchor="middle" fill="#c0392b" font-size="9" font-weight="600">&cross; No citations</text>
+  <text x="80" y="329" text-anchor="middle" fill="#c0392b" font-size="9" font-weight="600">&cross; Generic errors</text>
+
+  <!-- Arrow Employee → Gateway -->
+  <line x1="140" y1="220" x2="188" y2="220" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- API Gateway -->
+  <rect x="190" y="190" width="110" height="60" rx="10" fill="#fef9e7" stroke="#d4a017" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="245" y="217" text-anchor="middle" fill="#7d6608" font-weight="700" font-size="12">API Gateway</text>
+  <text x="245" y="235" text-anchor="middle" fill="#555" font-size="10">REST / Sync</text>
+  <text x="245" y="270" text-anchor="middle" fill="#c0392b" font-size="9" font-weight="600">&cross; No SSE/WebSocket</text>
+  <text x="245" y="283" text-anchor="middle" fill="#c0392b" font-size="9" font-weight="600">&cross; Buffers full response</text>
+
+  <!-- Arrow Gateway → Lambda -->
+  <line x1="300" y1="220" x2="358" y2="220" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Lambda Box (large) -->
+  <rect x="360" y="50" width="620" height="440" rx="12" fill="#fff" stroke="#e67e22" stroke-width="2" filter="url(#shadow)"/>
+  <text x="670" y="76" text-anchor="middle" fill="#e67e22" font-weight="700" font-size="14">Lambda (Node.js) &mdash; Orchestrator</text>
+
+  <!-- Step 1: Retrieval -->
+  <rect x="400" y="100" width="160" height="70" rx="8" fill="#eafaf1" stroke="#27ae60" stroke-width="1.5"/>
+  <text x="480" y="125" text-anchor="middle" fill="#27ae60" font-weight="700" font-size="12">Step 1: Retrieval</text>
+  <text x="480" y="142" text-anchor="middle" fill="#555" font-size="10">Vector Store | 70ms avg</text>
+  <text x="480" y="157" text-anchor="middle" fill="#555" font-size="10">Cache: 5.8% hit | 0% errors</text>
+
+  <!-- SERIAL Label -->
+  <rect x="575" y="130" width="60" height="22" rx="4" fill="#fdf0ef" stroke="#c0392b" stroke-width="1"/>
+  <text x="605" y="145" text-anchor="middle" fill="#c0392b" font-size="9" font-weight="700">SERIAL</text>
+
+  <!-- Arrow Retrieval → Inventory -->
+  <line x1="560" y1="141" x2="648" y2="141" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="6" marker-end="url(#arr-r)"/>
+
+  <!-- Step 2: Inventory -->
+  <rect x="650" y="100" width="175" height="70" rx="8" fill="#fff3e0" stroke="#e67e22" stroke-width="1.5"/>
+  <text x="737" y="125" text-anchor="middle" fill="#e67e22" font-weight="700" font-size="12">Step 2: Inventory</text>
+  <text x="737" y="142" text-anchor="middle" fill="#555" font-size="10">REST API | 200&ndash;550ms</text>
+  <text x="737" y="157" text-anchor="middle" fill="#555" font-size="10">Cache: 5.6% hit | Degrading</text>
+
+  <!-- Arrow Both → OpenAI (converge) -->
+  <line x1="480" y1="170" x2="480" y2="210" stroke="#27ae60" stroke-width="1.2" stroke-dasharray="4"/>
+  <line x1="737" y1="170" x2="737" y2="210" stroke="#e67e22" stroke-width="1.2" stroke-dasharray="4"/>
+  <line x1="480" y1="210" x2="560" y2="240" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="737" y1="210" x2="660" y2="240" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="610" y="225" text-anchor="middle" fill="#555" font-size="9">waits for both (serial)</text>
+
+  <!-- Step 3: OpenAI -->
+  <rect x="500" y="240" width="220" height="90" rx="8" fill="#fdf0ef" stroke="#c0392b" stroke-width="1.5"/>
+  <text x="610" y="268" text-anchor="middle" fill="#c0392b" font-weight="700" font-size="13">Step 3: OpenAI GPT-4o</text>
+  <text x="610" y="286" text-anchor="middle" fill="#555" font-size="10">750ms avg | All traffic uses GPT-4o</text>
+  <text x="610" y="300" text-anchor="middle" fill="#c0392b" font-size="9">&cross; No streaming &nbsp; &cross; No model routing</text>
+  <text x="610" y="314" text-anchor="middle" fill="#c0392b" font-size="9">&cross; No prompt caching &nbsp; &cross; Naive retry</text>
+
+  <!-- Problems list (bottom of Lambda box) -->
+  <rect x="400" y="355" width="270" height="120" rx="8" fill="#fdf0ef" stroke="#c0392b" stroke-width="1" stroke-dasharray="4"/>
+  <text x="535" y="376" text-anchor="middle" fill="#c0392b" font-weight="700" font-size="11">Identified Problems</text>
+  <text x="410" y="395" fill="#c0392b" font-size="10">&cross; Serial calls (retrieval&rarr;inv&rarr;OAI)</text>
+  <text x="410" y="410" fill="#c0392b" font-size="10">&cross; No circuit breakers</text>
+  <text x="410" y="425" fill="#c0392b" font-size="10">&cross; No graceful degradation</text>
+  <text x="410" y="440" fill="#c0392b" font-size="10">&cross; No provisioned concurrency</text>
+  <text x="410" y="455" fill="#c0392b" font-size="10">&cross; No error classification on retries</text>
+
+  <!-- CloudWatch -->
+  <rect x="710" y="375" width="150" height="80" rx="8" fill="#f4f6f9" stroke="#95a5a6" stroke-width="1.5"/>
+  <text x="785" y="400" text-anchor="middle" fill="#555" font-weight="700" font-size="11">CloudWatch</text>
+  <text x="785" y="418" text-anchor="middle" fill="#555" font-size="10">Logging only</text>
+  <text x="785" y="436" text-anchor="middle" fill="#c0392b" font-size="9">&cross; No dashboard</text>
+  <text x="785" y="449" text-anchor="middle" fill="#c0392b" font-size="9">&cross; No alerting</text>
+
+  <!-- Arrow Lambda → CloudWatch -->
+  <line x1="670" y1="415" x2="710" y2="415" stroke="#95a5a6" stroke-width="1.2" marker-end="url(#arr)"/>
+</svg>
+</div>
+
+<div class="finding">
+  <div class="finding-title">
+    <span class="badge badge-critical">Critical</span>
+    Serial Execution &mdash; Proven Across 611/611 Traces
+  </div>
+  <div class="trace-block">
+    <span class="label">Trace:</span> <span class="val">req_5048bf7b539b</span><br>
+    <span class="label">Retrieval:</span> <span style="color:#27ae60">&#9608;&#9608;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;40ms &nbsp;(ends ~:40.100)<br>
+    <span class="label">Inventory:</span> &nbsp;&nbsp;&nbsp;<span style="color:#e67e22">&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;143ms (starts :40.106 &mdash; <strong>waits</strong>)<br>
+    <span class="label">OpenAI:</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color:#c0392b">&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;&#9608;</span> 554ms<br><br>
+    <span class="label">Total:</span> <span class="val">793ms</span> &nbsp;|&nbsp; Wasted: 40&ndash;70ms waiting on retrieval before inventory
+  </div>
+  <p>A simple <code>Promise.all([retrieval(), inventoryLookup()])</code> would overlap these calls, saving <strong>70&ndash;140ms on 51% of traffic</strong> with minimal code change.</p>
+</div>
+
+<!-- 1.3 Problem 1 -->
+<h3 id="s1-3">1.3 Problem 1: Prompt Token Accumulation <span class="badge badge-critical">Drives Cost</span></h3>
+
+<p>Average prompt tokens per request grew from <strong>871 to 1,981 over 14 days (+127%)</strong> &mdash; a near-perfect linear increase of <strong>85.89 tokens/day</strong> (R&sup2; = 0.9997).</p>
+
+<table>
+  <tr><th>Day</th><th>Avg Prompt Tokens</th><th>Avg Cost/Request</th></tr>
+  <tr><td>Jun 1</td><td>871</td><td>$11.0</td></tr>
+  <tr><td>Jun 7</td><td>1,379</td><td>$17.1</td></tr>
+  <tr><td>Jun 14</td><td>1,981</td><td>$24.3</td></tr>
+</table>
+
+<p><strong>Why we know this is a system prompt issue</strong> (not user behavior, not retrieval, not route mix):</p>
+<ul>
+  <li><strong>Growth is identical across all three routes:</strong> policy_only +85/day, inventory +86/day, mixed +88/day. Since <code>policy_only</code> doesn&rsquo;t call inventory at all, the growth must be in shared prompt infrastructure.</li>
+  <li><strong>Retrieval payload is flat</strong> at ~1,155 bytes/day with zero trend (R&sup2; = 0.02).</li>
+  <li><strong>Zero correlation</strong> between retrieval payload size and prompt tokens (r = -0.02).</li>
+  <li><strong>Every user is unique</strong> &mdash; 1,200 requests from 1,200 distinct user hashes, each appearing exactly once. This rules out conversation history accumulation.</li>
+  <li><strong>Growth is uniform within each day</strong> &mdash; coefficient of variation is ~5%. Not driven by outliers.</li>
+  <li><strong>Route mix proportions don&rsquo;t trend.</strong> Can&rsquo;t explain growth via shift toward higher-token routes.</li>
+</ul>
+
+<p><strong>100% of cost growth traces to input token inflation.</strong> The cost formula: <code>prompt_tokens &times; $0.012 + completion_tokens &times; $0.0024</code> (verified with zero prediction error). Under this formula, $1,121 of $1,122 total cost increase comes from input tokens.</p>
+
+<div class="callout callout-info">
+  <strong>Prompt token variance is high</strong> (stdev 354, range 669&ndash;2,100). This variance prevents OpenAI&rsquo;s automatic prompt caching from activating consistently. A chunk budget would reduce this variance alongside fixing the growth.
+</div>
+
+<p><strong>Most likely causes:</strong> An automated process (cron job, daily deployment, content sync) appending few-shot examples, knowledge base metadata, or behavioral instructions to the system prompt.</p>
+
+<!-- 1.4 Problem 2 -->
+<h3 id="s1-4">1.4 Problem 2: Inventory Service Degradation <span class="badge badge-critical">Drives Latency</span></h3>
+
+<p>Between June 8&ndash;9, the inventory service experienced a sudden performance degradation:</p>
+
+<table>
+  <tr><th>Metric</th><th>Jun 1&ndash;8</th><th>Jun 9&ndash;14</th><th>Change</th></tr>
+  <tr><td>Mean latency (OK requests)</td><td>197ms</td><td>520ms</td><td><strong>+164% (2.6&times;)</strong></td></tr>
+  <tr><td>p95 latency</td><td>313ms</td><td>897ms</td><td><strong>+187%</strong></td></tr>
+  <tr><td>Timeout setting</td><td>900ms</td><td>1,300ms</td><td><strong>Raised overnight</strong></td></tr>
+  <tr><td>Errors</td><td>0</td><td>14</td><td><strong>New failure mode</strong></td></tr>
+  <tr><td>Retry rate</td><td>3.5% (12/339)</td><td>12.1% (33/272)</td><td><strong>+246%</strong></td></tr>
+</table>
+
+<p><strong>This was not caused by increased load.</strong> Inventory-route request volume is flat (43/day week 1 vs 45/day week 2). Something changed in the service itself.</p>
+
+<p>Someone raised the timeout from 900ms to 1,300ms on June 9 at 00:56 UTC &mdash; a reactive band-aid. Despite the raised ceiling: <strong>9 requests still timed out</strong> (504) and <strong>5 returned HTTP 500</strong> (new failure mode starting June 11).</p>
+
+<p><strong>Policy-only requests (49%) experienced zero latency change</strong> &mdash; confirming inventory is the sole cause:</p>
+
+<table>
+  <tr><th>Component</th><th>policy_only W1</th><th>policy_only W2</th><th>inv/mixed W1</th><th>inv/mixed W2</th></tr>
+  <tr><td>Retrieval</td><td>72ms</td><td>69ms</td><td>72ms</td><td>67ms</td></tr>
+  <tr><td>Inventory</td><td>&mdash;</td><td>&mdash;</td><td>198ms</td><td>470ms</td></tr>
+  <tr><td>OpenAI</td><td>757ms</td><td>749ms</td><td>745ms</td><td>723ms</td></tr>
+  <tr><td>Overhead</td><td>76ms</td><td>75ms</td><td>70ms</td><td>70ms</td></tr>
+  <tr><td><strong>Total</strong></td><td><strong>905ms</strong></td><td><strong>894ms</strong></td><td><strong>1,086ms</strong></td><td><strong>1,330ms</strong></td></tr>
+</table>
+
+<div class="callout">
+  <strong>These two problems are provably independent.</strong> Prompt token growth is continuous across the June 8/9 boundary (same ~86 token/day slope, no step change). Inventory latency shows a clear overnight step change (186ms &rarr; 565ms). Different root causes, different fixes.
+</div>
+
+<p><strong>SLA impact:</strong> Before June 9, 55.7% of requests completed in under 1 second. After June 9, only 35.4% did &mdash; a <strong>20-percentage-point drop</strong> entirely caused by the inventory service.</p>
+
+<!-- 1.5 Error Analysis -->
+<h3 id="s1-5">1.5 Error Analysis</h3>
+
+<p><strong>33 total errors</strong> over 14 days (2.8% overall). <strong>100% occur during peak hours (11&ndash;13h, 16&ndash;18h). Off-peak error rate is 0.0%.</strong> Peak-hour error rate is <strong>8.2%</strong> &mdash; 1 in 12 employee requests fails during the busiest periods.</p>
+
+<div class="callout callout-info">
+  <strong>Bimodal concurrency:</strong> Off-peak concurrency maxes at 120; peak starts at 181 (gap from 121&ndash;180). Two discrete operating modes with no gradual transition.
+</div>
+
+<table>
+  <tr><th>Hour Band (UTC)</th><th>Requests</th><th>Errors</th><th>Avg Latency</th></tr>
+  <tr><td>06&ndash;10</td><td>235</td><td>0</td><td>1,001ms</td></tr>
+  <tr style="background:#fdf0ef;font-weight:600"><td>11&ndash;13</td><td>298</td><td>19</td><td>1,196ms</td></tr>
+  <tr><td>14&ndash;15</td><td>133</td><td>0</td><td>920ms</td></tr>
+  <tr style="background:#fdf0ef;font-weight:600"><td>16&ndash;18</td><td>309</td><td>14</td><td>1,189ms</td></tr>
+  <tr><td>19&ndash;23</td><td>181</td><td>0</td><td>945ms</td></tr>
+  <tr><td>00&ndash;05</td><td>42</td><td>0</td><td>924ms</td></tr>
+</table>
+
+<table>
+  <tr><th>Error Source</th><th>Week 1</th><th>Week 2</th><th>Root Cause</th></tr>
+  <tr><td>OpenAI/Lambda layer</td><td>10</td><td>9 (stable)</td><td>Rate limits / 429 (6), API errors / 502 (6), Lambda overload / 504 (7)</td></tr>
+  <tr><td>Inventory service</td><td>0</td><td><strong>14 (NEW)</strong></td><td>Timeouts / 504 (9) and server errors / 500 (5)</td></tr>
+  <tr><td><strong>Total</strong></td><td><strong>10</strong></td><td><strong>23</strong></td><td><strong>+130% week-over-week</strong></td></tr>
+</table>
+
+<div class="callout callout-warn">
+  <strong>14 wasted completions:</strong> On all 14 inventory failures, GPT-4o still generated a successful response that was <em>discarded</em> because the downstream tool call failed. The company paid for 14 API completions with no value delivered. This is the strongest argument for <strong>graceful degradation</strong>.
+</div>
+
+<!-- 1.6 Response Quality -->
+<h3 id="s1-6">1.6 Response Quality</h3>
+
+<table>
+  <tr><th>Finish Reason</th><th>Count</th><th>%</th><th>Meaning</th></tr>
+  <tr><td><code>stop</code></td><td>1,019</td><td>84.9%</td><td>Clean, complete answer</td></tr>
+  <tr><td><code>tool</code></td><td>100</td><td>8.3%</td><td>Model requested a tool call (97 succeeded, 3 failed)</td></tr>
+  <tr><td><code>length</code></td><td>62</td><td>5.2%</td><td><strong>Truncated</strong> &mdash; answer cut off mid-response</td></tr>
+  <tr><td><code>error</code></td><td>19</td><td>1.6%</td><td>API failure &mdash; no answer at all</td></tr>
+</table>
+
+<div class="callout callout-ok">
+  <strong>One-line fix:</strong> Raise <code>max_tokens</code> to 1,024. You pay only for tokens generated, not the ceiling. This immediately eliminates 5.2% truncated answers (~620 projected over full traffic).
+</div>
+
+<p><strong>Unexpected tool calls on policy_only:</strong> 74 out of 589 policy_only requests (12.6%) include tool calls, yet <strong>zero</strong> triggered an actual inventory span. The model is either hallucinating tool calls or tool/function definitions are being sent unnecessarily &mdash; wasting prompt tokens.</p>
+
+<!-- 1.7 Retry Behavior -->
+<h3 id="s1-7">1.7 Retry Behavior</h3>
+
+<table>
+  <tr><th>Service</th><th>Retried Requests</th><th>Success After Retry</th><th>Failure After Retry</th></tr>
+  <tr><td>OpenAI chat</td><td>58 (4.8%)</td><td>43 (74.1%)</td><td>15 (25.9%)</td></tr>
+  <tr><td>Inventory</td><td>45 (7.4%)</td><td>43 (95.6%)</td><td>2 (4.4%)</td></tr>
+  <tr><td>Retrieval</td><td>0 (0%)</td><td>N/A</td><td>N/A</td></tr>
+</table>
+
+<p><strong>Inventory retries almost always succeed</strong> (95.6%) &mdash; transient latency spikes, not persistent failure. <strong>OpenAI retries fail 26%</strong> &mdash; mainly sustained 429 rate limiting. Inventory retry rate jumped 3.5% &rarr; 12.1% in Week 2.</p>
+
+<p><strong>Current retry strategy is naive:</strong> all errors retried identically. Proper error classification: retry 429s (respect <code>Retry-After</code>), retry 500/502/503 with exponential backoff, immediately fail on 400/401/403.</p>
+
+<!-- 1.8 Cold Starts -->
+<h3 id="s1-8">1.8 Lambda Cold Starts</h3>
+
+<table>
+  <tr><th>Metric</th><th>Cold Start</th><th>Warm Start</th></tr>
+  <tr><td>Frequency</td><td>2.5% (30/1,200)</td><td>97.5%</td></tr>
+  <tr><td>Avg latency</td><td>1,293ms</td><td>1,073ms</td></tr>
+  <tr><td>Penalty</td><td>+220ms</td><td>Baseline</td></tr>
+  <tr><td>Error rate</td><td><strong>0.0%</strong></td><td>2.8%</td></tr>
+</table>
+
+<p>Cold starts add ~220ms but cause <strong>zero errors</strong>. They occur exclusively off-peak. Not a priority, but contribute to poor cache hit rates (empty in-memory caches on each new Lambda instance).</p>
+
+<!-- 1.9 Adoption Risk -->
+<h3 id="s1-9">1.9 Adoption Risk</h3>
+
+<div class="callout callout-warn">
+  <strong>Try-once-and-abandon pattern:</strong> 1,200 unique users made 1,200 requests &mdash; exactly 1.0 queries per user over 14 days. Maximum from any single store is 3. Employees try the tool once and never return.
+</div>
+
+<p>Root cause unknown without feedback data. Could be: poor answer quality, slow response times, truncated answers, lack of trust (no citations), poor UX, or lack of discoverability. <strong>We cannot diagnose without a feedback mechanism.</strong></p>
+
+<p>For executives: an AI assistant with flat adoption and 1.0 queries/user is not delivering intended value. Expanding to 3 new teams on this foundation risks replicating the same low-adoption pattern at 4&times; scale.</p>
+
+<!-- 1.10 Additional Context -->
+<h3 id="s1-10">1.10 Additional Context</h3>
+
+<p><strong>Weekend vs weekday:</strong> Traffic volume identical 7 days/week (~86 req/day in sample). Reflecting retail operations.</p>
+
+<p><strong>Cost composition:</strong> 97.1% of total cost from input tokens. Every optimization should focus on reducing input tokens (prompt compression, caching, fine-tuning).</p>
+
+<p><strong>Data timeline:</strong> Telemetry from June 2024. OpenAI&rsquo;s automatic prompt caching launched October 2024. The 0% hit rate reflects a pre-caching mechanism. Prompt caching is available now.</p>
+
+<!-- 1.11 Biggest Risks -->
+<h3 id="s1-11">1.11 Biggest Risks</h3>
+
+<div class="risk-grid">
+  <div class="risk-card" style="border-left:4px solid var(--critical)">
+    <h4><span class="badge badge-critical">1</span> Runaway Cost</h4>
+    <p>Cost per request doubles every ~14 days. At 4&times; expansion, projected monthly cost becomes unsustainable within one quarter.</p>
+  </div>
+  <div class="risk-card" style="border-left:4px solid var(--critical)">
+    <h4><span class="badge badge-critical">2</span> Scaling on Broken Foundation</h4>
+    <p>8.2% peak error rate. Inventory degrading further (HTTP 500s started June 11). Adding 3 teams means more users hit worse reliability.</p>
+  </div>
+  <div class="risk-card" style="border-left:4px solid var(--high)">
+    <h4><span class="badge badge-high">3</span> Employee Trust Erosion</h4>
+    <p>6.8% of requests return incomplete/failed answers. 1.0 queries/user suggests trust is already gone. Recovery is harder than prevention.</p>
+  </div>
+  <div class="risk-card" style="border-left:4px solid var(--high)">
+    <h4><span class="badge badge-high">4</span> No Graceful Degradation</h4>
+    <p>Any downstream failure kills the whole request. 14 wasted API completions discarded. No partial-answer fallback.</p>
+  </div>
+  <div class="risk-card" style="border-left:4px solid var(--medium)">
+    <h4><span class="badge badge-medium">5</span> Poor Cache Utilization</h4>
+    <p>91.4% miss rate. Common policy questions across hundreds of stores fully reprocessed every time.</p>
+  </div>
+  <div class="risk-card" style="border-left:4px solid var(--medium)">
+    <h4><span class="badge badge-medium">6</span> No Quality Visibility</h4>
+    <p>No feedback, no logging, no evals, no dashboard. Team can&rsquo;t tell if answers are correct or if changes help.</p>
+  </div>
+</div>
+
+<!-- 1.12 Key Questions -->
+<h3 id="s1-12">1.12 Key Questions I Need Answered</h3>
+
+<ol class="question-list">
+  <li><strong>What is the system prompt template, and is anything appending to it automatically?</strong> This is the single most important question &mdash; root cause of the cost spiral depends on the answer.</li>
+  <li><strong>What changed with the inventory service on June 8&ndash;9?</strong> Deployment, migration, vendor update?</li>
+  <li><strong>Who raised the inventory timeout to 1,300ms and was this intended as temporary?</strong></li>
+  <li><strong>When inventory fails, what does the employee see?</strong> An error message? Or the GPT-4o response without inventory data?</li>
+  <li><strong>What is the current <code>max_tokens</code> parameter on OpenAI API calls?</strong></li>
+  <li><strong>What is the current OpenAI usage tier?</strong> (Determines rate limits.)</li>
+  <li><strong>What query patterns will the 3 new teams introduce?</strong> Same as current, or different use cases?</li>
+  <li><strong>Are tool/function definitions sent to OpenAI for all routes, including policy_only?</strong></li>
+  <li><strong>What is the AWS Lambda concurrency limit, and is reserved concurrency configured?</strong></li>
+  <li><strong>Is there monitoring and alerting in place?</strong> Was anyone alerted to the Week 2 degradation?</li>
+</ol>
+
+<!-- 1.13 Assumptions -->
+<h3 id="s1-13">1.13 Documented Assumptions</h3>
+
+<ol>
+  <li>The 10% sample is representative (uniform random sampling across users/stores).</li>
+  <li>The cost field reflects the enterprise&rsquo;s internal cost model; growth rates are valid.</li>
+  <li>Prompt token growth is from system-level context injection (proven: every user appears once).</li>
+  <li>Inventory degradation is service-side, not load-driven (proven: flat volume).</li>
+  <li>Expansion to 3 teams means ~4&times; total volume.</li>
+  <li>New teams will have broadly similar query patterns.</li>
+  <li>Peak hours (11&ndash;13h, 16&ndash;18h) correspond to retail shift patterns and will persist.</li>
+  <li>No streaming is used (supported by ~5ms delta between usage and span latency).</li>
+  <li>No dedicated caching infrastructure exists outside Lambda memory.</li>
+  <li>The 14 wasted OpenAI calls represent actual API spend with no value delivered.</li>
+</ol>
+
+<!-- ====================================================================== -->
+<h2 id="s2">2. What I Would Do Next</h2>
+
+<!-- Phase 1 -->
+<h3 id="s2-1">2.1 Phase 1 &mdash; Stabilize <span class="badge badge-phase">Weeks 1&ndash;2</span></h3>
+
+<div class="action-card phase1">
+  <div class="action-title">Action 1: Diagnose and Halt Prompt Token Growth <span class="badge badge-critical">Top Priority</span></div>
+  <p>Work directly with your engineering team to review the system prompt template and any automated injection pipelines. Identify what adds ~86 tokens/day, cap it, target stable prompt under 1,000 tokens.</p>
+  <p>Look for: daily cron jobs appending few-shot examples, logging that injects prior context, growing tool/function schemas, expanding metadata injected outside retrieval span.</p>
+</div>
+
+<div class="action-card phase1">
+  <div class="action-title">Action 2: Investigate Inventory Service + Implement Graceful Degradation</div>
+  <p>Your infrastructure team determines what changed June 8&ndash;9. In parallel, implement <strong>graceful degradation with explicit partial answers</strong>:</p>
+  <ul>
+    <li>When inventory fails but retrieval + OpenAI succeed: serve the policy-based answer with a caveat: <em>&ldquo;I don&rsquo;t have live inventory data right now, but here&rsquo;s the policy information.&rdquo;</em></li>
+    <li>When OpenAI fails: return a static fallback directing employees to alternative resources.</li>
+    <li><strong>Never return a raw 500/502/504 error to the employee.</strong></li>
+  </ul>
+  <p>Add a <strong>circuit breaker</strong>: after N consecutive inventory failures, skip the call and fall through to partial-answer handler immediately.</p>
+</div>
+
+<div class="action-card phase1">
+  <div class="action-title">Action 3: Implement User Feedback Mechanism</div>
+  <p>Thumbs-up/down after every response in OneStore widget, linked to <code>trace_id</code>. Log to durable store (DynamoDB or equivalent). Minimum viable signal for answer quality and prerequisite for diagnosing the 1.0 queries/user problem.</p>
+</div>
+
+<div class="action-card phase1">
+  <div class="action-title">Action 4: Enable Prompt/Completion Logging</div>
+  <p>Log full prompt + completion for 10% of requests to restricted S3 bucket, linked to <code>trace_id</code>. Privacy-review with security/compliance. Required for retrieval quality audit, eval pipeline, and debugging prompt growth.</p>
+</div>
+
+<div class="action-card phase1">
+  <div class="action-title">Action 5: Quick Configuration Fixes</div>
+  <p>Three one-line fixes:</p>
+  <ul>
+    <li><strong>Raise <code>max_tokens</code> to 1,024:</strong> Eliminates 5.2% truncated responses. Cost impact: negligible.</li>
+    <li><strong>Remove tool/function definitions from policy_only:</strong> Saves ~73 tokens/request on 49% of traffic.</li>
+    <li><strong>Review OpenAI usage tier:</strong> If Tier 1, the 6 throttle events may resolve by reaching Tier 2.</li>
+  </ul>
+</div>
+
+<div class="action-card phase1">
+  <div class="action-title">Action 6: Set Up Monitoring and Alerting</div>
+  <p>Alerts for: inventory p95 > 500ms, error rate > 3%/hour, daily prompt token average exceeding threshold, any OpenAI 429 events. The Week 2 degradation should have been caught within hours.</p>
+</div>
+
+<!-- Phase 2 -->
+<h3 id="s2-2">2.2 Phase 2 &mdash; Optimize <span class="badge badge-phase">Weeks 3&ndash;6</span></h3>
+
+<div class="action-card phase2">
+  <div class="action-title">Action 7: Parallelize Retrieval and Inventory Calls</div>
+  <p>Replace serial <code>await</code> with <code>Promise.all([retrieval(), inventoryLookup()])</code>. Saves <strong>70&ndash;140ms on 51% of traffic</strong>. Low effort, high impact, zero risk &mdash; no dependency between these calls.</p>
+</div>
+
+<div class="action-card phase2">
+  <div class="action-title">Action 8: Implement Retrieval Chunk Budget</div>
+  <p>Cap retrieved context at fixed budget (e.g., top 3 chunks or ~800 tokens). Makes prompt size predictable, enables prompt caching, reduces baseline size. Tune after retrieval quality audit.</p>
+</div>
+
+<div class="action-card phase2">
+  <div class="action-title">Action 9: Enable OpenAI Prompt Caching</div>
+  <p><strong>Automatic</strong> for GPT-4o/GPT-4o-mini since Oct 2024. Caches prefix &ge;1,024 tokens. <strong>50% discount</strong> on cached tokens, up to <strong>80% faster</strong> TTFT.</p>
+  <p><strong>Key requirement:</strong> Static content (system prompt, tool defs) must come <strong>at the beginning</strong>. Variable content (retrieval, user query) at the end. Prefix matching is exact.</p>
+  <p>Current: 0% cache hits. With prompt at ~1,700+ tokens, caching should be automatic &mdash; but only with proper prefix structure. Also consider <code>prompt_cache_key</code> and <code>extended</code> cache retention for high-traffic use.</p>
+</div>
+
+<div class="action-card phase2">
+  <div class="action-title">Action 10: Evaluate Model Routing (GPT-4o vs GPT-4o-mini)</div>
+  <table>
+    <tr><th>Model</th><th>Input Price</th><th>Output Price</th></tr>
+    <tr><td>GPT-4o</td><td>$2.50/M tokens</td><td>$10.00/M tokens</td></tr>
+    <tr><td>GPT-4o-mini</td><td>$0.15/M tokens</td><td>$0.60/M tokens</td></tr>
+  </table>
+  <p>GPT-4o-mini is <strong>~94% cheaper</strong>. For 49% policy-only traffic, massive cost lever. But quality must be validated first with eval suite (200 representative questions, side-by-side scoring).</p>
+</div>
+
+<div class="action-card phase2">
+  <div class="action-title">Action 11: Consider Fine-Tuning to Compress Prompt</div>
+  <p>If prompt growth is from behavioral instructions, fine-tuning GPT-4o encodes behavior into weights &mdash; potentially eliminating 1,500+ tokens. Training: $25/M tokens. Minimum: 50&ndash;100 examples. Prompt caching still works on fine-tuned models.</p>
+</div>
+
+<div class="action-card phase2">
+  <div class="action-title">Action 12: Optimize Function Calling</div>
+  <p>Remove tool defs from policy_only. Use <strong>Structured Outputs</strong> (<code>strict: true</code>) for inventory responses &mdash; 100% schema adherence. Describe when (not) to use each function in system prompt.</p>
+</div>
+
+<div class="action-card phase2">
+  <div class="action-title">Action 13: Add Shared Caching Infrastructure</div>
+  <p>Redis/ElastiCache for component-level caching:</p>
+  <ul>
+    <li><strong>Retrieval cache:</strong> Key on embedding similarity &ge;0.95. TTL: 6&ndash;24hr. Expected: 20&ndash;40% hit rate.</li>
+    <li><strong>Inventory cache:</strong> Key on <code>product_id + store_id</code>. TTL: 10min. Expected: 30&ndash;50% hit rate.</li>
+  </ul>
+</div>
+
+<div class="action-card phase2">
+  <div class="action-title">Action 14: Implement Proper Retry Strategy</div>
+  <p><strong>Classify errors:</strong> 429 &rarr; retryable (respect <code>Retry-After</code>). 500/502/503 &rarr; exponential backoff (200ms&rarr;400ms&rarr;800ms + jitter). 400/401/403 &rarr; not retryable (fail fast to graceful degradation).</p>
+  <p>Add <strong>circuit breaker per downstream service:</strong> after N failures in rolling window, skip call entirely.</p>
+</div>
+
+<!-- Phase 3 -->
+<h3 id="s2-3">2.3 Phase 3 &mdash; Expand <span class="badge badge-phase">Weeks 7&ndash;12</span></h3>
+
+<div class="action-card phase3">
+  <div class="action-title">Action 15: Build Evaluation Framework</div>
+  <p>Golden dataset of 200+ representative questions with expert-validated answers. Metrics: accuracy, completeness, faithfulness, format. Model-graded evals (GPT-4o as judge). Run before every change. Makes quality <strong>visible and measurable</strong>.</p>
+</div>
+
+<div class="action-card phase3">
+  <div class="action-title">Action 16: Implement Streaming End-to-End</div>
+  <p>Current TTFT: ~1,000ms. With streaming: <strong>~150ms</strong>. Three layers: OpenAI (<code>stream: true</code>), Lambda Function URL (response streaming), OneStore widget (SSE consumer). The single biggest UX improvement available.</p>
+</div>
+
+<div class="action-card phase3">
+  <div class="action-title">Action 17: Request AWS Lambda Concurrency Increase</div>
+  <p>Current peak: ~420. At 4&times;: ~1,680 (above 1,000 default limit). Request increase to 2,500+. Configure <strong>provisioned concurrency of 350&ndash;400</strong> for peak hours via CloudWatch Events.</p>
+</div>
+
+<div class="action-card phase3">
+  <div class="action-title">Action 18: Verify OpenAI Usage Tier</div>
+  <p>Check Settings &rarr; Limits. The 6 throttle events suggest burst spikes exceeding per-second sub-windows. If Tier 1, reaching Tier 2 (auto with $50+ spend) may resolve. Can facilitate internal escalation.</p>
+</div>
+
+<div class="action-card phase3">
+  <div class="action-title">Action 19: Implement Per-Team Cost Attribution</div>
+  <p>Separate API keys or project tags per team. Per-team usage limits to prevent runaway costs from any single team&rsquo;s experimentation.</p>
+</div>
+
+<div class="action-card phase3">
+  <div class="action-title">Action 20: Load Test the Complete Pipeline</div>
+  <p>At projected 4&times; volume during simulated peak. Validate all components handle increased concurrency. Onboard <strong>one team as pilot</strong>, monitor one week, then expand to remaining two.</p>
+</div>
+
+<!-- 2.4 Not Recommended -->
+<h3 id="s2-4">2.4 Features Evaluated But Not Recommended</h3>
+
+<div class="finding">
+  <p><strong>OpenAI Batch API:</strong> 50% cost discount but 24-hour turnaround. Not viable for a real-time assistant. Useful only for offline eval runs or FAQ pre-computation.</p>
+  <p><strong>Assistants API:</strong> Built-in conversation threading, but the assistant&rsquo;s single-turn nature (1.0 queries/user) doesn&rsquo;t benefit. Migration complexity without clear benefit.</p>
+</div>
+
+<!-- ====================================================================== -->
+<h2 id="s3">3. Proposed Architecture</h2>
+
+<p>Every identified problem is addressed while preserving the core pipeline. No rewrite required &mdash; every change is targeted and incremental.</p>
+
+<div class="diagram-container">
+<svg viewBox="0 0 1020 600" width="1020" height="600" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, system-ui, sans-serif" font-size="12">
+  <defs>
+    <marker id="pa" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#555"/></marker>
+    <marker id="pag" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#27ae60"/></marker>
+    <filter id="sh2" x="-2%" y="-2%" width="104%" height="104%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <!-- Title -->
+  <text x="510" y="24" text-anchor="middle" font-size="15" font-weight="700" fill="#0f3460">Proposed Architecture &mdash; All Problems Addressed</text>
+
+  <!-- Employee Widget (Enhanced) -->
+  <rect x="15" y="170" width="130" height="120" rx="10" fill="#eafaf1" stroke="#27ae60" stroke-width="2" filter="url(#sh2)"/>
+  <text x="80" y="196" text-anchor="middle" fill="#27ae60" font-weight="700" font-size="12">Employee Widget</text>
+  <text x="80" y="214" text-anchor="middle" fill="#555" font-size="10">(OneStore)</text>
+  <text x="80" y="234" text-anchor="middle" fill="#27ae60" font-size="9" font-weight="600">+ Streaming display</text>
+  <text x="80" y="248" text-anchor="middle" fill="#27ae60" font-size="9" font-weight="600">+ Thumbs up/down</text>
+  <text x="80" y="262" text-anchor="middle" fill="#27ae60" font-size="9" font-weight="600">+ Source citations</text>
+  <text x="80" y="276" text-anchor="middle" fill="#27ae60" font-size="9" font-weight="600">+ Friendly errors</text>
+
+  <!-- Arrow Widget ↔ Gateway -->
+  <line x1="145" y1="230" x2="193" y2="230" stroke="#27ae60" stroke-width="2" marker-end="url(#pag)"/>
+  <text x="169" y="223" text-anchor="middle" fill="#27ae60" font-size="8" font-weight="600">SSE</text>
+
+  <!-- Lambda Function URL -->
+  <rect x="195" y="195" width="115" height="70" rx="10" fill="#eafaf1" stroke="#27ae60" stroke-width="1.5" filter="url(#sh2)"/>
+  <text x="252" y="222" text-anchor="middle" fill="#27ae60" font-weight="700" font-size="11">Lambda Fn URL</text>
+  <text x="252" y="239" text-anchor="middle" fill="#555" font-size="10">+ Response Streaming</text>
+  <text x="252" y="253" text-anchor="middle" fill="#555" font-size="10">+ SSE/WebSocket</text>
+
+  <!-- Arrow Gateway → Lambda -->
+  <line x1="310" y1="230" x2="358" y2="230" stroke="#555" stroke-width="1.5" marker-end="url(#pa)"/>
+
+  <!-- Lambda Box (large, enhanced) -->
+  <rect x="360" y="50" width="640" height="390" rx="12" fill="#fff" stroke="#27ae60" stroke-width="2" filter="url(#sh2)"/>
+  <text x="680" y="76" text-anchor="middle" fill="#27ae60" font-weight="700" font-size="14">Lambda (Node.js) &mdash; Enhanced</text>
+
+  <!-- PARALLEL Execution Box -->
+  <rect x="390" y="90" width="470" height="100" rx="8" fill="#eafaf1" stroke="#27ae60" stroke-width="1" stroke-dasharray="6"/>
+  <text x="625" y="108" text-anchor="middle" fill="#27ae60" font-weight="700" font-size="11">PARALLEL EXECUTION &mdash; Promise.all()</text>
+
+  <!-- Retrieval (inside parallel) -->
+  <rect x="410" y="118" width="180" height="60" rx="8" fill="#fff" stroke="#27ae60" stroke-width="1.5"/>
+  <text x="500" y="140" text-anchor="middle" fill="#27ae60" font-weight="700" font-size="11">Retrieval</text>
+  <text x="500" y="155" text-anchor="middle" fill="#555" font-size="9">Vector Store | + chunk budget</text>
+  <text x="500" y="168" text-anchor="middle" fill="#555" font-size="9">70ms avg | 0% errors</text>
+
+  <!-- Inventory (inside parallel) -->
+  <rect x="650" y="118" width="190" height="60" rx="8" fill="#fff" stroke="#e67e22" stroke-width="1.5"/>
+  <text x="745" y="140" text-anchor="middle" fill="#e67e22" font-weight="700" font-size="11">Inventory</text>
+  <text x="745" y="155" text-anchor="middle" fill="#555" font-size="9">+ circuit breaker</text>
+  <text x="745" y="168" text-anchor="middle" fill="#555" font-size="9">+ graceful degradation</text>
+
+  <!-- Arrows converging to OpenAI -->
+  <line x1="500" y1="178" x2="560" y2="215" stroke="#27ae60" stroke-width="1.2" marker-end="url(#pag)"/>
+  <line x1="745" y1="178" x2="680" y2="215" stroke="#e67e22" stroke-width="1.2" marker-end="url(#pa)"/>
+
+  <!-- OpenAI (enhanced) -->
+  <rect x="500" y="215" width="240" height="100" rx="8" fill="#eaf2fa" stroke="#3498db" stroke-width="1.5"/>
+  <text x="620" y="240" text-anchor="middle" fill="#3498db" font-weight="700" font-size="13">OpenAI GPT-4o / 4o-mini</text>
+  <text x="620" y="258" text-anchor="middle" fill="#27ae60" font-size="9" font-weight="600">&#10003; stream: true &nbsp; &#10003; model routing</text>
+  <text x="620" y="272" text-anchor="middle" fill="#27ae60" font-size="9" font-weight="600">&#10003; prompt caching (static prefix)</text>
+  <text x="620" y="286" text-anchor="middle" fill="#27ae60" font-size="9" font-weight="600">&#10003; max_tokens: 1024 &nbsp; &#10003; strict: true</text>
+  <text x="620" y="300" text-anchor="middle" fill="#27ae60" font-size="9" font-weight="600">&#10003; error classification &nbsp; &#10003; backoff + jitter</text>
+
+  <!-- Lambda improvements list -->
+  <rect x="390" y="330" width="270" height="95" rx="8" fill="#eafaf1" stroke="#27ae60" stroke-width="1"/>
+  <text x="525" y="348" text-anchor="middle" fill="#27ae60" font-weight="700" font-size="10">Lambda Improvements</text>
+  <text x="400" y="365" fill="#27ae60" font-size="9" font-weight="600">&#10003; Provisioned concurrency (350&ndash;400)</text>
+  <text x="400" y="380" fill="#27ae60" font-size="9" font-weight="600">&#10003; Circuit breakers per downstream</text>
+  <text x="400" y="395" fill="#27ae60" font-size="9" font-weight="600">&#10003; Graceful degradation (partial answers)</text>
+  <text x="400" y="410" fill="#27ae60" font-size="9" font-weight="600">&#10003; Prompt/completion logging (10% &rarr; S3)</text>
+
+  <!-- Per-team attribution -->
+  <rect x="680" y="330" width="170" height="95" rx="8" fill="#eaf2fa" stroke="#3498db" stroke-width="1"/>
+  <text x="765" y="348" text-anchor="middle" fill="#3498db" font-weight="700" font-size="10">Cost &amp; Scale</text>
+  <text x="690" y="365" fill="#3498db" font-size="9" font-weight="600">&#10003; Per-team attribution</text>
+  <text x="690" y="380" fill="#3498db" font-size="9" font-weight="600">&#10003; Usage tier verified</text>
+  <text x="690" y="395" fill="#3498db" font-size="9" font-weight="600">&#10003; Load tested at 4&times;</text>
+  <text x="690" y="410" fill="#3498db" font-size="9" font-weight="600">&#10003; Budget controls per team</text>
+
+  <!-- Redis/ElastiCache (left side below widget) -->
+  <rect x="15" y="340" width="130" height="100" rx="10" fill="#fef9e7" stroke="#d4a017" stroke-width="1.5" filter="url(#sh2)"/>
+  <text x="80" y="365" text-anchor="middle" fill="#7d6608" font-weight="700" font-size="11">Redis/ElastiCache</text>
+  <text x="80" y="383" text-anchor="middle" fill="#555" font-size="9">Policy: embedding sim</text>
+  <text x="80" y="396" text-anchor="middle" fill="#555" font-size="9">&ge;0.95 cosine | 6&ndash;24hr TTL</text>
+  <text x="80" y="412" text-anchor="middle" fill="#555" font-size="9">Inventory: product+store</text>
+  <text x="80" y="425" text-anchor="middle" fill="#555" font-size="9">10min TTL</text>
+
+  <!-- Arrow Lambda ↔ Cache -->
+  <line x1="360" y1="380" x2="145" y2="380" stroke="#d4a017" stroke-width="1.5" stroke-dasharray="6" marker-end="url(#pa)"/>
+
+  <!-- Observability (bottom) -->
+  <rect x="15" y="475" width="330" height="110" rx="10" fill="#f4f6f9" stroke="#95a5a6" stroke-width="1.5" filter="url(#sh2)"/>
+  <text x="180" y="498" text-anchor="middle" fill="#555" font-weight="700" font-size="12">Observability Stack</text>
+  <text x="25" y="518" fill="#27ae60" font-size="10" font-weight="600">Dashboard: adoption, quality, latency, cost, errors, cache</text>
+  <text x="25" y="535" fill="#27ae60" font-size="10" font-weight="600">Alerting: error &gt;2%/15min, p95 &gt;2s, any 429, thumbs-down &gt;40%</text>
+  <text x="25" y="552" fill="#27ae60" font-size="10" font-weight="600">Feedback store: trace_id + vote</text>
+  <text x="25" y="569" fill="#27ae60" font-size="10" font-weight="600">Prompt/completion logging: 10% sample &rarr; S3</text>
+
+  <!-- Arrow Lambda → Observability -->
+  <line x1="500" y1="440" x2="345" y2="490" stroke="#95a5a6" stroke-width="1.5" marker-end="url(#pa)"/>
+
+  <!-- Eval Pipeline (bottom right) -->
+  <rect x="380" y="475" width="270" height="110" rx="10" fill="#eaf2fa" stroke="#3498db" stroke-width="1.5" filter="url(#sh2)"/>
+  <text x="515" y="498" text-anchor="middle" fill="#3498db" font-weight="700" font-size="12">Evaluation Pipeline</text>
+  <text x="390" y="518" fill="#3498db" font-size="10" font-weight="600">Golden Q&amp;A set (200+ pairs)</text>
+  <text x="390" y="535" fill="#3498db" font-size="10" font-weight="600">Model-graded evals (GPT-4o as judge)</text>
+  <text x="390" y="552" fill="#3498db" font-size="10" font-weight="600">Gates all quality-affecting deployments</text>
+  <text x="390" y="569" fill="#3498db" font-size="10" font-weight="600">Continuous regression testing</text>
+</svg>
+</div>
+
+<h4>Key Changes from Current State</h4>
+<table>
+  <tr><th>Layer</th><th>Current</th><th>Proposed</th><th>Impact</th></tr>
+  <tr><td>Widget</td><td>Blank screen until full response</td><td>Streaming + feedback + citations</td><td>TTFT: 1,000ms &rarr; ~150ms</td></tr>
+  <tr><td>Gateway</td><td>REST API Gateway (sync)</td><td>Lambda Function URL with streaming</td><td>Enables streaming pipeline</td></tr>
+  <tr><td>Lambda execution</td><td>Serial: retrieval &rarr; inv &rarr; OAI</td><td>Parallel: retrieval &par; inv &rarr; OAI</td><td>-70&ndash;140ms on 51% traffic</td></tr>
+  <tr><td>Lambda resilience</td><td>All-or-nothing</td><td>Circuit breakers + degradation</td><td>Partial answers vs 500 errors</td></tr>
+  <tr><td>Lambda capacity</td><td>On-demand, 2.5% cold starts</td><td>Provisioned concurrency for peaks</td><td>Eliminates peak overload</td></tr>
+  <tr><td>Retrieval cache</td><td>Exact-match (5.8% hit)</td><td>Embedding similarity &ge;0.95</td><td>20&ndash;40% target hit rate</td></tr>
+  <tr><td>Inventory cache</td><td>Exact-match (5.6% hit)</td><td>product_id + store_id keys</td><td>30&ndash;50% target hit rate</td></tr>
+  <tr><td>OpenAI model</td><td>GPT-4o for everything</td><td>GPT-4o-mini for policy_only</td><td>~94% cost reduction on 49%</td></tr>
+  <tr><td>OpenAI streaming</td><td>Disabled</td><td><code>stream: true</code></td><td>TTFT: 750ms &rarr; ~150ms</td></tr>
+  <tr><td>OpenAI prompt</td><td>Variable prefix, no caching</td><td>Static prefix first</td><td>50% discount on cached tokens</td></tr>
+  <tr><td>OpenAI retries</td><td>Naive retry-once</td><td>Backoff + jitter + classification</td><td>Fewer retry storms</td></tr>
+  <tr><td>max_tokens</td><td>~300&ndash;500 (5.2% truncation)</td><td>1,024</td><td>Zero truncation</td></tr>
+  <tr><td>Observability</td><td>CloudWatch logs only</td><td>Dashboard + alerting + feedback</td><td>Full visibility</td></tr>
+  <tr><td>Quality</td><td>No measurement</td><td>Feedback + evals + pipeline</td><td>Every change validated</td></tr>
+</table>
+
+<!-- ====================================================================== -->
+<h2 id="s4">4. How I Would Advise on Tradeoffs</h2>
+
+<div class="decision-box">
+  <h4>Decision 1: Model Routing (Cost vs. Quality)</h4>
+  <div class="option">
+    <strong>Option A:</strong> Switch policy_only (49%) to GPT-4o-mini. ~94% cost reduction. Scores 82% on MMLU. Gate: eval suite, proceed only if quality drop &lt;5%.
+  </div>
+  <div class="option">
+    <strong>Option B:</strong> Keep GPT-4o everywhere, focus only on prompt compression. Zero quality risk but smaller savings (~30&ndash;50%).
+  </div>
+  <div class="rec"><strong>Recommendation:</strong> Pursue Option A &mdash; biggest single cost lever. But never ship without eval validation.</div>
+</div>
+
+<div class="decision-box">
+  <h4>Decision 2: Prompt Compression vs. Fine-Tuning (Cost vs. Effort)</h4>
+  <div class="option">
+    <strong>Option A:</strong> Manual trim &mdash; identify and remove growing content. Fast (days), low risk.
+  </div>
+  <div class="option">
+    <strong>Option B:</strong> Fine-tune GPT-4o to encode behavioral instructions. Eliminates bloat permanently but higher effort (weeks).
+  </div>
+  <div class="rec"><strong>Recommendation:</strong> Fix immediate growth first (A), then evaluate fine-tuning (B). Sequential, not exclusive.</div>
+</div>
+
+<div class="decision-box">
+  <h4>Decision 3: Expand Now vs. Stabilize First (Speed vs. Risk)</h4>
+  <div class="option">
+    <strong>Option A:</strong> Expand immediately. 3 teams get access sooner. But inherit 8.2% peak failure rate and escalating costs.
+  </div>
+  <div class="option">
+    <strong>Option B:</strong> Stabilize 4&ndash;6 weeks, then pilot. New teams launch on solid ground.
+  </div>
+  <div class="rec"><strong>Recommendation:</strong> Stabilize first. An unreliable tool that employees abandon is worse than a delayed one they trust. Retail word-of-mouth is powerful.</div>
+</div>
+
+<div class="decision-box">
+  <h4>Decision 4: Streaming (Latency Perception vs. Engineering Effort)</h4>
+  <div class="option">
+    <strong>Option A:</strong> Implement streaming end-to-end. TTFT: ~1,000ms &rarr; ~150ms. Changes at three layers. Medium effort.
+  </div>
+  <div class="option">
+    <strong>Option B:</strong> Keep synchronous. Less work but employees still stare at blank screen 1+ second.
+  </div>
+  <div class="rec"><strong>Recommendation:</strong> Implement in Phase 3 after stabilization. Single biggest UX improvement. Directly addresses the 1.0 queries/user concern.</div>
+</div>
+
+<div class="callout">
+  <strong>On Quality:</strong> We cannot measure answer quality from telemetry alone. <code>finish_reason</code> tells us about completion, not correctness. Build an evaluation suite: 200+ questions with known-good answers, scored by domain experts or LLM-as-judge, run before every change. This makes quality <strong>visible and measurable</strong> rather than anecdotal.
+</div>
+
+<!-- ====================================================================== -->
+<h2 id="s5">5. How I Would Ensure Deployment</h2>
+
+<h3>5.1 Stakeholder Communication</h3>
+<p><strong>Weekly executive summary</strong> (CIO/CTO): Three metrics &mdash; system availability, cost per request trend, median response time &mdash; with a one-sentence narrative each. Example:</p>
+<div class="callout callout-ok" style="font-style:italic;">
+  &ldquo;Availability improved from 91.8% to 97.5% during peak hours after the inventory circuit breaker was deployed. Cost per request stabilized for the first time in 3 weeks. On track for pilot team onboarding in week 7.&rdquo;
+</div>
+<p><strong>Bi-weekly technical review</strong>: Working session with dashboards. <strong>Ad-hoc incident communication</strong>: within 2 hours, structured as what/impact/action/next update.</p>
+
+<h3>5.2 Roles and Ownership</h3>
+<table>
+  <tr><th>What I Do (ASE)</th><th>What Your Engineering Team Owns</th></tr>
+  <tr><td>Diagnose prompt growth (review template)</td><td>Fixing the inventory service</td></tr>
+  <tr><td>Advise on prompt structure for cache hits</td><td>Adding Redis/ElastiCache caching</td></tr>
+  <tr><td>Facilitate model evaluation (design evals)</td><td>Lambda pipeline restructuring</td></tr>
+  <tr><td>Connect to OpenAI fine-tuning resources</td><td>Implementing graceful degradation</td></tr>
+  <tr><td>Escalate rate-limit issues internally</td><td>Deploying monitoring &amp; feedback</td></tr>
+  <tr><td>Review architecture for scaling readiness</td><td>Prompt changes &amp; max_tokens fix</td></tr>
+  <tr><td>Facilitate usage tier upgrades</td><td>Load testing &amp; dashboard/eval pipeline</td></tr>
+</table>
+
+<h3>5.3 Implementation Waves</h3>
+<table class="wave-table">
+  <tr><th>Wave</th><th>Timeline</th><th>Actions</th><th>Key Outcome</th></tr>
+  <tr><td style="color:var(--critical)">Wave 1: Quick Fixes</td><td>Week 1</td><td>A5 (max_tokens, tool defs, tier), A6 (alerting), begin A1</td><td>Truncation eliminated. Alerting live.</td></tr>
+  <tr><td style="color:var(--high)">Wave 2: Stabilize</td><td>Weeks 2&ndash;4</td><td>A1 (prompt fix), A2 (inventory + degradation), A3 (feedback), A4 (logging), A14 (retries), A7 (parallelize)</td><td>Peak errors &lt;1%. Cost stabilized.</td></tr>
+  <tr><td style="color:var(--policy)">Wave 3: Optimize</td><td>Weeks 4&ndash;8</td><td>A8 (chunk budget), A9 (prompt caching), A10 (model routing), A12 (function calling), A13 (shared cache), A16 (streaming)</td><td>TTFT ~150ms. Cache 20&ndash;50%.</td></tr>
+  <tr><td style="color:var(--accent)">Wave 4: Expand</td><td>Weeks 8&ndash;12</td><td>A15 (eval pipeline), A17 (Lambda concurrency), A19 (cost attribution), A20 (load test), pilot &rarr; full expansion</td><td>3 teams onboarded. All SLAs met.</td></tr>
+</table>
+
+<h3>5.4 Success Criteria and Expansion Gates</h3>
+<table class="metric-table">
+  <tr><th>Metric</th><th>Current</th><th>Pre-Expansion Target</th><th>Post-Expansion Target</th></tr>
+  <tr><td>Overall availability</td><td>97.2%</td><td>&gt; 99%</td><td>&gt; 99%</td></tr>
+  <tr><td>Peak-hour availability</td><td>91.8%</td><td>&gt; 97%</td><td>&gt; 97%</td></tr>
+  <tr><td>p50 response time</td><td>1,012ms</td><td>&lt; 1,000ms</td><td>&lt; 1,000ms</td></tr>
+  <tr><td>Perceived TTFT</td><td>~1,000ms</td><td>~1,000ms</td><td><strong>~150ms</strong> (streaming)</td></tr>
+  <tr><td>Cost per request trend</td><td>+6.2%/day</td><td>Flat</td><td>Flat</td></tr>
+  <tr><td>Truncation rate</td><td>5.2%</td><td>&lt; 1%</td><td>&lt; 1%</td></tr>
+  <tr><td>Prompt tokens (daily avg)</td><td>Growing +86/day</td><td>Stable</td><td>Stable</td></tr>
+  <tr><td>Cache hit rate (policy)</td><td>5.8%</td><td>&gt; 30%</td><td>&gt; 30%</td></tr>
+  <tr><td>OpenAI prompt cache rate</td><td>0%</td><td>&gt; 50%</td><td>&gt; 50%</td></tr>
+  <tr><td>7-day repeat usage</td><td>~0%</td><td>Baselined</td><td>&gt; 20% target</td></tr>
+  <tr><td>Quality (feedback)</td><td>Not measured</td><td>Feedback flowing</td><td>&gt; 80% thumbs-up</td></tr>
+</table>
+
+<div class="callout callout-ok">
+  <strong>Expansion gates:</strong> All pre-expansion targets met for <strong>two consecutive weeks</strong> before onboarding the pilot team. If any metric regresses after pilot launch, pause before adding remaining teams.
+</div>
+
+<!-- ====================================================================== -->
+<hr class="separator">
+<h2 id="appA">Appendix A: OpenAI Platform Features Referenced</h2>
+
+<table class="appendix-table">
+  <tr><th>Feature</th><th>Relevance</th><th>Status</th></tr>
+  <tr><td><strong>Prompt Caching</strong></td><td>50% input discount, 80% latency reduction. Auto for &ge;1,024 tokens. Static prefix first.</td><td>Not active (0% hits). Quick win.</td></tr>
+  <tr><td><strong>GPT-4o-mini</strong></td><td>94% cheaper than GPT-4o. Strong on straightforward Q&amp;A.</td><td>Not used. Evaluate for policy_only.</td></tr>
+  <tr><td><strong>Structured Outputs</strong></td><td>100% schema adherence. <code>strict: true</code>.</td><td>Not used. Apply to inventory calls.</td></tr>
+  <tr><td><strong>Fine-tuning</strong></td><td>Encode behavior into weights. Eliminate bloat. $25/M training.</td><td>Not used. Medium-term.</td></tr>
+  <tr><td><strong>Evals API</strong></td><td>Structured model quality tests. Dashboard + API + open-source.</td><td>Not used. Critical before changes.</td></tr>
+  <tr><td><strong>Usage Tiers</strong></td><td>Auto rate limit increases with spend. Tier 1&ndash;5.</td><td>Unknown. Verify before expansion.</td></tr>
+  <tr><td><strong>Batch API</strong></td><td>50% discount, 24h turnaround.</td><td>Not viable for real-time. Offline evals only.</td></tr>
+  <tr><td><strong>Function Calling</strong></td><td>Describe when (not) to use each function in system prompt.</td><td>74 unnecessary tool calls suggest misconfigured.</td></tr>
+  <tr><td><strong><code>prompt_cache_key</code></strong></td><td>Improve routing for shared prefixes.</td><td>Not used. Apply after basic caching.</td></tr>
+  <tr><td><strong>Extended retention</strong></td><td>24-hour cache instead of 5&ndash;10 min.</td><td>Not used. Evaluate after basic caching.</td></tr>
+  <tr><td><strong>OpenAI Cookbook</strong></td><td>RAG best practices, prompt engineering, fine-tuning guides.</td><td>Reference for implementation.</td></tr>
+</table>
+
+<!-- ====================================================================== -->
+<hr class="separator">
+<h2 id="appB">Appendix B: Request Flow Diagrams by Route</h2>
+
+<h4 class="flow-title">policy_only Route (49.1% &mdash; 589 requests)</h4>
+<div class="diagram-container">
+<svg viewBox="0 0 900 170" width="900" height="170" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, system-ui, sans-serif" font-size="12">
+  <defs>
+    <marker id="fb1" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#555"/></marker>
+  </defs>
+  <!-- Employee -->
+  <rect x="10" y="50" width="100" height="44" rx="8" fill="#e8eef6" stroke="#0f3460" stroke-width="1.5"/>
+  <text x="60" y="77" text-anchor="middle" fill="#0f3460" font-weight="600" font-size="11">Employee</text>
+  <line x1="110" y1="72" x2="148" y2="72" stroke="#555" stroke-width="1.5" marker-end="url(#fb1)"/>
+  <!-- Lambda -->
+  <rect x="150" y="50" width="80" height="44" rx="8" fill="#fff3e0" stroke="#e67e22" stroke-width="1.5"/>
+  <text x="190" y="77" text-anchor="middle" fill="#e67e22" font-weight="600" font-size="11">Lambda</text>
+  <line x1="230" y1="72" x2="278" y2="72" stroke="#27ae60" stroke-width="1.5" marker-end="url(#fb1)"/>
+  <text x="254" y="63" text-anchor="middle" fill="#27ae60" font-size="9">Step 1</text>
+  <!-- Retrieval -->
+  <rect x="280" y="50" width="160" height="44" rx="8" fill="#eafaf1" stroke="#27ae60" stroke-width="1.5"/>
+  <text x="360" y="70" text-anchor="middle" fill="#27ae60" font-weight="600" font-size="11">Retrieval (71ms)</text>
+  <text x="360" y="85" text-anchor="middle" fill="#555" font-size="9">Cache 5.8% | 0% errors</text>
+  <line x1="440" y1="72" x2="488" y2="72" stroke="#c0392b" stroke-width="1.5" marker-end="url(#fb1)"/>
+  <text x="464" y="63" text-anchor="middle" fill="#c0392b" font-size="9">Step 2</text>
+  <!-- OpenAI -->
+  <rect x="490" y="50" width="180" height="44" rx="8" fill="#fdf0ef" stroke="#c0392b" stroke-width="1.5"/>
+  <text x="580" y="70" text-anchor="middle" fill="#c0392b" font-weight="600" font-size="11">OpenAI GPT-4o (753ms)</text>
+  <text x="580" y="85" text-anchor="middle" fill="#555" font-size="9">model=gpt-4o | all traffic</text>
+  <line x1="670" y1="72" x2="708" y2="72" stroke="#555" stroke-width="1.5" marker-end="url(#fb1)"/>
+  <!-- Response -->
+  <rect x="710" y="50" width="120" height="44" rx="8" fill="#eafaf1" stroke="#27ae60" stroke-width="1.5"/>
+  <text x="770" y="70" text-anchor="middle" fill="#27ae60" font-weight="600" font-size="11">Response</text>
+  <text x="770" y="85" text-anchor="middle" fill="#555" font-size="9">909ms avg</text>
+
+  <!-- Timeline bar -->
+  <text x="10" y="125" fill="#555" font-size="10" font-weight="600">Timeline:</text>
+  <text x="100" y="125" fill="#27ae60" font-size="10">Retrieval</text>
+  <rect x="170" y="115" width="30" height="14" rx="2" fill="#27ae60"/>
+  <text x="220" y="125" fill="#555" font-size="10">71ms</text>
+
+  <text x="280" y="125" fill="#c0392b" font-size="10">OpenAI</text>
+  <rect x="340" y="115" width="320" height="14" rx="2" fill="#c0392b"/>
+  <text x="670" y="125" fill="#555" font-size="10">753ms</text>
+
+  <text x="100" y="150" fill="#95a5a6" font-size="10">Overhead</text>
+  <rect x="665" y="138" width="32" height="14" rx="2" fill="#95a5a6"/>
+  <text x="705" y="150" fill="#555" font-size="10">76ms</text>
+  <text x="770" y="150" fill="#0f3460" font-size="10" font-weight="700">Total: 909ms</text>
+</svg>
+</div>
+
+<h4 class="flow-title">inventory / mixed Route (51% &mdash; 611 requests)</h4>
+<div class="diagram-container">
+<svg viewBox="0 0 900 260" width="900" height="260" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, system-ui, sans-serif" font-size="12">
+  <defs>
+    <marker id="fb2" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><path d="M0,0 L8,3 L0,6" fill="#555"/></marker>
+  </defs>
+  <!-- Employee -->
+  <rect x="10" y="30" width="100" height="44" rx="8" fill="#e8eef6" stroke="#0f3460" stroke-width="1.5"/>
+  <text x="60" y="57" text-anchor="middle" fill="#0f3460" font-weight="600" font-size="11">Employee</text>
+  <line x1="110" y1="52" x2="148" y2="52" stroke="#555" stroke-width="1.5" marker-end="url(#fb2)"/>
+  <!-- Lambda -->
+  <rect x="150" y="30" width="80" height="44" rx="8" fill="#fff3e0" stroke="#e67e22" stroke-width="1.5"/>
+  <text x="190" y="57" text-anchor="middle" fill="#e67e22" font-weight="600" font-size="11">Lambda</text>
+  <line x1="230" y1="52" x2="278" y2="52" stroke="#27ae60" stroke-width="1.5" marker-end="url(#fb2)"/>
+  <!-- Retrieval -->
+  <rect x="280" y="30" width="130" height="44" rx="8" fill="#eafaf1" stroke="#27ae60" stroke-width="1.5"/>
+  <text x="345" y="50" text-anchor="middle" fill="#27ae60" font-weight="600" font-size="11">Retrieval (70ms)</text>
+  <text x="345" y="65" text-anchor="middle" fill="#555" font-size="9">0% errors</text>
+  <!-- SERIAL -->
+  <rect x="418" y="40" width="52" height="20" rx="4" fill="#fdf0ef" stroke="#c0392b" stroke-width="1"/>
+  <text x="444" y="54" text-anchor="middle" fill="#c0392b" font-size="8" font-weight="700">SERIAL</text>
+  <line x1="410" y1="52" x2="478" y2="52" stroke="#c0392b" stroke-width="1.5" stroke-dasharray="5" marker-end="url(#fb2)"/>
+  <!-- Inventory -->
+  <rect x="480" y="30" width="150" height="44" rx="8" fill="#fff3e0" stroke="#e67e22" stroke-width="1.5"/>
+  <text x="555" y="50" text-anchor="middle" fill="#e67e22" font-weight="600" font-size="11">Inventory (337ms)</text>
+  <text x="555" y="65" text-anchor="middle" fill="#555" font-size="9">2.3% errors | 7.4% retries</text>
+  <line x1="630" y1="52" x2="668" y2="52" stroke="#c0392b" stroke-width="1.5" marker-end="url(#fb2)"/>
+  <!-- OpenAI -->
+  <rect x="670" y="30" width="130" height="44" rx="8" fill="#fdf0ef" stroke="#c0392b" stroke-width="1.5"/>
+  <text x="735" y="57" text-anchor="middle" fill="#c0392b" font-weight="600" font-size="11">OpenAI (730ms)</text>
+  <line x1="800" y1="52" x2="828" y2="52" stroke="#555" stroke-width="1.5" marker-end="url(#fb2)"/>
+  <!-- Response -->
+  <rect x="830" y="38" width="60" height="30" rx="6" fill="#eafaf1" stroke="#27ae60" stroke-width="1"/>
+  <text x="860" y="58" text-anchor="middle" fill="#27ae60" font-weight="600" font-size="10">1,253ms</text>
+
+  <!-- CURRENT TIMELINE -->
+  <text x="10" y="105" fill="#555" font-size="10" font-weight="700">CURRENT (serial):</text>
+  <rect x="170" y="95" width="30" height="14" rx="2" fill="#27ae60"/>
+  <text x="130" y="105" fill="#27ae60" font-size="9">Retrieval</text>
+  <rect x="210" y="95" width="142" height="14" rx="2" fill="#e67e22"/>
+  <text x="290" y="89" fill="#e67e22" font-size="9">Inventory 337ms</text>
+  <text x="210" y="125" text-anchor="middle" fill="#c0392b" font-size="8">&larr; WASTED: waits for retrieval</text>
+  <rect x="360" y="95" width="310" height="14" rx="2" fill="#c0392b"/>
+  <text x="515" y="89" fill="#c0392b" font-size="9">OpenAI 730ms</text>
+  <rect x="675" y="95" width="30" height="14" rx="2" fill="#95a5a6"/>
+  <text x="730" y="105" fill="#0f3460" font-size="10" font-weight="700">1,253ms</text>
+
+  <!-- PROPOSED TIMELINE -->
+  <text x="10" y="170" fill="#27ae60" font-size="10" font-weight="700">PROPOSED (parallel):</text>
+  <rect x="170" y="160" width="30" height="14" rx="2" fill="#27ae60"/>
+  <text x="130" y="170" fill="#27ae60" font-size="9">Retrieval</text>
+  <rect x="170" y="180" width="142" height="14" rx="2" fill="#e67e22"/>
+  <text x="130" y="190" fill="#e67e22" font-size="9">Inventory</text>
+  <!-- Bracket -->
+  <line x1="155" y1="160" x2="155" y2="194" stroke="#27ae60" stroke-width="1.5"/>
+  <line x1="155" y1="177" x2="140" y2="177" stroke="#27ae60" stroke-width="1.5"/>
+  <text x="120" y="180" text-anchor="end" fill="#27ae60" font-size="8" font-weight="600">Promise.all()</text>
+
+  <rect x="318" y="168" width="310" height="14" rx="2" fill="#c0392b"/>
+  <text x="473" y="164" fill="#c0392b" font-size="9">OpenAI 730ms</text>
+  <rect x="633" y="168" width="30" height="14" rx="2" fill="#95a5a6"/>
+  <text x="688" y="178" fill="#27ae60" font-size="10" font-weight="700">~1,183ms</text>
+  <text x="770" y="178" fill="#27ae60" font-size="10" font-weight="600">(saves 70ms)</text>
+
+  <!-- Savings arrow -->
+  <line x1="705" y1="105" x2="663" y2="178" stroke="#27ae60" stroke-width="2" stroke-dasharray="5"/>
+  <rect x="660" y="130" width="85" height="22" rx="4" fill="#eafaf1" stroke="#27ae60" stroke-width="1"/>
+  <text x="702" y="145" text-anchor="middle" fill="#27ae60" font-size="9" font-weight="700">&minus;70ms saved</text>
+</svg>
+</div>
+
+<!-- ====================================================================== -->
+<hr class="separator">
+<h2 id="appC">Appendix C: Root Cause Pattern</h2>
+
+<div class="callout callout-warn">
+  <strong>This system was built as an MVP and deployed to production without the additional engineering that production demands.</strong> This is common and not a criticism &mdash; it&rsquo;s the expected trajectory for any fast-moving team.
+</div>
+
+<table>
+  <tr><th style="width:30%">Problem</th><th style="width:30%">MVP Shortcut</th><th style="width:40%">Production Requirement</th></tr>
+  <tr><td>Serial downstream calls</td><td>Sequential <code>await</code></td><td>Parallel calls with partial-failure handling</td></tr>
+  <tr><td>All errors in peak hours</td><td>Default Lambda auto-scaling</td><td>Provisioned concurrency for predictable peaks</td></tr>
+  <tr><td>No graceful degradation</td><td>All-or-nothing logic</td><td>Partial responses with clear communication</td></tr>
+  <tr><td>Ineffective caching (5&ndash;6%)</td><td>Exact-match query cache</td><td>Component-level caching with structured keys</td></tr>
+  <tr><td>Rate-limit errors (429)</td><td>Default OpenAI tier</td><td>Tier sized for peak volume</td></tr>
+  <tr><td>Naive retries, no classification</td><td>Retry once immediately</td><td>Exponential backoff + circuit breakers + classification</td></tr>
+  <tr><td>Truncated responses (5.2%)</td><td>Conservative <code>max_tokens</code></td><td>Adequate headroom (1,024)</td></tr>
+  <tr><td>No prompt caching</td><td>Unstructured prompt template</td><td>Static prefix first for cache activation</td></tr>
+  <tr><td>GPT-4o for everything</td><td>Single model</td><td>Complexity-based model routing with eval</td></tr>
+  <tr><td>No streaming</td><td>Synchronous response</td><td>Streaming for real-time UX</td></tr>
+  <tr><td>No quality measurement</td><td>No feedback, no evals, no logging</td><td>Feedback + golden Q&amp;A + eval pipeline + dashboard</td></tr>
+  <tr><td>No adoption tracking</td><td>Deployed and assumed working</td><td>Repeat usage metrics, feedback, onboarding</td></tr>
+</table>
+
+<div class="callout callout-ok" style="margin-top: 24px;">
+  <strong>The good news:</strong> None of these are fundamental. The architecture is sound at its core &mdash; Lambda orchestrating a vector store, an inventory service, and OpenAI. Every issue is fixable with targeted engineering, not a rewrite. The most impactful changes (fix prompt growth, raise max_tokens, parallelize calls, add feedback) are also among the lowest-effort.
+</div>
+
+</body>
+</html>
