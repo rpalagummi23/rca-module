@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlanetScope Vegetation Analysis Guide</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --border: #334155;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent: #22c55e;
+            --accent2: #3b82f6;
+            --code-bg: #0d1117;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            padding: 2rem;
+        }
+        .container { max-width: 960px; margin: 0 auto; }
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        h2 {
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 2px solid var(--border);
+        }
+        h3 {
+            font-size: 1.15rem;
+            color: var(--accent2);
+            margin: 1.5rem 0 0.5rem;
+        }
+        p { margin-bottom: 1rem; color: var(--text-muted); }
+        .subtitle { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 2rem; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0 1.5rem;
+            background: var(--surface);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th {
+            background: var(--accent);
+            color: var(--bg);
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(34, 197, 94, 0.05); }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.2rem;
+            overflow-x: auto;
+            margin: 0.75rem 0 1.5rem;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        code {
+            font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+            color: #e2e8f0;
+        }
+        .keyword { color: #c084fc; }
+        .string { color: #fbbf24; }
+        .comment { color: #6b7280; font-style: italic; }
+        .func { color: #60a5fa; }
+        .num { color: #34d399; }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        .card h3 { margin-top: 0; }
+        .formula {
+            background: var(--code-bg);
+            border-left: 3px solid var(--accent);
+            padding: 0.75rem 1rem;
+            margin: 0.5rem 0;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.95rem;
+            border-radius: 0 6px 6px 0;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 0.3rem;
+        }
+        .badge-green { background: rgba(34, 197, 94, 0.2); color: var(--accent); }
+        .badge-blue { background: rgba(59, 130, 246, 0.2); color: var(--accent2); }
+        .badge-yellow { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+
+        .tip {
+            background: rgba(34, 197, 94, 0.08);
+            border-left: 4px solid var(--accent);
+            padding: 1rem 1.2rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+        .tip strong { color: var(--accent); }
+
+        ul { margin: 0.5rem 0 1rem 1.5rem; color: var(--text-muted); }
+        li { margin-bottom: 0.4rem; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        @media (max-width: 700px) {
+            .grid { grid-template-columns: 1fr; }
+            body { padding: 1rem; }
+            h1 { font-size: 1.6rem; }
+        }
+
+        footer {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PlanetScope Vegetation Analysis</h1>
+        <p class="subtitle">Band extraction and vegetation index computation from PlanetScope (SuperDove) satellite imagery</p>
+
+        <!-- Band Information -->
+        <h2>PlanetScope SuperDove Spectral Bands</h2>
+        <p>PlanetScope SuperDove satellites capture 8 spectral bands at ~3m spatial resolution with daily revisit capability.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Band</th>
+                    <th>Name</th>
+                    <th>Wavelength (nm)</th>
+                    <th>Use in Vegetation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td>Coastal Blue</td><td>431 &ndash; 452</td><td>Atmospheric correction</td></tr>
+                <tr><td>2</td><td>Blue</td><td>465 &ndash; 515</td><td>EVI computation</td></tr>
+                <tr><td>3</td><td>Green I</td><td>513 &ndash; 549</td><td>Green reflectance</td></tr>
+                <tr><td>4</td><td>Green</td><td>547 &ndash; 583</td><td>Chlorophyll sensitivity</td></tr>
+                <tr><td>5</td><td>Yellow</td><td>600 &ndash; 620</td><td>Senescence detection</td></tr>
+                <tr><td>6</td><td>Red</td><td>650 &ndash; 680</td><td>Chlorophyll absorption</td></tr>
+                <tr><td>7</td><td>Red Edge</td><td>697 &ndash; 713</td><td>Canopy stress &amp; NDRE</td></tr>
+                <tr><td>8</td><td>NIR</td><td>845 &ndash; 885</td><td>Leaf structure / NDVI</td></tr>
+            </tbody>
+        </table>
+
+        <!-- Band Extraction -->
+        <h2>Extracting Bands with Python</h2>
+        <p>Use <code>rasterio</code> to read PlanetScope Analytic Surface Reflectance (SR) GeoTIFF files.</p>
+        <pre><code><span class="keyword">import</span> rasterio
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+
+<span class="comment"># Open PlanetScope analytic surface reflectance scene</span>
+<span class="keyword">with</span> rasterio.<span class="func">open</span>(<span class="string">"planetscope_scene.tif"</span>) <span class="keyword">as</span> src:
+    coastal_blue = src.<span class="func">read</span>(<span class="num">1</span>).astype(<span class="func">float</span>)
+    blue         = src.<span class="func">read</span>(<span class="num">2</span>).astype(<span class="func">float</span>)
+    green_i      = src.<span class="func">read</span>(<span class="num">3</span>).astype(<span class="func">float</span>)
+    green        = src.<span class="func">read</span>(<span class="num">4</span>).astype(<span class="func">float</span>)
+    yellow       = src.<span class="func">read</span>(<span class="num">5</span>).astype(<span class="func">float</span>)
+    red          = src.<span class="func">read</span>(<span class="num">6</span>).astype(<span class="func">float</span>)
+    red_edge     = src.<span class="func">read</span>(<span class="num">7</span>).astype(<span class="func">float</span>)
+    nir          = src.<span class="func">read</span>(<span class="num">8</span>).astype(<span class="func">float</span>)
+    profile      = src.profile</code></pre>
+
+        <!-- Vegetation Indices -->
+        <h2>Vegetation Indices</h2>
+
+        <div class="grid">
+            <div class="card">
+                <h3>NDVI <span class="badge badge-green">Most Common</span></h3>
+                <p>Normalized Difference Vegetation Index. Standard measure of green vegetation density and health.</p>
+                <div class="formula">NDVI = (NIR &minus; Red) / (NIR + Red)</div>
+                <p><strong>Range:</strong> &minus;1 to 1 &nbsp;|&nbsp; <strong>Healthy vegetation:</strong> 0.3 &ndash; 0.8</p>
+                <pre><code>ndvi = (nir - red) / (nir + red + <span class="num">1e-10</span>)</code></pre>
+            </div>
+
+            <div class="card">
+                <h3>NDRE <span class="badge badge-blue">PlanetScope Advantage</span></h3>
+                <p>Normalized Difference Red Edge. Sensitive to chlorophyll in mature canopies.</p>
+                <div class="formula">NDRE = (NIR &minus; RedEdge) / (NIR + RedEdge)</div>
+                <p><strong>Range:</strong> &minus;1 to 1 &nbsp;|&nbsp; <strong>Better for dense canopy</strong></p>
+                <pre><code>ndre = (nir - red_edge) / (nir + red_edge + <span class="num">1e-10</span>)</code></pre>
+            </div>
+
+            <div class="card">
+                <h3>EVI <span class="badge badge-yellow">High Biomass</span></h3>
+                <p>Enhanced Vegetation Index. Reduces atmospheric and soil background noise.</p>
+                <div class="formula">EVI = 2.5 &times; (NIR &minus; Red) / (NIR + 6&times;Red &minus; 7.5&times;Blue + 1)</div>
+                <p><strong>Range:</strong> &minus;1 to 1 &nbsp;|&nbsp; <strong>Best for dense forests</strong></p>
+                <pre><code>evi = <span class="num">2.5</span> * (nir - red) / (nir + <span class="num">6</span> * red - <span class="num">7.5</span> * blue + <span class="num">1</span>)</code></pre>
+            </div>
+
+            <div class="card">
+                <h3>SAVI <span class="badge badge-yellow">Sparse Vegetation</span></h3>
+                <p>Soil-Adjusted Vegetation Index. Minimizes soil brightness influence.</p>
+                <div class="formula">SAVI = ((NIR &minus; Red) / (NIR + Red + L)) &times; (1 + L)</div>
+                <p><strong>L = 0.5</strong> (soil correction factor)</p>
+                <pre><code>L = <span class="num">0.5</span>
+savi = ((nir - red) / (nir + red + L)) * (<span class="num">1</span> + L)</code></pre>
+            </div>
+        </div>
+
+        <!-- Cloud Masking -->
+        <h2>Cloud Masking with UDM2</h2>
+        <p>PlanetScope scenes include a UDM2 (Usable Data Mask) file with per-pixel quality flags. Always apply this before analysis.</p>
+        <pre><code><span class="comment"># UDM2 bands: 1=clear, 2=snow, 3=shadow, 4=light haze, 5=heavy haze, 6=cloud, 7=confidence, 8=unusable</span>
+<span class="keyword">with</span> rasterio.<span class="func">open</span>(<span class="string">"scene_udm2.tif"</span>) <span class="keyword">as</span> udm:
+    clear   = udm.<span class="func">read</span>(<span class="num">1</span>)   <span class="comment"># 1 = clear pixel</span>
+    cloud   = udm.<span class="func">read</span>(<span class="num">6</span>)   <span class="comment"># 1 = cloud pixel</span>
+    shadow  = udm.<span class="func">read</span>(<span class="num">3</span>)   <span class="comment"># 1 = shadow pixel</span>
+
+<span class="comment"># Create a clean mask: clear=1, no cloud, no shadow</span>
+clean_mask = (clear == <span class="num">1</span>) & (cloud == <span class="num">0</span>) & (shadow == <span class="num">0</span>)
+
+<span class="comment"># Apply mask to NDVI</span>
+ndvi_masked = np.<span class="func">where</span>(clean_mask, ndvi, np.nan)</code></pre>
+
+        <!-- Visualization -->
+        <h2>Visualization &amp; Export</h2>
+        <pre><code><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt
+
+<span class="comment"># Plot NDVI</span>
+fig, ax = plt.<span class="func">subplots</span>(figsize=(<span class="num">10</span>, <span class="num">10</span>))
+im = ax.<span class="func">imshow</span>(ndvi_masked, cmap=<span class="string">"RdYlGn"</span>, vmin=<span class="num">-0.2</span>, vmax=<span class="num">0.8</span>)
+ax.<span class="func">set_title</span>(<span class="string">"NDVI - PlanetScope"</span>, fontsize=<span class="num">14</span>)
+plt.<span class="func">colorbar</span>(im, ax=ax, label=<span class="string">"NDVI"</span>, shrink=<span class="num">0.8</span>)
+ax.<span class="func">axis</span>(<span class="string">"off"</span>)
+plt.<span class="func">tight_layout</span>()
+plt.<span class="func">show</span>()
+
+<span class="comment"># Export NDVI as GeoTIFF</span>
+profile.<span class="func">update</span>(dtype=rasterio.float32, count=<span class="num">1</span>, nodata=np.nan)
+<span class="keyword">with</span> rasterio.<span class="func">open</span>(<span class="string">"ndvi_output.tif"</span>, <span class="string">"w"</span>, **profile) <span class="keyword">as</span> dst:
+    dst.<span class="func">write</span>(ndvi_masked.astype(np.float32), <span class="num">1</span>)</code></pre>
+
+        <!-- Recommendations -->
+        <h2>Best Practices</h2>
+        <div class="tip">
+            <strong>Key Recommendations</strong>
+            <ul>
+                <li><strong>Use Surface Reflectance (SR) products</strong> &mdash; atmospherically corrected and essential for accurate index values.</li>
+                <li><strong>Always apply the UDM2 mask</strong> &mdash; exclude clouds, shadows, and haze before computing indices.</li>
+                <li><strong>Leverage the Red Edge band (NDRE)</strong> &mdash; unique to PlanetScope and more sensitive than NDVI for dense/mature canopy stress detection.</li>
+                <li><strong>For time-series analysis</strong> &mdash; normalize scenes using the same product type and account for BRDF effects.</li>
+                <li><strong>Scale values</strong> &mdash; PlanetScope SR values may be scaled (e.g., 0&ndash;10000). Divide by 10000 to get 0&ndash;1 reflectance before computing indices.</li>
+            </ul>
+        </div>
+
+        <!-- Crop Growth Monitoring -->
+        <h2>Crop Growth Monitoring (Rice &amp; Corn)</h2>
+        <p>PlanetScope's daily revisit capability makes it ideal for tracking crop phenology from sowing through harvest. Below is a complete approach for monitoring rice and corn fields.</p>
+
+        <h3>Data Acquisition Strategy</h3>
+        <p>Capture imagery across the full growing season. Weekly cloud-free composites are more practical than daily scenes.</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Crop</th>
+                    <th>Season Length</th>
+                    <th>Key Stages to Capture</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Rice</td><td>~120 &ndash; 150 days</td><td>Transplanting, Tillering, Heading, Grain fill, Harvest</td></tr>
+                <tr><td>Corn</td><td>~90 &ndash; 130 days</td><td>Emergence, V6 (knee-high), Tasseling, Grain fill, Maturity</td></tr>
+            </tbody>
+        </table>
+        <div class="tip">
+            <strong>Product recommendation:</strong> Always use <strong>PSScene Analytic Surface Reflectance (SR)</strong> with the <strong>8-band</strong> asset and <strong>UDM2</strong> mask. Aim for imagery every 5&ndash;7 days.
+        </div>
+
+        <h3>Relevant Indices for Crop Monitoring</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Index</th>
+                    <th>Formula</th>
+                    <th>What It Tells You</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>NDVI</strong></td><td>(NIR &minus; Red) / (NIR + Red)</td><td>Overall canopy greenness and biomass; tracks growth curve</td></tr>
+                <tr><td><strong>NDRE</strong></td><td>(NIR &minus; RedEdge) / (NIR + RedEdge)</td><td>Chlorophyll content; stays sensitive when NDVI saturates at peak growth</td></tr>
+                <tr><td><strong>NDMI</strong></td><td>(NIR &minus; SWIR) / (NIR + SWIR)</td><td>Canopy water content and moisture stress</td></tr>
+                <tr><td><strong>EVI</strong></td><td>2.5 &times; (NIR &minus; Red) / (NIR + 6R &minus; 7.5B + 1)</td><td>Biomass in dense canopy; less saturation than NDVI</td></tr>
+                <tr><td><strong>SAVI</strong></td><td>((NIR &minus; Red) / (NIR + Red + L)) &times; (1+L)</td><td>Early season when soil is still visible</td></tr>
+            </tbody>
+        </table>
+
+        <div class="tip">
+            <strong>NDMI Note:</strong> PlanetScope does <strong>not</strong> have a SWIR band. Two options:
+            <ul>
+                <li><strong>Proxy using Red Edge:</strong> <code>(NIR &minus; RedEdge) / (NIR + RedEdge)</code> &mdash; correlates with canopy moisture to some degree (this is effectively NDRE)</li>
+                <li><strong>Fuse with Sentinel-2 or Landsat SWIR:</strong> Use Sentinel-2 Band 11 (1610nm) or Landsat Band 6 for true NDMI, combined with PlanetScope for higher spatial resolution</li>
+            </ul>
+        </div>
+
+        <h3>Typical Crop NDVI Growth Curve</h3>
+        <p>The NDVI time-series follows a characteristic pattern through the growing season:</p>
+        <pre><code>NDVI
+ 0.9 |                  ___________
+     |                /             \
+ 0.6 |              /                 \
+     |            /                     \
+ 0.3 |          /                         \
+     |    ____/                             \____
+ 0.0 |___/                                       \___
+     |----|----|----|----|----|----|----|----|----|----|
+     Sow  Emerge  Tillering  Peak   Grain   Senesc  Harvest
+                  /Vegetative        Fill</code></pre>
+        <ul>
+            <li><strong>Rice:</strong> Possible NDVI dip at transplanting (flooded paddy), then steady rise through tillering</li>
+            <li><strong>Corn:</strong> Smooth S-curve up to tasseling, then gradual decline through grain fill</li>
+        </ul>
+
+        <h3>Growth Stage Detection from Index Time-Series</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Signal</th>
+                    <th>Interpretation</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>NDVI &lt; 0.2, flat</td><td>Bare soil / pre-emergence</td></tr>
+                <tr><td>NDVI rising steadily</td><td>Vegetative growth (tillering / stem elongation)</td></tr>
+                <tr><td>NDVI plateau &gt; 0.7, NDRE still rising</td><td>Peak canopy &mdash; NDRE differentiates health here</td></tr>
+                <tr><td>NDVI begins declining</td><td>Reproductive stage / grain fill</td></tr>
+                <tr><td>NDVI dropping rapidly</td><td>Senescence approaching harvest</td></tr>
+                <tr><td>For rice: NDVI dip + high NDMI proxy</td><td>Flooded paddy before transplanting</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Monitoring Workflow</h3>
+        <div class="card">
+            <ol style="margin: 0.5rem 0 0 1.5rem; color: var(--text-muted);">
+                <li>Define AOI (field boundary as GeoJSON / Shapefile)</li>
+                <li>Order PlanetScope 8-band SR scenes covering the growing season</li>
+                <li>For each scene:
+                    <ul>
+                        <li>Apply UDM2 cloud mask</li>
+                        <li>Clip to AOI</li>
+                        <li>Compute indices (NDVI, NDRE, EVI, SAVI)</li>
+                        <li>Calculate field-average and per-pixel stats</li>
+                    </ul>
+                </li>
+                <li>Build time-series dataframe (date, mean_ndvi, mean_ndre, &hellip;)</li>
+                <li>Plot phenology curves</li>
+                <li>Identify anomalies / stress events</li>
+                <li>Compare against normal growth profiles</li>
+            </ol>
+        </div>
+
+        <h3>Stress Detection</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Condition</th>
+                    <th>Signal</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>Water stress</td><td>NDRE drops while NDVI stays high (early stress indicator)</td></tr>
+                <tr><td>Nutrient deficiency</td><td>Lower NDVI plateau than healthy reference</td></tr>
+                <tr><td>Pest / disease</td><td>Localized NDVI drop within the field</td></tr>
+                <tr><td>Lodging (crop fell over)</td><td>Sudden NDVI drop mid-season</td></tr>
+            </tbody>
+        </table>
+
+        <!-- Example: Real Scene Analysis -->
+        <h2>Example: composite.tif Analysis Results</h2>
+        <p>Results from running band extraction and vegetation index computation on an actual PlanetScope scene.</p>
+
+        <h3>Scene Metadata</h3>
+        <table>
+            <thead>
+                <tr><th>Property</th><th>Value</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>File</td><td><code>composite.tif</code> + <code>composite_udm2.tif</code></td></tr>
+                <tr><td>CRS</td><td>EPSG:32644 (UTM Zone 44N)</td></tr>
+                <tr><td>Size</td><td>1146 &times; 915 pixels</td></tr>
+                <tr><td>Resolution</td><td>3m</td></tr>
+                <tr><td>Coverage</td><td>~3.4 km &times; 2.7 km</td></tr>
+                <tr><td>Bounds</td><td>561642, 2287929 &rarr; 565080, 2290674 (meters)</td></tr>
+            </tbody>
+        </table>
+
+        <h3>UDM2 Cloud Mask</h3>
+        <table>
+            <thead>
+                <tr><th>Metric</th><th>Value</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Total pixels</td><td>1,048,590</td></tr>
+                <tr><td>Clean pixels</td><td>1,041,411 <span class="badge badge-green">99.3% clear</span></td></tr>
+                <tr><td>Masked pixels</td><td>7,179 (0.7%)</td></tr>
+                <tr><td>Cloud / Shadow / Haze</td><td>None detected</td></tr>
+            </tbody>
+        </table>
+
+        <h3>Band Reflectance Statistics (Clean Pixels Only)</h3>
+        <p>Values are surface reflectance (0&ndash;1 scale, after dividing raw uint16 by 10000).</p>
+        <table>
+            <thead>
+                <tr><th>Band</th><th>Name</th><th>Min</th><th>Max</th><th>Mean</th><th>Std</th><th>Median</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td>Coastal Blue</td><td>0.0036</td><td>0.1175</td><td>0.0245</td><td>0.0115</td><td>0.0236</td></tr>
+                <tr><td>2</td><td>Blue</td><td>0.0062</td><td>0.1825</td><td>0.0388</td><td>0.0156</td><td>0.0375</td></tr>
+                <tr><td>3</td><td>Green I</td><td>0.0276</td><td>0.2110</td><td>0.0565</td><td>0.0177</td><td>0.0556</td></tr>
+                <tr><td>4</td><td>Green</td><td>0.0208</td><td>0.2101</td><td>0.0563</td><td>0.0218</td><td>0.0554</td></tr>
+                <tr><td>5</td><td>Yellow</td><td>0.0274</td><td>0.2137</td><td>0.0692</td><td>0.0330</td><td>0.0676</td></tr>
+                <tr><td>6</td><td>Red</td><td>0.0045</td><td>0.2641</td><td>0.0669</td><td>0.0426</td><td>0.0638</td></tr>
+                <tr><td>7</td><td>Red Edge</td><td>0.0459</td><td>0.2800</td><td>0.1050</td><td>0.0405</td><td>0.0986</td></tr>
+                <tr><td>8</td><td>NIR</td><td>0.0392</td><td>0.4620</td><td>0.2748</td><td>0.0570</td><td>0.2662</td></tr>
+            </tbody>
+        </table>
+        <div class="tip">
+            <strong>Spectral signature confirms vegetation:</strong> Low red reflectance (0.067 mean) with a strong jump through the Red Edge (0.105) to high NIR (0.275) &mdash; the classic "red edge" transition of healthy vegetation.
+        </div>
+
+        <h3>Vegetation Index Results</h3>
+        <table>
+            <thead>
+                <tr><th>Index</th><th>Min</th><th>Max</th><th>Mean</th><th>Std</th><th>Median</th><th>P10</th><th>P90</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>NDVI</strong></td>
+                    <td>&minus;0.2375</td><td>0.9765</td>
+                    <td><strong>0.6071</strong></td><td>0.2270</td><td>0.5720</td><td>0.3229</td><td>0.8824</td>
+                </tr>
+                <tr>
+                    <td><strong>NDRE</strong></td>
+                    <td>&minus;0.2306</td><td>0.7904</td>
+                    <td><strong>0.4432</strong></td><td>0.1954</td><td>0.3836</td><td>0.2216</td><td>0.6900</td>
+                </tr>
+                <tr>
+                    <td><strong>EVI</strong></td>
+                    <td>&minus;0.0607</td><td>0.7871</td>
+                    <td><strong>0.3847</strong></td><td>0.1737</td><td>0.3333</td><td>0.1864</td><td>0.6209</td>
+                </tr>
+                <tr>
+                    <td><strong>SAVI</strong></td>
+                    <td>&minus;0.0652</td><td>0.6885</td>
+                    <td><strong>0.3685</strong></td><td>0.1452</td><td>0.3324</td><td>0.1999</td><td>0.5633</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>NDVI Land Cover Classification</h3>
+        <table>
+            <thead>
+                <tr><th>Class</th><th>NDVI Range</th><th>Pixel Count</th><th>Percentage</th></tr>
+            </thead>
+            <tbody>
+                <tr><td style="color:#2166ac;">Water / Non-vegetation</td><td>&lt; 0.0</td><td>1,752</td><td>0.2%</td></tr>
+                <tr><td style="color:#d6a04e;">Bare Soil</td><td>0.0 &ndash; 0.2</td><td>5,109</td><td>0.5%</td></tr>
+                <tr><td style="color:#c2e699;">Sparse Vegetation</td><td>0.2 &ndash; 0.4</td><td>255,173</td><td>24.5%</td></tr>
+                <tr><td style="color:#4dac26;">Moderate Vegetation</td><td>0.4 &ndash; 0.6</td><td>273,795</td><td>26.3%</td></tr>
+                <tr><td style="color:#006837;">Dense Vegetation</td><td>&ge; 0.6</td><td>505,582</td><td><strong>48.6%</strong></td></tr>
+            </tbody>
+        </table>
+        <div class="tip">
+            <strong>Interpretation:</strong> Nearly half the scene (48.6%) is dense vegetation with NDVI &ge; 0.6, and 99.3% of pixels are cloud-free. The high NDRE mean (0.44) alongside NDVI (0.61) confirms healthy chlorophyll-rich canopy. Only 0.7% of the scene is non-vegetated (water + bare soil).
+        </div>
+
+        <!-- PlanetScope Data Access Options -->
+        <h2 style="margin-top:3rem;">PlanetScope Data Access Options</h2>
+        <p>PlanetScope imagery requires a valid Planet account with data access. Below are the available pathways, including several free options for researchers.</p>
+
+        <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.5rem;">
+            <div class="card" style="border-left: 3px solid var(--accent);">
+                <h3>Education &amp; Research (E&amp;R) Basic</h3>
+                <span class="badge badge-green">Free</span>
+                <ul style="margin-top:0.8rem; padding-left:1.2rem;">
+                    <li>For university-affiliated researchers and students</li>
+                    <li>3,000 km&sup2;/month download quota</li>
+                    <li>30-day data delay (no real-time access)</li>
+                    <li>Non-commercial use only</li>
+                    <li>Apply at <code>planet.com/markets/education-and-research</code></li>
+                </ul>
+            </div>
+
+            <div class="card" style="border-left: 3px solid var(--accent);">
+                <h3>NASA CSDA (Commercial Smallsat Data Acquisition)</h3>
+                <span class="badge badge-green">Free</span>
+                <ul style="margin-top:0.8rem; padding-left:1.2rem;">
+                    <li>For US federally-funded researchers</li>
+                    <li>5 million km&sup2; quota</li>
+                    <li>PlanetScope + RapidEye archive</li>
+                    <li>Full resolution, no delay</li>
+                    <li>Apply via NASA Earthdata</li>
+                </ul>
+            </div>
+
+            <div class="card" style="border-left: 3px solid var(--accent2);">
+                <h3>ESA Network of Resources</h3>
+                <span class="badge badge-green">Free</span>
+                <ul style="margin-top:0.8rem; padding-left:1.2rem;">
+                    <li>For researchers in ESA member states</li>
+                    <li>PlanetScope + RapidEye + SkySat</li>
+                    <li>Project-based quota allocation</li>
+                    <li>Apply via ESA EO portal</li>
+                </ul>
+            </div>
+
+            <div class="card" style="border-left: 3px solid var(--accent2);">
+                <h3>DLR RESA (German Aerospace Center)</h3>
+                <span class="badge badge-green">Free</span>
+                <ul style="margin-top:0.8rem; padding-left:1.2rem;">
+                    <li>For German researchers and institutions</li>
+                    <li>PlanetScope + RapidEye + SkySat</li>
+                    <li>Apply via DLR Earth Observation Center</li>
+                </ul>
+            </div>
+
+            <div class="card" style="border-left: 3px solid var(--accent2);">
+                <h3>Tropical Forest Observatory (NICFI)</h3>
+                <span class="badge badge-green">Free</span>
+                <ul style="margin-top:0.8rem; padding-left:1.2rem;">
+                    <li>For nonprofits and researchers studying tropical forests</li>
+                    <li>Monthly basemap mosaics over tropical regions</li>
+                    <li>4.77m resolution composites</li>
+                    <li>Access via Planet NICFI portal</li>
+                </ul>
+            </div>
+
+            <div class="card" style="border-left: 3px solid var(--badge-yellow-bg, #f59e0b);">
+                <h3>Commercial (Planet Monitoring)</h3>
+                <span class="badge badge-yellow">Paid</span>
+                <ul style="margin-top:0.8rem; padding-left:1.2rem;">
+                    <li>Full API access with no delays or restrictions</li>
+                    <li>Area-based subscription pricing</li>
+                    <li>All product bundles including 8-band SR</li>
+                    <li>Priority tasking and support available</li>
+                    <li>Contact Planet sales for quotes</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="tip">
+            <strong>Recommendation:</strong> For academic crop monitoring research, start with <strong>E&amp;R Basic</strong> (fastest approval). If you need real-time data or larger quotas, apply for <strong>NASA CSDA</strong> (US-funded) or <strong>ESA NoR</strong> (European). The 30-day delay on E&amp;R Basic is usually acceptable for retrospective season analysis.
+        </div>
+
+        <footer>
+            PlanetScope Vegetation Analysis Guide &bull; Built for satellite image analysis workflows
+        </footer>
+    </div>
+</body>
+</html>

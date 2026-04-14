@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rice Male/Female Row Flowering Synchronization Guide</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --border: #334155;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent: #22c55e;
+            --accent2: #3b82f6;
+            --code-bg: #0d1117;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            padding: 2rem;
+        }
+        .container { max-width: 960px; margin: 0 auto; }
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        h2 {
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 2px solid var(--border);
+        }
+        h3 {
+            font-size: 1.15rem;
+            color: var(--accent2);
+            margin: 1.5rem 0 0.5rem;
+        }
+        h4 {
+            font-size: 1rem;
+            color: var(--text);
+            margin: 1rem 0 0.5rem;
+        }
+        p { margin-bottom: 1rem; color: var(--text-muted); }
+        .subtitle { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 2rem; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0 1.5rem;
+            background: var(--surface);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th {
+            background: var(--accent);
+            color: var(--bg);
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(34, 197, 94, 0.05); }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.2rem;
+            overflow-x: auto;
+            margin: 0.75rem 0 1.5rem;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        code {
+            font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+            color: #e2e8f0;
+        }
+        .keyword { color: #c084fc; }
+        .string { color: #fbbf24; }
+        .comment { color: #6b7280; font-style: italic; }
+        .func { color: #60a5fa; }
+        .num { color: #34d399; }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        .card h3 { margin-top: 0; }
+        .formula {
+            background: var(--code-bg);
+            border-left: 3px solid var(--accent);
+            padding: 0.75rem 1rem;
+            margin: 0.5rem 0;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.95rem;
+            border-radius: 0 6px 6px 0;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 0.3rem;
+        }
+        .badge-green { background: rgba(34, 197, 94, 0.2); color: var(--accent); }
+        .badge-blue { background: rgba(59, 130, 246, 0.2); color: var(--accent2); }
+        .badge-yellow { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+        .badge-red { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+        .tip {
+            background: rgba(34, 197, 94, 0.08);
+            border-left: 4px solid var(--accent);
+            padding: 1rem 1.2rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+        .tip strong { color: var(--accent); }
+
+        .warning {
+            background: rgba(245, 158, 11, 0.08);
+            border-left: 4px solid var(--warning);
+            padding: 1rem 1.2rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+        .warning strong { color: var(--warning); }
+
+        .danger {
+            background: rgba(239, 68, 68, 0.08);
+            border-left: 4px solid var(--danger);
+            padding: 1rem 1.2rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+        .danger strong { color: var(--danger); }
+
+        ul, ol { margin: 0.5rem 0 1rem 1.5rem; color: var(--text-muted); }
+        li { margin-bottom: 0.4rem; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        @media (max-width: 700px) {
+            .grid, .grid-3 { grid-template-columns: 1fr; }
+            body { padding: 1rem; }
+            h1 { font-size: 1.6rem; }
+        }
+
+        .fsri-scale {
+            display: flex;
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1rem 0;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        .fsri-scale > div { padding: 0.8rem 0.5rem; flex: 1; }
+        .fsri-good { background: rgba(34, 197, 94, 0.3); color: var(--accent); }
+        .fsri-moderate { background: rgba(251, 191, 36, 0.3); color: var(--warning); }
+        .fsri-high { background: rgba(239, 68, 68, 0.3); color: var(--danger); }
+
+        footer {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Rice Male/Female Row Flowering Synchronization</h1>
+        <p class="subtitle">Remote sensing approach for monitoring hybrid rice seed production using PlanetScope, UAV, and SAR data</p>
+
+        <!-- ============================================================ -->
+        <!-- Section 1: Background -->
+        <!-- ============================================================ -->
+        <h2>1. What is Male/Female Row Synchronization?</h2>
+
+        <p>In hybrid rice seed production, fields are planted with alternating rows of two distinct parent lines:</p>
+
+        <div class="grid">
+            <div class="card" style="border-left: 3px solid var(--danger);">
+                <h3>Female Parent (A-line / CMS)</h3>
+                <span class="badge badge-red">Male-Sterile</span>
+                <ul style="margin-top: 0.8rem;">
+                    <li><strong>Cytoplasmic Male Sterile (CMS)</strong> line &mdash; cannot produce viable pollen</li>
+                    <li>Depends entirely on pollen from the male parent for seed set</li>
+                    <li>Makes up the majority of the field (10&ndash;14 rows per block)</li>
+                    <li>Shorter canopy, greener during anthesis</li>
+                </ul>
+            </div>
+            <div class="card" style="border-left: 3px solid var(--accent2);">
+                <h3>Male Parent (R-line / Restorer)</h3>
+                <span class="badge badge-blue">Fertile</span>
+                <ul style="margin-top: 0.8rem;">
+                    <li><strong>Restorer line</strong> &mdash; provides fertile pollen</li>
+                    <li>Carries genes that restore fertility in F1 hybrid offspring</li>
+                    <li>Planted in narrow blocks (2 rows per block)</li>
+                    <li>Taller canopy, yellowish during pollen shedding</li>
+                </ul>
+            </div>
+        </div>
+
+        <h3>Typical Field Layout</h3>
+        <p>The standard planting configuration is <strong>2R:10A to 2R:14A</strong> (2 male restorer rows for every 10&ndash;14 female CMS rows). Row orientation is typically east&ndash;west to ensure uniform sunlight interception and minimize shading of female panicles during morning anthesis.</p>
+
+        <div class="formula">
+            Male block width: 2 rows &times; 20&ndash;30 cm spacing &asymp; <strong>40&ndash;60 cm</strong><br>
+            Female block width: 10&ndash;14 rows &times; 13&ndash;20 cm spacing &asymp; <strong>1.3&ndash;2.8 m</strong><br>
+            Full repeating unit: &asymp; 1.7&ndash;3.4 m
+        </div>
+
+        <h3>Why Synchronization Matters</h3>
+        <p><strong>Flowering synchronization between the R-line and A-line is the single most critical factor</strong> for seed set percentage and hybrid seed yield. If the male sheds pollen when the female stigma is not receptive, seed set fails. Research shows:</p>
+        <ul>
+            <li>Zero days difference in flowering between male and female &rarr; <strong>maximum seed yield</strong> (2.4&ndash;2.5 t/ha)</li>
+            <li>2 days difference &rarr; moderate yield reduction</li>
+            <li>5 days difference &rarr; <strong>significant yield loss</strong></li>
+            <li>Flowering duration of the female line matters: a concentrated 5-day blooming burst (97% of florets open before noon) is ideal</li>
+            <li>GDD (Growing Degree Days) requirement difference between R-line and CMS line is typically ~210 degree-days &mdash; sowing dates must be staggered accordingly</li>
+        </ul>
+
+        <!-- ============================================================ -->
+        <!-- Section 2: Spatial Resolution Reality Check -->
+        <!-- ============================================================ -->
+        <h2>2. Can PlanetScope Do This? &mdash; Honest Assessment</h2>
+
+        <h3>The Spatial Resolution Problem</h3>
+
+        <div class="danger">
+            <strong>Critical Limitation:</strong> PlanetScope is <strong>3m per pixel</strong>. A single pixel covers the entire male+female block and then some. You <strong>cannot spatially distinguish male from female rows</strong> at 3m resolution.
+        </div>
+
+        <table>
+            <thead>
+                <tr><th>Feature</th><th>Actual Size</th><th>PlanetScope Pixel</th><th>Can Resolve?</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Male row block (2 rows)</td><td>40&ndash;60 cm</td><td>3 m</td><td style="color: var(--danger);">No &mdash; 5&ndash;7&times; too coarse</td></tr>
+                <tr><td>Female row block (10&ndash;14 rows)</td><td>1.3&ndash;2.8 m</td><td>3 m</td><td style="color: var(--danger);">No &mdash; sub-pixel</td></tr>
+                <tr><td>Full repeating unit</td><td>1.7&ndash;3.4 m</td><td>3 m</td><td style="color: var(--warning);">Marginal &mdash; 1 pixel</td></tr>
+                <tr><td>Entire field AOI</td><td>0.5&ndash;5+ ha</td><td>3 m</td><td style="color: var(--accent);">Yes &mdash; many pixels</td></tr>
+            </tbody>
+        </table>
+
+        <p>Research that successfully separates male/female parents uses <strong>UAV imagery at 3&ndash;7 cm/pixel</strong> resolution &mdash; that is 50&ndash;100&times; finer than PlanetScope. UAV studies achieved 95.5% accuracy separating male/female parents using the ExGR (Excess Green minus Excess Red) index at centimeter resolution (MDPI Agriculture, 2022).</p>
+
+        <h3>What PlanetScope CAN Do</h3>
+
+        <p>PlanetScope&rsquo;s strength is <strong>daily revisit at field level</strong>. It can track the <strong>temporal phenology</strong> of the entire seed production field as a unit:</p>
+
+        <div class="grid">
+            <div class="card">
+                <h3>Heading Date Detection</h3>
+                <span class="badge badge-green">Feasible</span>
+                <ul style="margin-top: 0.8rem;">
+                    <li>NDVI reaches its <strong>maximum</strong> at heading/flowering</li>
+                    <li>First derivative of smoothed NDVI changing from positive to negative = heading date</li>
+                    <li>CI<sub>RedEdge</sub> detects booting stage (just before heading)</li>
+                    <li>Accuracy: ~3&ndash;6 days for heading date estimation</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Flowering Duration &amp; Vigor</h3>
+                <span class="badge badge-green">Feasible</span>
+                <ul style="margin-top: 0.8rem;">
+                    <li>Plateau width of NDVI near maximum indicates flowering duration</li>
+                    <li>Sharp, narrow peak = synchronized flowering</li>
+                    <li>Broad, flat peak = staggered flowering (risk)</li>
+                    <li>NDRE avoids saturation at peak biomass</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Stress During Reproductive Phase</h3>
+                <span class="badge badge-green">Feasible</span>
+                <ul style="margin-top: 0.8rem;">
+                    <li>Sudden NDVI/NDRE drop during flowering window = stress event</li>
+                    <li>Cold snap, heavy rain, or nutrient deficiency detected</li>
+                    <li>Your existing Part 2 pipeline already handles this</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Row-Level Male/Female ID</h3>
+                <span class="badge badge-red">Not Feasible</span>
+                <ul style="margin-top: 0.8rem;">
+                    <li>Requires &lt;10 cm resolution (UAV only)</li>
+                    <li>Cannot identify which rows are male vs female at 3m</li>
+                    <li>Cannot observe individual spikelet opening</li>
+                    <li>Cannot measure stigma exsertion or anther traits</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- Section 3: Data Requirements -->
+        <!-- ============================================================ -->
+        <h2>3. Required Data &mdash; Spectral and Spatial</h2>
+
+        <p>You need a <strong>combination of spectral (from imagery) and spatial (from your KML/AOI) information</strong>, supplemented by weather data and field records.</p>
+
+        <table>
+            <thead>
+                <tr><th>Data Source</th><th>What It Provides</th><th>Resolution</th><th>Role</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>PlanetScope 8-band</td><td>Spectral indices (NDVI, NDRE, CI<sub>RE</sub>) time-series</td><td>3 m spatial, daily temporal</td><td>Temporal phenology tracking</td></tr>
+                <tr><td>Weather station / ERA5</td><td>Temperature for GDD (Growing Degree Days)</td><td>Point / 0.25&deg; grid</td><td>Predict heading dates per variety</td></tr>
+                <tr><td>Field records</td><td>Sowing dates of A-line and R-line, variety info</td><td>Per field</td><td>GDD model calibration</td></tr>
+                <tr><td>KML / AOI polygon</td><td>Field boundary geometry</td><td>From your existing KML file</td><td>Clip imagery, extract zonal stats</td></tr>
+                <tr><td>UAV multispectral (optional)</td><td>Row-level male/female classification</td><td>3&ndash;7 cm/pixel</td><td>Targeted flights during flowering</td></tr>
+                <tr><td>Sentinel-1 SAR (optional)</td><td>VV/VH backscatter for cloud-gap filling</td><td>10 m, 6&ndash;12 day revisit</td><td>All-weather phenology backup</td></tr>
+            </tbody>
+        </table>
+
+        <h3>PlanetScope Bands Needed</h3>
+
+        <table>
+            <thead>
+                <tr><th>Band</th><th>Wavelength</th><th>Index Contribution</th><th>Relevance to Flowering Sync</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>B5</strong> &mdash; Yellow</td><td>610 nm</td><td>Yellow band indices</td>
+                    <td>Detects panicle emergence; male anthers appear yellowish during pollen shedding</td>
+                </tr>
+                <tr>
+                    <td><strong>B6</strong> &mdash; Red</td><td>665 nm</td><td>NDVI numerator</td>
+                    <td>Chlorophyll absorption; strong contrast between vegetative and reproductive canopy</td>
+                </tr>
+                <tr>
+                    <td><strong>B7</strong> &mdash; Red Edge</td><td>717 nm</td><td>NDRE, CI<sub>RedEdge</sub></td>
+                    <td>Most sensitive to canopy chlorophyll changes at heading; avoids NDVI saturation at peak biomass</td>
+                </tr>
+                <tr>
+                    <td><strong>B8</strong> &mdash; NIR</td><td>865 nm</td><td>NDVI, NDRE, CI<sub>RE</sub></td>
+                    <td>Canopy structure / LAI; rises through vegetative stage, peaks at heading</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Key Spectral Indices</h3>
+
+        <div class="grid">
+            <div class="card">
+                <h3>NDVI</h3>
+                <span class="badge badge-green">Primary</span>
+                <div class="formula">NDVI = (NIR &minus; Red) / (NIR + Red)</div>
+                <p>Maximum NDVI = heading date. First derivative sign change (positive &rarr; negative) marks the transition from vegetative to reproductive phase.</p>
+            </div>
+            <div class="card">
+                <h3>NDRE</h3>
+                <span class="badge badge-green">Primary</span>
+                <div class="formula">NDRE = (NIR &minus; RedEdge) / (NIR + RedEdge)</div>
+                <p>More sensitive than NDVI at peak biomass. Better differentiates &ldquo;healthy dense&rdquo; vs &ldquo;very healthy dense&rdquo; canopy during reproductive stage.</p>
+            </div>
+            <div class="card">
+                <h3>CI<sub>RedEdge</sub></h3>
+                <span class="badge badge-blue">Booting Detection</span>
+                <div class="formula">CI<sub>RE</sub> = (NIR / RedEdge) &minus; 1</div>
+                <p>Peaks at booting stage (just before heading). Accurately detects jointing and booting dates. Validated for rice phenology detection.</p>
+            </div>
+            <div class="card">
+                <h3>NDYI (Normalized Difference Yellow Index)</h3>
+                <span class="badge badge-yellow">Experimental</span>
+                <div class="formula">NDYI = (Green &minus; Blue) / (Green + Blue)</div>
+                <p>Originally used for rapeseed flowering detection. Potentially useful for detecting yellowish male anther emergence at field level, but untested for hybrid rice at satellite scale.</p>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- Section 4: Getting Spatial Data from KML -->
+        <!-- ============================================================ -->
+        <h2>4. Getting Spatial Data from Your KML/AOI</h2>
+
+        <p>Your KML file provides the field boundary polygon. The workflow to extract spatial data is:</p>
+
+        <ol>
+            <li><strong>Parse KML &rarr; GeoJSON</strong> &mdash; your notebook cell 58 already does this using <code>xml.etree.ElementTree</code></li>
+            <li><strong>Order PlanetScope scenes clipped to AOI</strong> &mdash; your Part 3 uses <code>clip_tool(aoi=geometry)</code> in the Orders API</li>
+            <li><strong>Load each scene and mask with UDM2</strong> &mdash; your Part 1 applies the clear pixel mask</li>
+            <li><strong>Compute zonal statistics per date</strong> &mdash; extract mean NDVI, NDRE, CI<sub>RE</sub> within the AOI polygon for each cloud-free scene</li>
+            <li><strong>Build time-series</strong> &mdash; plot index values vs date to produce the phenology curve</li>
+        </ol>
+
+        <pre><code><span class="comment"># Simplified workflow: KML &rarr; zonal time-series</span>
+<span class="keyword">import</span> rasterio
+<span class="keyword">from</span> rasterio.mask <span class="keyword">import</span> mask
+<span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">import</span> json
+
+<span class="comment"># 1. Load AOI from GeoJSON (parsed from KML)</span>
+<span class="keyword">with</span> <span class="func">open</span>(<span class="string">"field_boundary.geojson"</span>) <span class="keyword">as</span> f:
+    aoi = json.load(f)[<span class="string">"geometry"</span>]
+
+<span class="comment"># 2. For each scene date, extract clipped bands</span>
+<span class="keyword">with</span> rasterio.<span class="func">open</span>(scene_path) <span class="keyword">as</span> src:
+    clipped, transform = mask(src, [aoi], crop=<span class="keyword">True</span>)
+    nir  = clipped[<span class="num">7</span>].astype(<span class="string">"float32"</span>)  <span class="comment"># Band 8 - NIR</span>
+    red  = clipped[<span class="num">5</span>].astype(<span class="string">"float32"</span>)  <span class="comment"># Band 6 - Red</span>
+    re   = clipped[<span class="num">6</span>].astype(<span class="string">"float32"</span>)  <span class="comment"># Band 7 - Red Edge</span>
+
+<span class="comment"># 3. Compute indices (masked where valid)</span>
+ndvi = (nir - red) / (nir + red + <span class="num">1e-10</span>)
+ndre = (nir - re)  / (nir + re  + <span class="num">1e-10</span>)
+ci_re = (nir / (re + <span class="num">1e-10</span>)) - <span class="num">1</span>
+
+<span class="comment"># 4. Zonal mean for this date</span>
+mean_ndvi  = np.<span class="func">nanmean</span>(ndvi[ndvi &gt; <span class="num">0</span>])
+mean_ndre  = np.<span class="func">nanmean</span>(ndre[ndre &gt; <span class="num">0</span>])
+mean_ci_re = np.<span class="func">nanmean</span>(ci_re[ci_re &gt; <span class="num">0</span>])</code></pre>
+
+        <!-- ============================================================ -->
+        <!-- Section 5: Phenology Detection Method -->
+        <!-- ============================================================ -->
+        <h2>5. Temporal Phenology Analysis for Synchronization</h2>
+
+        <p>Since we cannot resolve individual rows, we use the <strong>temporal signature</strong> of the field to infer flowering timing and synchronization health.</p>
+
+        <h3>Step-by-Step Approach</h3>
+
+        <div class="card">
+            <h4>Step 1: Build the NDVI/NDRE Time-Series</h4>
+            <p>From daily PlanetScope scenes (your Part 2 pipeline already does this). Apply UDM2 cloud masking to keep only clear pixels.</p>
+        </div>
+
+        <div class="card">
+            <h4>Step 2: Smooth with Savitzky-Golay or Double-Logistic Function</h4>
+            <p>Removes noise, fills minor cloud gaps, produces a continuous curve. The smoothed curve shape encodes phenological information.</p>
+            <pre><code><span class="keyword">from</span> scipy.signal <span class="keyword">import</span> savgol_filter
+
+<span class="comment"># Smooth the NDVI time-series</span>
+ndvi_smooth = <span class="func">savgol_filter</span>(ndvi_values, window_length=<span class="num">7</span>, polyorder=<span class="num">3</span>)
+
+<span class="comment"># Compute first derivative</span>
+ndvi_deriv = np.<span class="func">gradient</span>(ndvi_smooth, days_array)</code></pre>
+        </div>
+
+        <div class="card">
+            <h4>Step 3: Extract Phenological Markers</h4>
+            <table>
+                <thead>
+                    <tr><th>Marker</th><th>Detection Method</th><th>Index Used</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>T<sub>boot</sub></strong> (booting date)</td><td>Date when CI<sub>RedEdge</sub> reaches maximum</td><td>CI<sub>RE</sub></td></tr>
+                    <tr><td><strong>T<sub>heading</sub></strong> (heading date)</td><td>Date when NDVI reaches maximum</td><td>NDVI</td></tr>
+                    <tr><td><strong>T<sub>heading</sub></strong> (alternative)</td><td>NDVI first derivative crosses zero (+ &rarr; &minus;)</td><td>NDVI'</td></tr>
+                    <tr><td><strong>Flowering duration</strong></td><td>Width of NDVI plateau at &gt;95% of max</td><td>NDVI</td></tr>
+                    <tr><td><strong>Maturity onset</strong></td><td>NDVI first derivative reaches minimum</td><td>NDVI'</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h4>Step 4: Compare Against GDD-Predicted Heading Dates</h4>
+            <p>Using known variety-specific GDD requirements and weather station temperature data:</p>
+            <div class="formula">
+                GDD<sub>daily</sub> = max(0, (T<sub>max</sub> + T<sub>min</sub>) / 2 &minus; T<sub>base</sub>)<br>
+                where T<sub>base</sub> = 10&deg;C for rice
+            </div>
+            <div class="formula">
+                Accumulated GDD = &Sigma; GDD<sub>daily</sub> from sowing date to current date
+            </div>
+            <p>Predicted heading date for each parent = date when accumulated GDD reaches variety-specific threshold. The GDD requirement of the restorer line is typically <strong>~210 degree-days higher</strong> than the CMS line &mdash; sowing dates must be staggered to compensate.</p>
+            <div class="formula">
+                Sync_gap = |T<sub>heading_predicted_R</sub> &minus; T<sub>heading_predicted_A</sub>|
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- Section 6: FSRI Formula -->
+        <!-- ============================================================ -->
+        <h2>6. Flowering Synchronization Risk Index (FSRI)</h2>
+
+        <p>A composite index to quantify synchronization health and predict yield risk. Combines phenological timing, canopy vigor, and stress events into a single actionable score.</p>
+
+        <div class="card" style="border: 2px solid var(--accent);">
+            <h3 style="color: var(--accent);">FSRI Formula</h3>
+            <div class="formula" style="font-size: 1.05rem; border-left-width: 4px;">
+                FSRI = w<sub>1</sub> &times; Heading_Deviation + w<sub>2</sub> &times; Vigor_Asymmetry + w<sub>3</sub> &times; Stress_Flag
+            </div>
+
+            <h4>Component 1: Heading Deviation</h4>
+            <div class="formula">
+                Heading_Deviation = |GDD_to_heading<sub>R</sub> &minus; GDD_to_heading<sub>A</sub>| / target_GDD
+            </div>
+            <p>Measures how far apart the predicted heading dates of male and female parents are, normalized by the target GDD. A value of 0 means perfect synchronization; values above 0.05 indicate risk.</p>
+
+            <h4>Component 2: Vigor Asymmetry</h4>
+            <div class="formula">
+                Vigor_Asymmetry = 1 &minus; (NDRE<sub>at_heading</sub> / NDRE<sub>max_expected</sub>)
+            </div>
+            <p>Whether the canopy is at expected vigor when heading occurs. Low vigor at heading suggests nutrient stress, water stress, or other conditions that impair flowering. A value of 0 means healthy; values above 0.2 are concerning.</p>
+
+            <h4>Component 3: Stress Flag</h4>
+            <div class="formula">
+                Stress_Flag = max(0, NDVI_drop_during_flowering / NDVI<sub>at_heading</sub>)
+            </div>
+            <p>Detects sudden NDVI drops during the flowering window, which indicate cold snaps, heavy rain, or other events disrupting anthesis. A value of 0 means stable conditions; values above 0.1 indicate a significant stress event.</p>
+
+            <h4>Recommended Weights</h4>
+            <div class="formula">
+                w<sub>1</sub> = 0.4 &nbsp;&nbsp;&nbsp; w<sub>2</sub> = 0.3 &nbsp;&nbsp;&nbsp; w<sub>3</sub> = 0.3
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Weights should be calibrated with field-level seed set data from your specific region and varieties.</p>
+        </div>
+
+        <h3>FSRI Interpretation Scale</h3>
+
+        <div class="fsri-scale">
+            <div class="fsri-good">FSRI &lt; 0.1<br>Good Sync</div>
+            <div class="fsri-moderate">FSRI 0.1 &ndash; 0.3<br>Moderate Risk</div>
+            <div class="fsri-high">FSRI &gt; 0.3<br>High Risk</div>
+        </div>
+
+        <div class="grid-3">
+            <div class="card" style="border-top: 3px solid var(--accent);">
+                <h3 style="color: var(--accent);">FSRI &lt; 0.1</h3>
+                <p>Good synchronization expected. Heading dates align, canopy is vigorous, no stress events during flowering.</p>
+                <p><strong>Action:</strong> Normal operations. No intervention needed.</p>
+            </div>
+            <div class="card" style="border-top: 3px solid var(--warning);">
+                <h3 style="color: var(--warning);">FSRI 0.1 &ndash; 0.3</h3>
+                <p>Moderate risk. Slight heading date mismatch, sub-optimal vigor, or a minor stress event detected.</p>
+                <p><strong>Action:</strong> Consider supplementary pollination (GA<sub>3</sub> application, rope pulling).</p>
+            </div>
+            <div class="card" style="border-top: 3px solid var(--danger);">
+                <h3 style="color: var(--danger);">FSRI &gt; 0.3</h3>
+                <p>High risk of poor seed set. Significant heading mismatch, low canopy vigor, or major stress during flowering.</p>
+                <p><strong>Action:</strong> Immediate intervention. Intensive supplementary pollination, adjust irrigation/nutrients.</p>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- Section 7: Implementation Code -->
+        <!-- ============================================================ -->
+        <h2>7. Implementation: FSRI Computation</h2>
+
+        <pre><code><span class="keyword">import</span> numpy <span class="keyword">as</span> np
+<span class="keyword">from</span> scipy.signal <span class="keyword">import</span> savgol_filter
+<span class="keyword">from</span> datetime <span class="keyword">import</span> datetime, timedelta
+
+<span class="keyword">def</span> <span class="func">compute_gdd</span>(tmax_series, tmin_series, t_base=<span class="num">10.0</span>):
+    <span class="string">"""Compute daily GDD from temperature arrays."""</span>
+    t_mean = (np.array(tmax_series) + np.array(tmin_series)) / <span class="num">2.0</span>
+    gdd_daily = np.maximum(<span class="num">0</span>, t_mean - t_base)
+    <span class="keyword">return</span> np.cumsum(gdd_daily)
+
+<span class="keyword">def</span> <span class="func">detect_heading_date</span>(dates, ndvi_values, window=<span class="num">7</span>):
+    <span class="string">"""Detect heading date as the date of maximum smoothed NDVI."""</span>
+    ndvi_smooth = savgol_filter(ndvi_values, window_length=window, polyorder=<span class="num">3</span>)
+    peak_idx = np.argmax(ndvi_smooth)
+    <span class="keyword">return</span> dates[peak_idx], ndvi_smooth[peak_idx], ndvi_smooth
+
+<span class="keyword">def</span> <span class="func">compute_fsri</span>(
+    gdd_heading_r, gdd_heading_a, target_gdd,
+    ndre_at_heading, ndre_max_expected,
+    ndvi_at_heading, ndvi_drop_during_flowering,
+    w1=<span class="num">0.4</span>, w2=<span class="num">0.3</span>, w3=<span class="num">0.3</span>
+):
+    <span class="string">"""
+    Compute the Flowering Synchronization Risk Index.
+
+    Parameters
+    ----------
+    gdd_heading_r : float
+        Accumulated GDD from R-line sowing to predicted heading.
+    gdd_heading_a : float
+        Accumulated GDD from A-line sowing to predicted heading.
+    target_gdd : float
+        Expected GDD for the variety (e.g., 1200 degree-days).
+    ndre_at_heading : float
+        Observed NDRE at the detected heading date.
+    ndre_max_expected : float
+        Expected NDRE for a healthy canopy at heading (from historical data).
+    ndvi_at_heading : float
+        NDVI at the detected heading date.
+    ndvi_drop_during_flowering : float
+        Maximum NDVI decrease observed during the flowering window
+        (0 if NDVI was stable or increasing).
+
+    Returns
+    -------
+    fsri : float
+        Flowering Synchronization Risk Index (0 = best, &gt;0.3 = high risk).
+    components : dict
+        Individual component values for diagnostics.
+    """</span>
+    <span class="comment"># Component 1: Heading deviation</span>
+    heading_dev = abs(gdd_heading_r - gdd_heading_a) / target_gdd
+
+    <span class="comment"># Component 2: Vigor asymmetry</span>
+    vigor_asym = max(<span class="num">0</span>, <span class="num">1.0</span> - (ndre_at_heading / (ndre_max_expected + <span class="num">1e-10</span>)))
+
+    <span class="comment"># Component 3: Stress flag</span>
+    stress_flag = max(<span class="num">0</span>, ndvi_drop_during_flowering / (ndvi_at_heading + <span class="num">1e-10</span>))
+
+    <span class="comment"># Composite score</span>
+    fsri = w1 * heading_dev + w2 * vigor_asym + w3 * stress_flag
+
+    components = {
+        <span class="string">"heading_deviation"</span>: round(heading_dev, <span class="num">4</span>),
+        <span class="string">"vigor_asymmetry"</span>: round(vigor_asym, <span class="num">4</span>),
+        <span class="string">"stress_flag"</span>: round(stress_flag, <span class="num">4</span>),
+        <span class="string">"fsri"</span>: round(fsri, <span class="num">4</span>),
+    }
+    <span class="keyword">return</span> fsri, components
+
+<span class="comment"># ----- Example Usage -----</span>
+fsri, details = compute_fsri(
+    gdd_heading_r=<span class="num">1250</span>,       <span class="comment"># R-line heading at 1250 GDD</span>
+    gdd_heading_a=<span class="num">1190</span>,       <span class="comment"># A-line heading at 1190 GDD</span>
+    target_gdd=<span class="num">1200</span>,          <span class="comment"># Variety target</span>
+    ndre_at_heading=<span class="num">0.42</span>,     <span class="comment"># Observed NDRE at heading</span>
+    ndre_max_expected=<span class="num">0.48</span>,   <span class="comment"># Historical healthy NDRE</span>
+    ndvi_at_heading=<span class="num">0.75</span>,     <span class="comment"># NDVI at heading</span>
+    ndvi_drop_during_flowering=<span class="num">0.03</span>  <span class="comment"># Minor drop</span>
+)
+print(f<span class="string">"FSRI = {fsri:.3f}"</span>)
+print(f<span class="string">"Components: {details}"</span>)
+<span class="comment"># Output: FSRI = 0.067  --  Good synchronization</span></code></pre>
+
+        <!-- ============================================================ -->
+        <!-- Section 8: Rice Phenology from SAR -->
+        <!-- ============================================================ -->
+        <h2>8. SAR (Sentinel-1 VV/VH) for Cloud-Gap Filling</h2>
+
+        <p>During monsoon season (critical for Kharif rice in Chhattisgarh), persistent cloud cover can create multi-week gaps in PlanetScope data. Sentinel-1 SAR sees through clouds and provides complementary phenology signals.</p>
+
+        <div class="grid">
+            <div class="card">
+                <h3>VH Backscatter &amp; Rice Growth</h3>
+                <ul>
+                    <li><strong>Transplanting:</strong> VH minimum (flooded field, smooth water surface)</li>
+                    <li><strong>Tillering &rarr; Heading:</strong> VH rises steadily (increasing canopy volume scattering)</li>
+                    <li><strong>Heading/flowering:</strong> VH reaches maximum or plateau</li>
+                    <li><strong>Maturity:</strong> VH decreases (canopy drying, reduced water content)</li>
+                </ul>
+            </div>
+            <div class="card">
+                <h3>Rice-Specific SAR Signatures</h3>
+                <ul>
+                    <li><strong>VH/VV ratio</strong> correlates with biomass, less affected by soil moisture</li>
+                    <li><strong>Rice-specific:</strong> Sharp VH dip at transplanting (flooded field) then rise through tillering &mdash; distinctive enough to detect rice fields from SAR alone</li>
+                    <li>VH heading date &asymp; optical heading date (&plusmn; a few days)</li>
+                    <li>C-band saturates for very tall/dense canopy late in season</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="warning">
+            <strong>SAR Preprocessing Required:</strong> Apply orbit file correction, thermal noise removal, radiometric calibration to &sigma;<sup>0</sup>, and terrain correction (use ESA SNAP or <code>s1tiling</code>). Stick to one orbit track (ascending or descending) for time-series consistency, as backscatter varies with incidence angle.
+        </div>
+
+        <h3>Optical + SAR Fusion for Heading Date</h3>
+        <pre><code><span class="comment"># Train regression: predict NDVI from SAR on clear days</span>
+<span class="comment"># Then apply on cloudy days to fill gaps</span>
+
+<span class="keyword">from</span> sklearn.ensemble <span class="keyword">import</span> RandomForestRegressor
+
+<span class="comment"># On clear days: paired optical + SAR observations</span>
+X_train = np.column_stack([vh_clear, vv_clear, vh_vv_ratio_clear])
+y_train = ndvi_clear
+
+model = RandomForestRegressor(n_estimators=<span class="num">100</span>, random_state=<span class="num">42</span>)
+model.fit(X_train, y_train)
+
+<span class="comment"># On cloudy days: predict NDVI from SAR</span>
+X_cloudy = np.column_stack([vh_cloudy, vv_cloudy, vh_vv_ratio_cloudy])
+ndvi_predicted = model.predict(X_cloudy)
+
+<span class="comment"># Merge into unified time-series</span>
+ndvi_full = merge_optical_and_predicted(ndvi_clear, ndvi_predicted, dates)</code></pre>
+
+        <!-- ============================================================ -->
+        <!-- Section 9: UAV Complement -->
+        <!-- ============================================================ -->
+        <h2>9. UAV-Level Row Detection (Complement to PlanetScope)</h2>
+
+        <p>For actual <strong>spatial discrimination of male vs female rows</strong>, you need UAV imagery at &lt;10 cm resolution. PlanetScope tells you <em>when</em> to fly the drone; the drone provides the row-level detail.</p>
+
+        <h3>UAV Classification of Male/Female Rows</h3>
+
+        <table>
+            <thead>
+                <tr><th>Index / Method</th><th>Resolution Needed</th><th>Accuracy</th><th>Notes</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>ExGR</strong> (Excess Green minus Excess Red)</td><td>3&ndash;7 cm/pixel</td><td>Kappa 0.93, OA 96%</td><td>Best single index for male/female separation</td></tr>
+                <tr><td><strong>Maximum Likelihood + ExGR</strong></td><td>3&ndash;7 cm/pixel</td><td>Kappa 0.93, OA 96%</td><td>Fastest computation</td></tr>
+                <tr><td><strong>NDVI from multispectral UAV</strong></td><td>5&ndash;10 cm/pixel</td><td>Kappa 0.88</td><td>Separability ~1.9 (near perfect)</td></tr>
+                <tr><td><strong>Neural Network + ExGR</strong></td><td>3&ndash;7 cm/pixel</td><td>Kappa 0.93, OA 96%</td><td>Highest accuracy but slower</td></tr>
+                <tr><td><strong>Semi-supervised (DeepLabv3+)</strong></td><td>3&ndash;7 cm/pixel</td><td>mIoU 0.887</td><td>Reduces annotation labor by 50%</td></tr>
+            </tbody>
+        </table>
+
+        <div class="tip">
+            <strong>Why ExGR works:</strong> During anthesis, male rows appear more yellowish (pollen production) while female rows remain greener. The Excess Green minus Excess Red index amplifies this spectral difference. At centimeter resolution, row geometry is clearly visible.
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- Section 10: Limitations -->
+        <!-- ============================================================ -->
+        <h2>10. What You Cannot Determine from PlanetScope Alone</h2>
+
+        <p>To set honest expectations about the boundaries of satellite-based monitoring:</p>
+
+        <table>
+            <thead>
+                <tr><th>Observation</th><th>Required Resolution</th><th>PlanetScope (3m)?</th><th>Alternative</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Which rows are male vs female</td><td>&lt;10 cm</td><td style="color: var(--danger);">No</td><td>UAV multispectral</td></tr>
+                <tr><td>Individual spikelet opening</td><td>&lt;1 cm</td><td style="color: var(--danger);">No</td><td>Ground-level hyperspectral</td></tr>
+                <tr><td>Stigma exsertion / anther length</td><td>Sub-mm</td><td style="color: var(--danger);">No</td><td>Manual field observation</td></tr>
+                <tr><td>Pollen dispersal patterns</td><td>&lt;1 cm</td><td style="color: var(--danger);">No</td><td>Wind sensors + field trials</td></tr>
+                <tr><td>Field-level heading date</td><td>3&ndash;30 m</td><td style="color: var(--accent);">Yes</td><td>&mdash;</td></tr>
+                <tr><td>Canopy vigor at flowering</td><td>3&ndash;30 m</td><td style="color: var(--accent);">Yes</td><td>&mdash;</td></tr>
+                <tr><td>Stress events during flowering</td><td>3&ndash;30 m</td><td style="color: var(--accent);">Yes</td><td>&mdash;</td></tr>
+                <tr><td>Flowering duration (temporal)</td><td>Daily revisit</td><td style="color: var(--accent);">Yes</td><td>&mdash;</td></tr>
+            </tbody>
+        </table>
+
+        <!-- ============================================================ -->
+        <!-- Section 11: Complete Workflow -->
+        <!-- ============================================================ -->
+        <h2>11. Complete Workflow Summary</h2>
+
+        <div class="card" style="border: 2px solid var(--accent2);">
+            <h3 style="color: var(--accent2);">End-to-End Pipeline</h3>
+            <ol>
+                <li><strong>Parse KML/AOI</strong> &rarr; GeoJSON field boundary (existing notebook cell 58)</li>
+                <li><strong>Order PlanetScope scenes</strong> for the growing season, clipped to AOI (Part 3 of notebook)</li>
+                <li><strong>Extract 8-band SR + UDM2</strong> for each scene date (Part 1 of notebook)</li>
+                <li><strong>Compute NDVI, NDRE, CI<sub>RE</sub></strong> per date, zonal mean within AOI</li>
+                <li><strong>Smooth time-series</strong> with Savitzky-Golay or double-logistic function</li>
+                <li><strong>Detect heading date</strong> from NDVI maximum / first derivative zero-crossing</li>
+                <li><strong>Collect weather data</strong> (ERA5 or local station) for GDD computation</li>
+                <li><strong>Compute GDD-predicted heading</strong> for both A-line and R-line varieties</li>
+                <li><strong>Calculate FSRI</strong> using heading deviation, vigor asymmetry, and stress flag</li>
+                <li><strong>Generate alert</strong> if FSRI &gt; 0.1 &mdash; recommend supplementary pollination</li>
+                <li><strong>Optional: Fly UAV</strong> during the critical 5&ndash;7 day flowering window for row-level male/female classification</li>
+                <li><strong>Optional: Fill cloud gaps</strong> with Sentinel-1 VH/VV SAR backscatter regression</li>
+            </ol>
+        </div>
+
+        <h3>Sensor Complementarity</h3>
+
+        <table>
+            <thead>
+                <tr><th>Sensor</th><th>Role</th><th>When to Use</th><th>Cost</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>PlanetScope</strong></td><td>Daily temporal phenology</td><td>Entire growing season</td><td>E&amp;R Basic (free) or commercial</td></tr>
+                <tr><td><strong>Sentinel-1 SAR</strong></td><td>Cloud-gap filling</td><td>Monsoon / prolonged cloud cover</td><td>Free (Copernicus)</td></tr>
+                <tr><td><strong>Sentinel-2</strong></td><td>Backup optical (5-day revisit)</td><td>When PlanetScope is cloudy</td><td>Free (Copernicus)</td></tr>
+                <tr><td><strong>UAV multispectral</strong></td><td>Row-level male/female ID</td><td>Targeted flights during flowering</td><td>Equipment + operator</td></tr>
+                <tr><td><strong>Weather station</strong></td><td>GDD computation</td><td>Continuous</td><td>Free (ERA5) or local station</td></tr>
+            </tbody>
+        </table>
+
+        <div class="tip">
+            <strong>Bottom Line:</strong> PlanetScope gives you the <strong>temporal dimension</strong> &mdash; daily field-level phenology tracking to predict and monitor heading/flowering timing. Combined with GDD models and variety-specific phenology data, you can build an effective synchronization risk score. But for <strong>spatial discrimination of male vs female rows</strong>, you need UAV-level resolution. The two are complementary: PlanetScope tells you <em>when</em> to fly the drone for the detailed row-level assessment.
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- Section 12: References -->
+        <!-- ============================================================ -->
+        <h2>12. Key Research References</h2>
+
+        <ul>
+            <li><strong>Male/Female Parent Identification:</strong> &ldquo;Identification of Male and Female Parents for Hybrid Rice Seed Production Using UAV-Based Multispectral Imagery&rdquo; &mdash; MDPI Agriculture, 2022. ExGR index, 95.5% accuracy at cm resolution.</li>
+            <li><strong>Rice Phenology Detection:</strong> &ldquo;Detection of rice phenology through time series analysis of ground-based spectral index data&rdquo; &mdash; Field Crops Research, 2016. CI<sub>RedEdge</sub> and NDVI for heading date detection.</li>
+            <li><strong>Flowering Synchronization in Hybrid Rice:</strong> &ldquo;Seed Set as Affected by Male to Female Ratio, Male Direction and Different Flowering Date&rdquo; &mdash; Sakha Agricultural Research Station, Egypt, 2020-2021. 2R:14A optimal ratio.</li>
+            <li><strong>Panicle Detection &amp; Tracking:</strong> &ldquo;Analyzing Nitrogen Effects on Rice Panicle Development by Panicle Detection and Time-Series Tracking&rdquo; &mdash; Plant Phenomics, 2023. YOLOv5 + DeepSORT for flowering panicle counting.</li>
+            <li><strong>Rice Phenology from SAR + Optical:</strong> &ldquo;Feature-based algorithm for large-scale rice phenology detection combining Sentinel-1 and Sentinel-2&rdquo; &mdash; ScienceDirect, 2022. VH for planting date, EVI for heading date.</li>
+            <li><strong>PTGMS Flowering Synchrony:</strong> &ldquo;Characterization of the PTGMS line Huhan 82S&rdquo; &mdash; Euphytica, 2026. 97% florets open before noon in synchronized 5-day burst.</li>
+            <li><strong>Hybrid Rice Row Detection:</strong> &ldquo;Hybrid rice row detection at the pollination stage based on vanishing point and line-scanning method&rdquo; &mdash; Precision Agriculture, 2022. Machine vision for autonomous pollination vehicles.</li>
+            <li><strong>Flower Intensity Estimation:</strong> &ldquo;Estimating rice flower intensity using flower spectral information&rdquo; &mdash; ScienceDirect, 2023. Flower Index (FI) from spectral differences before and after flowering.</li>
+            <li><strong>PlanetScope for Rice Yield:</strong> &ldquo;Estimating paddy rice yield using PlanetScope imagery and machine learning&rdquo; &mdash; ScienceDirect, 2025. 3m PlanetScope VIs + ML for field-scale yield.</li>
+        </ul>
+
+        <!-- ============================================================ -->
+        <!-- Section 13: Accuracy Assessment Q&A -->
+        <!-- ============================================================ -->
+        <h2>13. Accuracy Assessment: How Reliable Is This Approach?</h2>
+
+        <p><strong>Q: How do you rate the accuracy of the male/female row synchronization with the approach outlined above?</strong></p>
+
+        <h3>Accuracy Rating by Component</h3>
+
+        <table>
+            <thead>
+                <tr><th>Component</th><th>Rating</th><th>Accuracy</th><th>Rationale</th></tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Heading Date Detection</strong></td>
+                    <td><span class="badge badge-yellow">Moderate-Good</span></td>
+                    <td>70&ndash;80%</td>
+                    <td>Literature validates NDVI-maximum = heading date with 3&ndash;6 day accuracy using Sentinel-2 and MODIS. PlanetScope daily revisit should perform at least as well. However, 3&ndash;6 day uncertainty is significant when synchronization gaps of 2&ndash;5 days are what you are trying to detect. <strong>The signal you are measuring is the same order of magnitude as your measurement error.</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>GDD-Based Heading Prediction</strong></td>
+                    <td><span class="badge badge-green">Good</span></td>
+                    <td>75&ndash;85%</td>
+                    <td>GDD models for predicting heading are well-established in rice agronomy. Accuracy depends on having correct variety-specific GDD thresholds and accurate sowing dates. If you know the exact varieties and sowing dates, GDD prediction alone (without satellite) gives ~3 day accuracy. The satellite data essentially <strong>validates</strong> the GDD prediction, not replaces it.</td>
+                </tr>
+                <tr>
+                    <td><strong>Vigor Asymmetry (NDRE at heading)</strong></td>
+                    <td><span class="badge badge-red">Low-Moderate</span></td>
+                    <td>50&ndash;65%</td>
+                    <td>NDRE reflects the <strong>mixed signal</strong> of both male and female rows averaged together in every 3m pixel. Cannot separate whether low NDRE is from male rows, female rows, or both. It is a general canopy health indicator, not a synchronization-specific measurement.</td>
+                </tr>
+                <tr>
+                    <td><strong>Stress Flag (NDVI drop)</strong></td>
+                    <td><span class="badge badge-yellow">Moderate</span></td>
+                    <td>65&ndash;75%</td>
+                    <td>Detecting sudden NDVI drops is reliable with daily revisit. But the drop could be from clouds missed by UDM2, sensor noise, or non-flowering causes. Tells you &ldquo;something bad happened during the flowering window&rdquo; but not specifically &ldquo;synchronization failed.&rdquo;</td>
+                </tr>
+                <tr style="background: rgba(59, 130, 246, 0.08);">
+                    <td><strong>FSRI Composite Score</strong></td>
+                    <td><span class="badge badge-yellow">Low-Moderate</span></td>
+                    <td><strong>55&ndash;65%</strong></td>
+                    <td>Composite of the above components. Useful as an early warning system but not reliable enough for precise synchronization assessment without calibration data.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Honest Assessment of Why Accuracy Is Limited</h3>
+
+        <div class="danger">
+            <strong>The FSRI formula is a reasonable conceptual framework, but it has not been validated.</strong> No published study has attempted to derive a flowering synchronization index from 3m satellite data for hybrid rice seed production fields.
+        </div>
+
+        <p>The fundamental reasons:</p>
+        <ol>
+            <li><strong>The synchronization signal is sub-pixel.</strong> The actual phenomenon (male anthers opening vs female stigma receptivity) happens at the centimeter scale. At 3m, you are averaging over both parent types in every pixel.</li>
+            <li><strong>The temporal precision needed (~1&ndash;2 days) pushes the limit</strong> of what phenology detection from satellite indices can achieve (3&ndash;6 day accuracy).</li>
+            <li><strong>The strongest component (heading deviation) comes from GDD models, not from the imagery.</strong> The satellite data adds incremental value by confirming/correcting the GDD prediction, but the heavy lifting is done by the agronomy model.</li>
+            <li><strong>No ground truth calibration exists.</strong> Without field-level seed set percentage data paired with satellite observations across multiple seasons, the weights (0.4, 0.3, 0.3) are educated guesses.</li>
+        </ol>
+
+        <h3>What Would Make This Accurate (80%+ Reliability)</h3>
+
+        <div class="card" style="border-left: 3px solid var(--accent);">
+            <ul>
+                <li><strong>2&ndash;3 seasons of paired data:</strong> satellite time-series + field-recorded seed set percentages from the same fields</li>
+                <li><strong>Known sowing dates and varieties</strong> for both A-line and R-line (you may already have this)</li>
+                <li><strong>UAV validation flights</strong> during flowering to confirm row-level status on a subset of fields</li>
+                <li><strong>Machine learning calibration</strong> of FSRI weights against actual seed set outcomes instead of the fixed 0.4 / 0.3 / 0.3</li>
+            </ul>
+        </div>
+
+        <h3>Practical Verdict</h3>
+
+        <div class="tip">
+            <strong>Recommendation:</strong> Use PlanetScope + GDD for <strong>coarse temporal monitoring and anomaly flagging</strong> across many fields, then deploy <strong>UAV flights to the flagged fields</strong> during the critical 5&ndash;7 day flowering window for the actual synchronization assessment. That two-tier approach would be genuinely actionable. The satellite alone, at its current 3m resolution, is not sufficient for confident synchronization scoring. To significantly improve satellite-only accuracy, move to <strong>very high resolution (VHR) satellites</strong> described in the next section.
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- Section 14: VHR Satellite Options -->
+        <!-- ============================================================ -->
+        <h2>14. Higher-Resolution Satellites for Improved Accuracy</h2>
+
+        <p>PlanetScope&rsquo;s 3m resolution cannot resolve male/female rows. But several satellites offer <strong>30&ndash;50 cm resolution</strong> that could significantly improve the approach. Here is a comprehensive comparison.</p>
+
+        <!-- SkySat -->
+        <h3>Planet SkySat &mdash; 50 cm</h3>
+
+        <div class="card" style="border-left: 3px solid var(--accent2);">
+            <p><strong>Operator:</strong> Planet Labs &nbsp;|&nbsp; <strong>Constellation:</strong> 21 microsatellites &nbsp;|&nbsp; <strong>Launched:</strong> 2013&ndash;2020</p>
+
+            <table>
+                <thead>
+                    <tr><th>Parameter</th><th>Specification</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Panchromatic GSD</td><td><strong>50 cm</strong> (ortho, super-resolved); 65 cm native at nadir</td></tr>
+                    <tr><td>Multispectral GSD</td><td><strong>81 cm</strong> native; delivered as 50 cm pansharpened</td></tr>
+                    <tr><td>Spectral Bands</td><td>Blue (450&ndash;515 nm), Green (515&ndash;595 nm), Red (605&ndash;695 nm), NIR (740&ndash;900 nm), Pan (450&ndash;900 nm)</td></tr>
+                    <tr><td>Revisit</td><td>Up to 10&times; daily (tasked)</td></tr>
+                    <tr><td>Swath Width</td><td>5.9 km</td></tr>
+                    <tr><td>Video</td><td>Up to 120 seconds panchromatic at 30 fps</td></tr>
+                    <tr><td>Ordering</td><td>Via Planet API (same as PlanetScope, item type = <code>SkySatCollect</code>)</td></tr>
+                </tbody>
+            </table>
+
+            <div class="warning">
+                <strong>Limitation for this use case:</strong> SkySat has only 4 multispectral bands &mdash; <strong>no Red Edge band</strong>. This means you cannot compute NDRE or CI<sub>RedEdge</sub>, which are the most sensitive indices for heading/booting detection. You are limited to NDVI and ExGR for row differentiation. At 50 cm, a male block (40&ndash;60 cm wide) occupies roughly 1 pixel &mdash; marginal but potentially detectable using textural/spatial analysis rather than pure spectral separation.
+            </div>
+
+            <h4>Suitability for Male/Female Row Detection</h4>
+            <table>
+                <thead>
+                    <tr><th>Aspect</th><th>Rating</th><th>Notes</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Spatial resolution for row separation</td><td><span class="badge badge-yellow">Marginal</span></td><td>50 cm &asymp; 1 pixel per male block; female block = 3&ndash;6 pixels</td></tr>
+                    <tr><td>Spectral bands for flowering detection</td><td><span class="badge badge-yellow">Limited</span></td><td>No Red Edge &rarr; no NDRE/CI<sub>RE</sub>; NDVI only</td></tr>
+                    <tr><td>Temporal revisit</td><td><span class="badge badge-green">Excellent</span></td><td>Up to 10&times;/day if tasked</td></tr>
+                    <tr><td>Cost/accessibility</td><td><span class="badge badge-yellow">Moderate</span></td><td>Requires Planet commercial subscription with tasking add-on</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pleiades Neo -->
+        <h3>Airbus Pl&eacute;iades Neo &mdash; 30 cm</h3>
+
+        <div class="card" style="border-left: 3px solid var(--accent);">
+            <p><strong>Operator:</strong> Airbus Defence &amp; Space &nbsp;|&nbsp; <strong>Constellation:</strong> 2 satellites (Neo 3 &amp; 4; Neo 5 &amp; 6 lost in Vega-C failure Dec 2022) &nbsp;|&nbsp; <strong>Launched:</strong> 2021</p>
+
+            <table>
+                <thead>
+                    <tr><th>Parameter</th><th>Specification</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Panchromatic GSD</td><td><strong>30 cm</strong> native; HD processing to <strong>15 cm</strong></td></tr>
+                    <tr><td>Multispectral GSD</td><td><strong>1.2 m</strong> native; HD processing to <strong>60 cm</strong></td></tr>
+                    <tr><td>Spectral Bands (6 MS + Pan)</td><td>Deep Blue (400&ndash;450 nm), Blue (450&ndash;520 nm), Green (530&ndash;590 nm), Red (620&ndash;690 nm), <strong>Red Edge (700&ndash;750 nm)</strong>, NIR (770&ndash;880 nm), Pan (450&ndash;800 nm)</td></tr>
+                    <tr><td>Revisit</td><td>Daily (30&deg; off-nadir); twice daily (46&deg; off-nadir)</td></tr>
+                    <tr><td>Swath Width</td><td>14 km at nadir</td></tr>
+                    <tr><td>Geolocation Accuracy</td><td>&lt;5 m CE90 without GCPs</td></tr>
+                </tbody>
+            </table>
+
+            <div class="tip">
+                <strong>Best satellite option for this use case.</strong> Pl&eacute;iades Neo is the only VHR satellite with a <strong>Red Edge band</strong>, enabling NDRE and CI<sub>RedEdge</sub> computation at 1.2m multispectral resolution. The 30 cm panchromatic can be pansharpened with the multispectral to produce ~60 cm 6-band imagery. At 60 cm, a female block (1.3&ndash;2.8 m) spans 2&ndash;5 pixels and a male block (40&ndash;60 cm) is approximately 1 pixel &mdash; enough for spatial pattern analysis.
+            </div>
+
+            <h4>Suitability for Male/Female Row Detection</h4>
+            <table>
+                <thead>
+                    <tr><th>Aspect</th><th>Rating</th><th>Notes</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Spatial resolution for row separation</td><td><span class="badge badge-green">Good</span></td><td>30 cm Pan / 1.2 m MS; HD mode: 15 cm Pan / 60 cm MS</td></tr>
+                    <tr><td>Spectral bands for flowering detection</td><td><span class="badge badge-green">Excellent</span></td><td><strong>Has Red Edge (700&ndash;750 nm)</strong> &rarr; NDRE + CI<sub>RE</sub> available</td></tr>
+                    <tr><td>Temporal revisit</td><td><span class="badge badge-yellow">Moderate</span></td><td>1&ndash;2&times;/day (tasked); less than PlanetScope&rsquo;s daily global coverage</td></tr>
+                    <tr><td>Cost/accessibility</td><td><span class="badge badge-red">Expensive</span></td><td>Commercial tasking; ESA Third Party Mission access for researchers</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- WorldView-3 -->
+        <h3>Maxar (Vantor) WorldView-3 &mdash; 31 cm</h3>
+
+        <div class="card" style="border-left: 3px solid var(--accent2);">
+            <p><strong>Operator:</strong> Maxar / Vantor &nbsp;|&nbsp; <strong>Constellation:</strong> 1 satellite &nbsp;|&nbsp; <strong>Launched:</strong> August 2014</p>
+
+            <table>
+                <thead>
+                    <tr><th>Parameter</th><th>Specification</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Panchromatic GSD</td><td><strong>31 cm</strong> at nadir</td></tr>
+                    <tr><td>Multispectral GSD (VNIR)</td><td><strong>1.24 m</strong> at nadir (8 bands)</td></tr>
+                    <tr><td>SWIR GSD</td><td><strong>3.7 m</strong> (8 bands, 1195&ndash;2365 nm)</td></tr>
+                    <tr><td>VNIR Bands (8)</td><td>Coastal Blue (400&ndash;450), Blue (450&ndash;510), Green (510&ndash;580), Yellow (585&ndash;625), Red (630&ndash;690), <strong>Red Edge (705&ndash;745)</strong>, NIR1 (770&ndash;895), NIR2 (860&ndash;1040 nm)</td></tr>
+                    <tr><td>Revisit</td><td>&lt;1 day at 1m GSD; 4.5 days at 20&deg; off-nadir</td></tr>
+                    <tr><td>Swath Width</td><td>13.1 km</td></tr>
+                    <tr><td>Daily Capacity</td><td>680,000 km&sup2;</td></tr>
+                </tbody>
+            </table>
+
+            <div class="tip">
+                <strong>Most spectrally rich VHR satellite.</strong> WorldView-3 has 8 VNIR bands (including Red Edge, Yellow, and two NIR bands) <strong>plus 8 SWIR bands</strong> at 3.7 m. The SWIR bands enable moisture and canopy water content analysis during flowering &mdash; a capability no other VHR satellite offers. The Yellow band is particularly relevant for detecting male anther pollen shedding.
+            </div>
+
+            <h4>Suitability for Male/Female Row Detection</h4>
+            <table>
+                <thead>
+                    <tr><th>Aspect</th><th>Rating</th><th>Notes</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Spatial resolution for row separation</td><td><span class="badge badge-green">Good</span></td><td>31 cm Pan / 1.24 m MS; pansharpened ~31 cm 8-band</td></tr>
+                    <tr><td>Spectral bands for flowering detection</td><td><span class="badge badge-green">Excellent</span></td><td>Red Edge + Yellow + 2&times; NIR + 8 SWIR bands</td></tr>
+                    <tr><td>Temporal revisit</td><td><span class="badge badge-yellow">Moderate</span></td><td>&lt;1 day revisit but single satellite; tasking required</td></tr>
+                    <tr><td>Cost/accessibility</td><td><span class="badge badge-red">Expensive</span></td><td>Commercial pricing; academic programs available via DigitalGlobe Foundation</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- WorldView Legion -->
+        <h3>Maxar (Vantor) WorldView Legion &mdash; 30 cm</h3>
+
+        <div class="card" style="border-left: 3px solid var(--accent2);">
+            <p><strong>Operator:</strong> Maxar / Vantor &nbsp;|&nbsp; <strong>Constellation:</strong> 6 satellites (mid-inclination + sun-synchronous) &nbsp;|&nbsp; <strong>Launched:</strong> 2024</p>
+
+            <table>
+                <thead>
+                    <tr><th>Parameter</th><th>Specification</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Panchromatic GSD</td><td><strong>34 cm</strong> at nadir; deliverable as <strong>30 cm</strong> (pansharpened to <strong>15 cm</strong>)</td></tr>
+                    <tr><td>Multispectral GSD</td><td><strong>1.36 m</strong> at nadir (8 bands)</td></tr>
+                    <tr><td>Spectral Bands (8 MS + Pan)</td><td>Coastal (400&ndash;450), Blue (450&ndash;510), Green (510&ndash;580), Yellow (585&ndash;625), Red (630&ndash;690), <strong>Red Edge 1 (695&ndash;715)</strong>, <strong>Red Edge 2 (730&ndash;750)</strong>, NIR (770&ndash;895 nm), Pan (450&ndash;800 nm)</td></tr>
+                    <tr><td>Revisit</td><td>Up to <strong>15&times; per day</strong> over high-demand areas</td></tr>
+                    <tr><td>Swath Width</td><td>10 km</td></tr>
+                    <tr><td>Daily Capacity</td><td>5,000,000 km&sup2; (full constellation)</td></tr>
+                </tbody>
+            </table>
+
+            <div class="tip">
+                <strong>Best temporal revisit among VHR satellites.</strong> WorldView Legion has <strong>two Red Edge bands</strong> (695&ndash;715 nm and 730&ndash;750 nm), providing finer chlorophyll gradient measurement than any other satellite. With 6 satellites and up to 15 revisits/day, it approaches PlanetScope-level temporal density at 30 cm resolution. This is the most promising satellite for operational flowering synchronization monitoring.
+            </div>
+
+            <h4>Suitability for Male/Female Row Detection</h4>
+            <table>
+                <thead>
+                    <tr><th>Aspect</th><th>Rating</th><th>Notes</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Spatial resolution for row separation</td><td><span class="badge badge-green">Good</span></td><td>30 cm Pan / 1.36 m MS; 15 cm pansharpened product</td></tr>
+                    <tr><td>Spectral bands for flowering detection</td><td><span class="badge badge-green">Excellent</span></td><td><strong>Two Red Edge bands</strong> + Yellow for pollen detection</td></tr>
+                    <tr><td>Temporal revisit</td><td><span class="badge badge-green">Excellent</span></td><td>Up to 15&times;/day &mdash; unprecedented for VHR</td></tr>
+                    <tr><td>Cost/accessibility</td><td><span class="badge badge-red">Expensive</span></td><td>Commercial pricing; newest constellation, premium pricing expected</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Comparison Table -->
+        <h3>Complete Satellite Comparison for Flowering Synchronization</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Satellite</th>
+                    <th>Pan GSD</th>
+                    <th>MS GSD</th>
+                    <th>Red Edge?</th>
+                    <th>SWIR?</th>
+                    <th>Revisit</th>
+                    <th>Male Row (40&ndash;60 cm) Pixels</th>
+                    <th>Est. Sync Accuracy</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>PlanetScope SuperDove</td><td>N/A</td><td>3 m</td>
+                    <td style="color: var(--accent);">Yes</td>
+                    <td style="color: var(--danger);">No</td>
+                    <td>Daily</td><td style="color: var(--danger);">0.1&ndash;0.2 (sub-pixel)</td>
+                    <td>55&ndash;65%</td>
+                </tr>
+                <tr>
+                    <td>Planet SkySat</td><td>50 cm</td><td>81 cm</td>
+                    <td style="color: var(--danger);">No</td>
+                    <td style="color: var(--danger);">No</td>
+                    <td>10&times;/day</td><td style="color: var(--warning);">~1 (marginal)</td>
+                    <td>60&ndash;70%</td>
+                </tr>
+                <tr style="background: rgba(34, 197, 94, 0.06);">
+                    <td><strong>Pl&eacute;iades Neo</strong></td><td><strong>30 cm</strong></td><td><strong>1.2 m</strong></td>
+                    <td style="color: var(--accent);"><strong>Yes</strong></td>
+                    <td style="color: var(--danger);">No</td>
+                    <td>1&ndash;2&times;/day</td><td style="color: var(--accent);">1&ndash;2</td>
+                    <td><strong>70&ndash;80%</strong></td>
+                </tr>
+                <tr>
+                    <td>WorldView-3</td><td>31 cm</td><td>1.24 m</td>
+                    <td style="color: var(--accent);">Yes</td>
+                    <td style="color: var(--accent);">Yes (8 bands)</td>
+                    <td>&lt;1 day</td><td style="color: var(--accent);">1&ndash;2</td>
+                    <td>70&ndash;80%</td>
+                </tr>
+                <tr style="background: rgba(34, 197, 94, 0.06);">
+                    <td><strong>WorldView Legion</strong></td><td><strong>30 cm</strong></td><td><strong>1.36 m</strong></td>
+                    <td style="color: var(--accent);"><strong>Yes (2 bands)</strong></td>
+                    <td style="color: var(--danger);">No</td>
+                    <td><strong>15&times;/day</strong></td><td style="color: var(--accent);">1&ndash;2</td>
+                    <td><strong>75&ndash;85%</strong></td>
+                </tr>
+                <tr>
+                    <td>UAV multispectral</td><td>N/A</td><td>3&ndash;7 cm</td>
+                    <td style="color: var(--accent);">Yes (5-band)</td>
+                    <td style="color: var(--danger);">Rare</td>
+                    <td>On-demand</td><td style="color: var(--accent);">6&ndash;20</td>
+                    <td>90&ndash;95%</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Key Findings</h3>
+
+        <div class="card" style="border: 2px solid var(--accent);">
+            <ul>
+                <li><strong>No satellite below ~15 cm can confidently resolve individual male rows (40&ndash;60 cm).</strong> At 30 cm panchromatic, a male block is 1&ndash;2 pixels &mdash; detectable but not robust. UAVs at 3&ndash;7 cm remain the gold standard for row-level classification.</li>
+                <li><strong>Pl&eacute;iades Neo</strong> is the strongest single-satellite option because it combines 30 cm Pan with a <strong>Red Edge band</strong> &mdash; the only VHR satellite with this combination. This enables both spatial row detection (via panchromatic) and spectral flowering analysis (via NDRE) in a single acquisition.</li>
+                <li><strong>WorldView Legion</strong> is the most promising for operational monitoring due to its <strong>15&times;/day revisit</strong> and <strong>two Red Edge bands</strong> (695&ndash;715 nm and 730&ndash;750 nm), providing finer chlorophyll sensitivity than any competitor.</li>
+                <li><strong>WorldView-3</strong> offers a unique advantage with <strong>8 SWIR bands at 3.7 m</strong>, enabling canopy water content and moisture analysis during flowering &mdash; relevant for detecting water stress that disrupts pollination.</li>
+                <li><strong>SkySat at 50 cm</strong> is a step up from PlanetScope but the <strong>lack of Red Edge</strong> limits its value for flowering-specific analysis. Best used for spatial/textural analysis with NDVI only.</li>
+                <li><strong>The optimal strategy</strong> combines PlanetScope (daily 3m temporal backbone, 8 bands) + a VHR satellite (30&ndash;50 cm targeted acquisitions during flowering) + UAV (cm-level validation on flagged fields).</li>
+            </ul>
+        </div>
+
+        <h3>Recommended Multi-Sensor Strategy</h3>
+
+        <table>
+            <thead>
+                <tr><th>Phase</th><th>Sensor</th><th>Purpose</th><th>Frequency</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Season-long monitoring</td><td>PlanetScope 8-band (3m)</td><td>Daily phenology tracking, GDD validation, stress detection</td><td>Daily</td></tr>
+                <tr><td>Pre-flowering alert</td><td>PlanetScope + GDD model</td><td>Predict heading date, flag fields with sync risk</td><td>Daily, ~2 weeks before expected heading</td></tr>
+                <tr><td>Flowering window</td><td>Pl&eacute;iades Neo or WorldView Legion (30 cm)</td><td>VHR acquisition for row-level spatial analysis</td><td>2&ndash;3 tasked acquisitions over 5&ndash;7 day window</td></tr>
+                <tr><td>Validation (subset)</td><td>UAV multispectral (3&ndash;7 cm)</td><td>Row-level male/female classification, ExGR computation</td><td>1&ndash;2 flights on highest-risk fields</td></tr>
+                <tr><td>Cloud gap-fill</td><td>Sentinel-1 SAR (10m)</td><td>VH/VV backscatter for heading date when optical is cloudy</td><td>Every 6&ndash;12 days (automatic)</td></tr>
+            </tbody>
+        </table>
+
+        <div class="warning">
+            <strong>Cost reality check:</strong> VHR satellite tasking is expensive. Pl&eacute;iades Neo and WorldView imagery typically costs $10&ndash;25 per km&sup2; for new tasking, with minimum order sizes of 25&ndash;100 km&sup2;. For small fields (&lt;1 ha like your Chhattisgarh AOI), the per-field cost may exceed the value of the crop. VHR satellites become cost-effective when monitoring <strong>many fields simultaneously</strong> within a single acquisition footprint. For individual small fields, a <strong>UAV flight ($100&ndash;300 per flight) is far more cost-effective</strong> than a tasked VHR satellite acquisition.
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- Section 15: Suggested Satellite-Only Approach                 -->
+        <!-- ============================================================ -->
+        <h2>15. Suggested Approach: Satellite-Only Strategy for Large-Scale Monitoring</h2>
+
+        <div class="card" style="border: 2px solid var(--accent);">
+            <p>UAV is the gold standard for row-level accuracy but is <strong>impractical across thousands of acres</strong>. The following satellite-only strategy maximizes accuracy while keeping costs manageable at scale.</p>
+        </div>
+
+        <h3>15.1 Sensor Choice</h3>
+
+        <div class="card">
+            <p><strong>Primary VHR:</strong> WorldView Legion or Pl&eacute;iades Neo</p>
+            <ul>
+                <li>30 cm resolution, dual Red Edge bands (Legion) or Red Edge + 6 bands (Neo)</li>
+                <li>15&times;/day revisit (Legion) maximizes chance of cloud-free capture during the critical 5&ndash;7 day flowering window</li>
+                <li>PlanetScope 3m as daily backup for temporal gap-filling</li>
+            </ul>
+        </div>
+
+        <h3>15.2 Core Approach: Dense Time-Series Phenology</h3>
+
+        <div class="card">
+            <ul>
+                <li>Stack PlanetScope daily (3m) + VHR tasked passes (30 cm) during booting-to-flowering stage</li>
+                <li>Track per-field NDVI, NDRE, CI<sub>RedEdge</sub> curves separately</li>
+                <li>Detect heading date from NDVI peak / first-derivative zero-crossing (3&ndash;6 day accuracy)</li>
+                <li>Compare A-line vs R-line heading timing using GDD model calibrated to local variety</li>
+            </ul>
+        </div>
+
+        <h3>15.3 Where ML Adds Value (and Where It Doesn&rsquo;t)</h3>
+
+        <div class="card">
+            <table>
+                <thead>
+                    <tr><th>ML Application</th><th>Recommended?</th><th>Details</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Synchronization scoring</td>
+                        <td style="color: var(--accent);"><strong>Yes</strong></td>
+                        <td>Random Forest or XGBoost trained on historical field-level outcomes (seed set %, yield) vs spectral time-series features (heading date gap, NDRE asymmetry, NDVI drop rate) &mdash; replaces hand-tuned FSRI weights with data-driven weights</td>
+                    </tr>
+                    <tr>
+                        <td>Row pattern detection from VHR</td>
+                        <td style="color: var(--accent);"><strong>Yes</strong></td>
+                        <td>CNN on VHR imagery to learn sub-pixel textural differences between male/female blocks (row pattern, canopy density contrast at 30 cm)</td>
+                    </tr>
+                    <tr>
+                        <td>Phenology detection</td>
+                        <td style="color: var(--danger);"><strong>No</strong></td>
+                        <td>Classical signal processing (Savitzky-Golay smoothing + zero-crossing) works better with sparse time-series than deep learning</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <h3>15.4 Training Data Strategy (The Bottleneck)</h3>
+
+        <div class="warning">
+            <strong>Without ground truth, ML accuracy won&rsquo;t exceed the 55&ndash;65% FSRI baseline.</strong>
+        </div>
+
+        <div class="card">
+            <ul>
+                <li>Collect <strong>2&ndash;3 seasons</strong> of ground truth: actual heading dates (A-line, R-line), seed set %, and GPS-tagged row locations for ~50&ndash;100 fields</li>
+                <li>Label each field as &ldquo;synchronized&rdquo; or &ldquo;desynchronized&rdquo; based on seed set outcome</li>
+                <li>This ground truth collection is the single biggest investment &mdash; but it is what separates a speculative index from a validated prediction model</li>
+            </ul>
+        </div>
+
+        <h3>15.5 Expected Accuracy by Approach</h3>
+
+        <table>
+            <thead>
+                <tr><th>Approach</th><th>Estimated Accuracy</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>PlanetScope alone (FSRI heuristic)</td><td>55&ndash;65%</td></tr>
+                <tr><td>PlanetScope + VHR 30 cm + phenology</td><td>70&ndash;80%</td></tr>
+                <tr><td><strong>Above + ML with 2&ndash;3 seasons ground truth</strong></td><td><strong>80&ndash;88%</strong></td></tr>
+            </tbody>
+        </table>
+
+        <h3>15.6 Practical Workflow</h3>
+
+        <div class="card">
+            <ol>
+                <li><strong>PlanetScope daily monitoring</strong> across all fields (cheap, broad coverage)</li>
+                <li><strong>Flag fields</strong> with abnormal NDVI/NDRE trajectories</li>
+                <li><strong>Task VHR satellite on flagged fields only</strong> (controls cost)</li>
+                <li><strong>ML model scores</strong> synchronization risk per field</li>
+                <li><strong>Ground-verify</strong> only high-risk flagged fields</li>
+            </ol>
+        </div>
+
+        <div class="card" style="border: 2px solid var(--accent2);">
+            <strong>Cost profile:</strong> ~$5&ndash;10/km&sup2; for PlanetScope blanket coverage + $15&ndash;25/km&sup2; for targeted VHR tasking on flagged fields only. This keeps total cost manageable while pushing accuracy toward <strong>80&ndash;85%</strong> with sufficient training data.
+        </div>
+
+        <footer>
+            Rice Male/Female Row Flowering Synchronization Guide &bull; Companion to the PlanetScope Vegetation Analysis Toolkit
+        </footer>
+    </div>
+</body>
+</html>
