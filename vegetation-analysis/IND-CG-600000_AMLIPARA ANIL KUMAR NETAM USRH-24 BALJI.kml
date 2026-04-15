@@ -13,7 +13,7 @@
 	</Style>
 <Placemark>
 <name>Village-Amlipara Anil Kumar netam Usrh-24</name><visibility>1</visibility>
-<description><![CDATA[<b>Area:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;6347.6m²<br>&nbsp;&nbsp;&nbsp;&nbsp;0.63ha<br>&nbsp;&nbsp;&nbsp;&nbsp;0.0km²<br>&nbsp;&nbsp;&nbsp;&nbsp;68325.03ft²<br>&nbsp;&nbsp;&nbsp;&nbsp;7591.67yd²<br>&nbsp;&nbsp;&nbsp;&nbsp;1.56acre<br>&nbsp;&nbsp;&nbsp;&nbsp;0.0mi²<br><b>Distance:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;354.62m<br>&nbsp;&nbsp;&nbsp;&nbsp;0.35km<br>&nbsp;&nbsp;&nbsp;&nbsp;1163.47ft<br>&nbsp;&nbsp;&nbsp;&nbsp;387.82yd<br>&nbsp;&nbsp;&nbsp;&nbsp;0.22mi]]></description>
+<description><![CDATA[<b>Area:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;6347.6mÂ²<br>&nbsp;&nbsp;&nbsp;&nbsp;0.63ha<br>&nbsp;&nbsp;&nbsp;&nbsp;0.0kmÂ²<br>&nbsp;&nbsp;&nbsp;&nbsp;68325.03ftÂ²<br>&nbsp;&nbsp;&nbsp;&nbsp;7591.67ydÂ²<br>&nbsp;&nbsp;&nbsp;&nbsp;1.56acre<br>&nbsp;&nbsp;&nbsp;&nbsp;0.0miÂ²<br><b>Distance:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;354.62m<br>&nbsp;&nbsp;&nbsp;&nbsp;0.35km<br>&nbsp;&nbsp;&nbsp;&nbsp;1163.47ft<br>&nbsp;&nbsp;&nbsp;&nbsp;387.82yd<br>&nbsp;&nbsp;&nbsp;&nbsp;0.22mi]]></description>
 	<styleUrl>#transparentPolygon</styleUrl>	<Polygon>		<outerBoundaryIs>			<LinearRing>
 				<tessellate>1</tessellate>
 				<altitudeMode>clampToGround</altitudeMode>
