@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlanetScope Field-Level Vegetation Analysis — Calculation Guide</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --border: #334155;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent: #22c55e;
+            --accent2: #3b82f6;
+            --code-bg: #0d1117;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            padding: 2rem;
+        }
+        .container { max-width: 960px; margin: 0 auto; }
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        h2 {
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 2px solid var(--border);
+        }
+        h3 {
+            font-size: 1.15rem;
+            color: var(--accent2);
+            margin: 1.5rem 0 0.5rem;
+        }
+        h4 {
+            font-size: 1rem;
+            color: var(--text);
+            margin: 1rem 0 0.5rem;
+        }
+        p { margin-bottom: 1rem; color: var(--text-muted); }
+        .subtitle { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 2rem; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0 1.5rem;
+            background: var(--surface);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        th {
+            background: var(--accent);
+            color: var(--bg);
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 0.6rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(34, 197, 94, 0.05); }
+
+        pre {
+            background: var(--code-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.2rem;
+            overflow-x: auto;
+            margin: 0.75rem 0 1.5rem;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        code {
+            font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+            color: #e2e8f0;
+        }
+        .keyword { color: #c084fc; }
+        .string { color: #fbbf24; }
+        .comment { color: #6b7280; font-style: italic; }
+        .func { color: #60a5fa; }
+        .num { color: #34d399; }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+        .card h3 { margin-top: 0; }
+        .formula {
+            background: var(--code-bg);
+            border-left: 3px solid var(--accent);
+            padding: 0.75rem 1rem;
+            margin: 0.5rem 0;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.95rem;
+            border-radius: 0 6px 6px 0;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-right: 0.3rem;
+        }
+        .badge-green { background: rgba(34, 197, 94, 0.2); color: var(--accent); }
+        .badge-blue { background: rgba(59, 130, 246, 0.2); color: var(--accent2); }
+        .badge-yellow { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+        .badge-red { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+        .tip {
+            background: rgba(34, 197, 94, 0.08);
+            border-left: 4px solid var(--accent);
+            padding: 1rem 1.2rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+        .tip strong { color: var(--accent); }
+
+        .warning {
+            background: rgba(245, 158, 11, 0.08);
+            border-left: 4px solid var(--warning);
+            padding: 1rem 1.2rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+        .warning strong { color: var(--warning); }
+
+        .danger {
+            background: rgba(239, 68, 68, 0.08);
+            border-left: 4px solid var(--danger);
+            padding: 1rem 1.2rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+        .danger strong { color: var(--danger); }
+
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin: 1.5rem 0;
+        }
+        .flow-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.8rem 1.2rem;
+            text-align: center;
+            min-width: 140px;
+        }
+        .flow-box .label { font-size: 0.75rem; color: var(--text-muted); }
+        .flow-box .value { font-size: 1.1rem; color: var(--accent); font-weight: 600; }
+        .flow-arrow { color: var(--accent2); font-size: 1.5rem; font-weight: bold; }
+
+        ul, ol { margin: 0.5rem 0 1rem 1.5rem; color: var(--text-muted); }
+        li { margin-bottom: 0.4rem; }
+        strong { color: var(--text); }
+
+        .inline-code {
+            background: var(--code-bg);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.88rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <h1>PlanetScope Field-Level Vegetation Analysis</h1>
+    <p class="subtitle">From raw GeoTIFF pixels to field-level NDVI &mdash; a complete calculation walkthrough using a 0.63 ha rice field in Chhattisgarh, India</p>
+
+    <!-- ============================================================ -->
+    <h2>1. The Input: PlanetScope 8-Band GeoTIFF</h2>
+
+    <p>PlanetScope SuperDove satellites capture <strong>8 spectral bands per pixel</strong> at 3-meter ground resolution. Each GeoTIFF is a 3D raster array with shape <span class="inline-code">[bands, height, width]</span>.</p>
+
+    <table>
+        <tr><th>Band</th><th>Name</th><th>Center Wavelength</th><th>Use</th></tr>
+        <tr><td>B1</td><td>Coastal Blue</td><td>431 nm</td><td>Atmospheric correction</td></tr>
+        <tr><td>B2</td><td>Blue</td><td>465 nm</td><td>EVI denominator, water</td></tr>
+        <tr><td>B3</td><td>Green I</td><td>513 nm</td><td>Vegetation greenness</td></tr>
+        <tr><td>B4</td><td>Green</td><td>547 nm</td><td>Chlorophyll absorption</td></tr>
+        <tr><td>B5</td><td>Yellow</td><td>610 nm</td><td>Senescence detection</td></tr>
+        <tr><td>B6</td><td>Red</td><td>665 nm</td><td>NDVI, EVI, SAVI</td></tr>
+        <tr><td>B7</td><td>Red Edge</td><td>717 nm</td><td>NDRE, CI_RedEdge</td></tr>
+        <tr><td>B8</td><td>NIR</td><td>865 nm</td><td>All vegetation indices</td></tr>
+    </table>
+
+    <div class="tip">
+        <strong>Scale factor:</strong> PlanetScope Surface Reflectance (SR) values are stored as integers scaled by 10,000. A raw pixel value of 2996 in the NIR band means a reflectance of 0.2996.
+    </div>
+
+    <!-- ============================================================ -->
+    <h2>2. Example Field: KML Polygon</h2>
+
+    <div class="card">
+        <h3>Field Details</h3>
+        <table>
+            <tr><th>Property</th><th>Value</th></tr>
+            <tr><td>File</td><td><span class="inline-code">IND-CG-600000_AMLIPARA ANIL KUMAR NETAM USRH-24 BALJI.kml</span></td></tr>
+            <tr><td>Location</td><td>Chhattisgarh, India (~81.763&deg;E, ~20.387&deg;N)</td></tr>
+            <tr><td>Area</td><td>~0.63 hectares</td></tr>
+            <tr><td>Polygon Vertices</td><td>248</td></tr>
+            <tr><td>Pixel Count (3m)</td><td>~700 pixels at 3m resolution (0.63 ha &divide; 9 m&sup2;/pixel)</td></tr>
+        </table>
+    </div>
+
+    <div class="warning">
+        <strong>KML Parsing Note:</strong> This KML file contains special characters that break standard XML parsers. Use regex extraction instead:
+        <pre><code><span class="func">re.search</span>(<span class="string">r'&lt;coordinates&gt;(.*?)&lt;/coordinates&gt;'</span>, content, re.DOTALL)</code></pre>
+    </div>
+
+    <!-- ============================================================ -->
+    <h2>3. Pixel Extraction from GeoTIFF</h2>
+
+    <h3>3.1 What is a "row" of data?</h3>
+    <p>Each pixel in the GeoTIFF becomes one row of data. A pixel is identified by its <strong>(row, col)</strong> position in the raster grid and its geographic coordinates <strong>(x, y)</strong>. Each row contains all 8 band values.</p>
+
+    <h3>3.2 Clipped vs Unclipped</h3>
+    <p>The GeoTIFF may cover a much larger area than your field. When you clip the raster to the KML polygon, only pixels inside the field boundary are extracted.</p>
+
+    <table>
+        <tr><th>Scenario</th><th>Pixel Count</th><th>Explanation</th></tr>
+        <tr><td>Full composite.tif (unclipped)</td><td>1,041,411</td><td>1146 &times; 915 grid minus NoData pixels. Covers ~930 ha.</td></tr>
+        <tr><td>Clipped to 0.63 ha KML field</td><td>~700</td><td>Only pixels whose centers fall inside the polygon.</td></tr>
+    </table>
+
+    <h3>3.3 NoData and Cloud Masking</h3>
+    <p>Two types of invalid pixels are excluded:</p>
+    <ul>
+        <li><strong>NoData pixels</strong> &mdash; All 8 bands equal zero. These are outside the satellite's imaging swath.</li>
+        <li><strong>Cloud/shadow pixels</strong> &mdash; Identified by the UDM2 mask (8-band quality mask). A pixel is "clean" when: <span class="inline-code">clear=1 AND cloud=0 AND shadow=0 AND haze=0</span></li>
+    </ul>
+
+    <h3>3.4 Extraction Output</h3>
+    <p>For each valid pixel, one row is written with 17 columns:</p>
+    <pre><code>pixel_row, pixel_col, x, y, date, B1_CoastalBlue, B2_Blue, B3_GreenI,
+B4_Green, B5_Yellow, B6_Red, B7_RedEdge, B8_NIR,
+NDVI, NDRE, EVI, SAVI, CI_RedEdge</code></pre>
+
+    <!-- ============================================================ -->
+    <h2>4. Vegetation Index Formulas (Computed Per Pixel)</h2>
+
+    <p>Every index is calculated <strong>independently for each pixel row</strong> using that pixel's band values. There is no averaging at this stage.</p>
+
+    <div class="card">
+        <h3>NDVI &mdash; Normalized Difference Vegetation Index</h3>
+        <div class="formula">NDVI = (NIR - Red) / (NIR + Red)</div>
+        <p>Primary vegetation greenness indicator. Range: -1 to +1. Healthy vegetation: 0.6&ndash;0.9.</p>
+    </div>
+
+    <div class="card">
+        <h3>NDRE &mdash; Normalized Difference Red Edge</h3>
+        <div class="formula">NDRE = (NIR - RedEdge) / (NIR + RedEdge)</div>
+        <p>Sensitive to chlorophyll content in dense canopy where NDVI saturates. Range: -1 to +1. Healthy: 0.3&ndash;0.7.</p>
+    </div>
+
+    <div class="card">
+        <h3>EVI &mdash; Enhanced Vegetation Index</h3>
+        <div class="formula">EVI = 2.5 &times; (NIR - Red) / (NIR + 6 &times; Red - 7.5 &times; Blue + 1)</div>
+        <p>Corrects for atmospheric and soil background effects. More linear than NDVI in dense canopy. Range: -1 to +1.</p>
+    </div>
+
+    <div class="card">
+        <h3>SAVI &mdash; Soil-Adjusted Vegetation Index</h3>
+        <div class="formula">SAVI = ((NIR - Red) / (NIR + Red + 0.5)) &times; 1.5</div>
+        <p>Reduces soil brightness influence in sparse canopy. L factor = 0.5 (standard). Range: -1.5 to +1.5.</p>
+    </div>
+
+    <div class="card">
+        <h3>CI_RedEdge &mdash; Chlorophyll Index Red Edge</h3>
+        <div class="formula">CI_RedEdge = (NIR / RedEdge) - 1</div>
+        <p>Linear estimator of leaf chlorophyll content. No upper bound; typical healthy vegetation: 1&ndash;5.</p>
+    </div>
+
+    <div class="tip">
+        <strong>Epsilon:</strong> A small constant (1&times;10<sup>-10</sup>) is added to denominators to avoid division by zero on bare soil or water pixels.
+    </div>
+
+    <!-- ============================================================ -->
+    <h2>5. Data Volume: Single Scene vs Full Season</h2>
+
+    <p>Understanding the data scale is critical for storage and compute planning.</p>
+
+    <table>
+        <tr><th>Metric</th><th>Single Scene (1 date)</th><th>Full Season (40 scenes)</th></tr>
+        <tr><td>Pixels per scene (0.63 ha field)</td><td>~700</td><td>~700</td></tr>
+        <tr><td>Rows in database</td><td>~700</td><td>~28,000</td></tr>
+        <tr><td>Pixels per scene (930 ha composite)</td><td>~1,041,411</td><td>~1,041,411</td></tr>
+        <tr><td>Rows in database</td><td>~1,041,411</td><td>~41,656,440 (~40M)</td></tr>
+        <tr><td>Columns per row</td><td colspan="2">17 (coords + bands + indices)</td></tr>
+        <tr><td>CSV size per scene (930 ha)</td><td>~165 MB</td><td>~6.5 GB</td></tr>
+    </table>
+
+    <div class="warning">
+        <strong>Key insight:</strong> With ~1M NDVI values per day and 40 scenes in a season, you will have ~40M NDVI values total. The question is: how do you go from 40M values to a single NDVI curve for the field?
+    </div>
+
+    <!-- ============================================================ -->
+    <h2>6. The Three-Level Analysis Pipeline</h2>
+
+    <p>The pipeline produces three distinct outputs at different granularities. This is the core of how per-pixel data becomes field-level insight.</p>
+
+    <div class="flow-diagram">
+        <div class="flow-box">
+            <div class="label">Level 1</div>
+            <div class="value">Per-Pixel Per-Date</div>
+            <div class="label">~40M rows</div>
+        </div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-box">
+            <div class="label">Level 2</div>
+            <div class="value">Per-Pixel Temporal</div>
+            <div class="label">~1M rows</div>
+        </div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-box">
+            <div class="label">Level 3</div>
+            <div class="value">Field Per-Date</div>
+            <div class="label">40 rows</div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <h2>7. Level 1 &mdash; Per-Pixel Per-Date (pixel_timeseries.csv)</h2>
+
+    <p>This is the raw, uncompressed data. Each row represents <strong>one pixel on one date</strong>.</p>
+
+    <table>
+        <tr><th>Column</th><th>Example</th><th>Description</th></tr>
+        <tr><td>pixel_row</td><td>0</td><td>Row position in raster grid</td></tr>
+        <tr><td>pixel_col</td><td>1057</td><td>Column position in raster grid</td></tr>
+        <tr><td>x</td><td>564814.5</td><td>Easting (UTM meters)</td></tr>
+        <tr><td>y</td><td>2290672.5</td><td>Northing (UTM meters)</td></tr>
+        <tr><td>date</td><td>2024-06-15</td><td>Scene acquisition date</td></tr>
+        <tr><td>B1&ndash;B8</td><td>0.0203 &hellip; 0.2996</td><td>8 band reflectance values (0&ndash;1)</td></tr>
+        <tr><td>NDVI</td><td>0.8016</td><td>Computed from this pixel's bands</td></tr>
+        <tr><td>NDRE</td><td>0.6480</td><td>Computed from this pixel's bands</td></tr>
+        <tr><td>EVI</td><td>0.5271</td><td>Computed from this pixel's bands</td></tr>
+        <tr><td>SAVI</td><td>0.4803</td><td>Computed from this pixel's bands</td></tr>
+        <tr><td>CI_RedEdge</td><td>3.6813</td><td>Computed from this pixel's bands</td></tr>
+    </table>
+
+    <div class="tip">
+        <strong>For the 0.63 ha KML field:</strong> ~700 rows per date &times; 40 scenes = ~28,000 rows total. For the full 930 ha composite: ~1M rows per date &times; 40 scenes = ~40M rows.
+    </div>
+
+    <!-- ============================================================ -->
+    <h2>8. Level 2 &mdash; Per-Pixel Temporal Summary (pixel_phenology.csv)</h2>
+
+    <h3>8.1 Why group by pixel?</h3>
+    <p>Each pixel represents a fixed 3m &times; 3m patch of ground. By grouping all 40 observations of the same pixel across time, you get that pixel's individual growth curve. This preserves <strong>spatial variability</strong> &mdash; different parts of the field may behave differently.</p>
+
+    <h3>8.2 The grouping operation</h3>
+    <pre><code><span class="comment"># Group all 40M rows by pixel identity</span>
+grouped = pixel_df.<span class="func">groupby</span>([<span class="string">'pixel_row'</span>, <span class="string">'pixel_col'</span>])
+
+<span class="comment"># For each pixel, we now have a time-series of ~40 NDVI values</span>
+<span class="keyword">for</span> (row, col), pixel_group <span class="keyword">in</span> grouped:
+    ndvi_timeseries = pixel_group[<span class="string">'NDVI'</span>].values  <span class="comment"># shape: (40,)</span>
+    dates = pixel_group[<span class="string">'date'</span>].values            <span class="comment"># shape: (40,)</span></code></pre>
+
+    <h3>8.3 Per-pixel smoothing</h3>
+    <p>Raw NDVI values are noisy due to atmospheric effects, sub-pixel clouds, and sensor variability. For each pixel's time-series, a <strong>Savitzky-Golay filter</strong> is applied to produce a smooth growth curve.</p>
+
+    <pre><code><span class="comment"># Smooth each pixel's NDVI time-series independently</span>
+ndvi_smooth = <span class="func">savgol_filter</span>(ndvi_timeseries, window_length=<span class="num">7</span>, polyorder=<span class="num">2</span>)</code></pre>
+
+    <h3>8.4 Peak detection and heading date</h3>
+    <p>For each pixel's smoothed curve:</p>
+    <ol>
+        <li><strong>Peak NDVI</strong> &mdash; the maximum of the smoothed curve. This corresponds to peak canopy/vegetative stage.</li>
+        <li><strong>Heading date</strong> &mdash; detected by first-derivative zero-crossing after the peak. The point where NDVI stops rising and starts declining marks the transition from vegetative to reproductive stage.</li>
+    </ol>
+
+    <pre><code><span class="comment"># First derivative of smoothed NDVI</span>
+deriv = np.<span class="func">gradient</span>(ndvi_smooth)
+
+<span class="comment"># Find where derivative crosses zero after peak (rising → declining)</span>
+<span class="keyword">for</span> j <span class="keyword">in</span> <span class="func">range</span>(peak_idx, n_obs - <span class="num">1</span>):
+    <span class="keyword">if</span> deriv[j] > <span class="num">0</span> <span class="keyword">and</span> deriv[j + <span class="num">1</span>] <= <span class="num">0</span>:
+        heading_date = dates[j]
+        <span class="keyword">break</span></code></pre>
+
+    <h3>8.5 Output columns</h3>
+    <table>
+        <tr><th>Column</th><th>Description</th></tr>
+        <tr><td>pixel_row, pixel_col</td><td>Pixel identity</td></tr>
+        <tr><td>n_observations</td><td>Number of clean scenes for this pixel (up to 40)</td></tr>
+        <tr><td>ndvi_min, ndvi_max, ndvi_mean</td><td>Season statistics for this pixel</td></tr>
+        <tr><td>ndre_max</td><td>Peak NDRE value</td></tr>
+        <tr><td>peak_ndvi_date</td><td>Date of maximum NDVI</td></tr>
+        <tr><td>heading_date</td><td>Estimated heading date from derivative analysis</td></tr>
+        <tr><td>ndvi_drop_post_peak</td><td>NDVI decline after peak (stress indicator)</td></tr>
+        <tr><td>final_stage</td><td>Growth stage at last observation</td></tr>
+    </table>
+
+    <p>This file has <strong>~1M rows</strong> (one per pixel) &mdash; not 1M files. It is a single CSV file containing the temporal summary for every pixel.</p>
+
+    <!-- ============================================================ -->
+    <h2>9. Level 3 &mdash; Field-Level Summary (field_summary.csv)</h2>
+
+    <h3>9.1 How field NDVI is calculated</h3>
+    <p>This is the answer to: <em>"What is the NDVI for my whole 0.63 ha KML field?"</em></p>
+
+    <p>For each date, all ~700 pixel NDVI values within the field polygon are aggregated:</p>
+
+    <pre><code><span class="comment"># For each date, aggregate all pixels in the field</span>
+<span class="keyword">for</span> date, group <span class="keyword">in</span> pixel_df.<span class="func">groupby</span>(<span class="string">'date'</span>):
+    ndvi_values = group[<span class="string">'NDVI'</span>].values  <span class="comment"># ~700 values</span>
+
+    record = {
+        <span class="string">'date'</span>: date,
+        <span class="string">'n_pixels'</span>: <span class="func">len</span>(ndvi_values),
+        <span class="string">'NDVI_mean'</span>: np.<span class="func">mean</span>(ndvi_values),     <span class="comment"># ← Field-level NDVI</span>
+        <span class="string">'NDVI_std'</span>:  np.<span class="func">std</span>(ndvi_values),      <span class="comment"># Spatial variability</span>
+        <span class="string">'NDVI_p10'</span>: np.<span class="func">percentile</span>(ndvi_values, <span class="num">10</span>),  <span class="comment"># Worst 10%</span>
+        <span class="string">'NDVI_p50'</span>: np.<span class="func">percentile</span>(ndvi_values, <span class="num">50</span>),  <span class="comment"># Median</span>
+        <span class="string">'NDVI_p90'</span>: np.<span class="func">percentile</span>(ndvi_values, <span class="num">90</span>),  <span class="comment"># Best 10%</span>
+    }</code></pre>
+
+    <h3>9.2 Output structure</h3>
+    <table>
+        <tr><th>date</th><th>n_pixels</th><th>NDVI_mean</th><th>NDVI_std</th><th>NDVI_p10</th><th>NDVI_p50</th><th>NDVI_p90</th><th>&hellip;</th></tr>
+        <tr><td>2024-03-15</td><td>695</td><td>0.182</td><td>0.045</td><td>0.121</td><td>0.178</td><td>0.241</td><td>&hellip;</td></tr>
+        <tr><td>2024-04-02</td><td>698</td><td>0.341</td><td>0.062</td><td>0.255</td><td>0.338</td><td>0.421</td><td>&hellip;</td></tr>
+        <tr><td>2024-05-10</td><td>690</td><td>0.612</td><td>0.078</td><td>0.510</td><td>0.618</td><td>0.705</td><td>&hellip;</td></tr>
+        <tr><td>2024-06-15</td><td>700</td><td>0.743</td><td>0.055</td><td>0.670</td><td>0.748</td><td>0.810</td><td>&hellip;</td></tr>
+        <tr><td colspan="8" style="text-align:center; color: var(--text-muted);">&hellip; one row per scene date &hellip;</td></tr>
+    </table>
+
+    <p>This file has <strong>40 rows</strong> (one per date). The same statistics are computed for NDRE, EVI, SAVI, and CI_RedEdge.</p>
+
+    <div class="tip">
+        <strong>NDVI_mean</strong> on each row is your "field-level NDVI for that date." Plot these 40 values over time to get the field's phenology curve.
+    </div>
+
+    <!-- ============================================================ -->
+    <h2>10. Visual Summary: The Calculation Flow</h2>
+
+    <div class="card">
+        <h3>Single Scene (1 date, clipped to KML field)</h3>
+        <div class="flow-diagram">
+            <div class="flow-box">
+                <div class="label">GeoTIFF</div>
+                <div class="value">1146 &times; 915</div>
+                <div class="label">8 bands</div>
+            </div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-box">
+                <div class="label">Clip to KML</div>
+                <div class="value">~700 pixels</div>
+                <div class="label">inside field</div>
+            </div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-box">
+                <div class="label">Per-Pixel</div>
+                <div class="value">700 NDVI values</div>
+                <div class="label">one per pixel</div>
+            </div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-box">
+                <div class="label">Field Mean</div>
+                <div class="value">1 NDVI value</div>
+                <div class="label">for this date</div>
+            </div>
+        </div>
+
+        <h3>Full Season (40 dates)</h3>
+        <div class="flow-diagram">
+            <div class="flow-box">
+                <div class="label">40 GeoTIFFs</div>
+                <div class="value">40 &times; 700</div>
+                <div class="label">= 28,000 rows</div>
+            </div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-box">
+                <div class="label">Group by Pixel</div>
+                <div class="value">700 groups</div>
+                <div class="label">40 obs each</div>
+            </div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-box">
+                <div class="label">Smooth + Peak</div>
+                <div class="value">700 curves</div>
+                <div class="label">Savitzky-Golay</div>
+            </div>
+            <div class="flow-arrow">&rarr;</div>
+            <div class="flow-box">
+                <div class="label">Field Summary</div>
+                <div class="value">40 rows</div>
+                <div class="label">mean/std/pctl</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <h2>11. Why Not Just Average Immediately?</h2>
+
+    <p>The original notebook (cell 35) collapsed all pixel values to a field mean immediately after extraction:</p>
+
+    <pre><code><span class="comment"># Original approach (notebook cell 35) — loses per-pixel identity</span>
+<span class="keyword">for</span> name, arr <span class="keyword">in</span> idx.items():
+    valid = arr[clean_mask]
+    record[f<span class="string">"{name}_mean"</span>] = np.<span class="func">nanmean</span>(valid)  <span class="comment"># ← 700 pixels → 1 number</span></code></pre>
+
+    <p>This works for a quick overview but loses critical information:</p>
+
+    <table>
+        <tr><th>What You Lose</th><th>Why It Matters</th></tr>
+        <tr><td>Spatial variability within the field</td><td>One corner may be stressed while the rest is healthy</td></tr>
+        <tr><td>Per-pixel heading date</td><td>Different parts of the field may flower on different days</td></tr>
+        <tr><td>Outlier detection</td><td>A few dead pixels can pull the mean down without being identified</td></tr>
+        <tr><td>Per-pixel growth stage classification</td><td>Cannot map which parts are vegetative vs reproductive</td></tr>
+        <tr><td>Stress localization</td><td>Cannot identify <em>where</em> in the field a problem occurs</td></tr>
+    </table>
+
+    <div class="danger">
+        <strong>The fix:</strong> Preserve per-pixel identity through the entire pipeline. Only aggregate to field level as the <em>last</em> step, after per-pixel temporal analysis is complete.
+    </div>
+
+    <!-- ============================================================ -->
+    <h2>12. Pipeline Script: pixel_timeseries_pipeline.py</h2>
+
+    <h3>12.1 Single-scene mode</h3>
+    <pre><code><span class="comment"># Extract all pixels from one GeoTIFF with indices</span>
+python pixel_timeseries_pipeline.py \
+    --scene composite.tif \
+    --udm2 composite_udm2.tif \
+    --date 2024-06-15 \
+    --output-dir output/pixel_timeseries</code></pre>
+
+    <h3>12.2 Multi-scene mode (full season)</h3>
+    <pre><code><span class="comment"># Process all scenes in a directory within a date range</span>
+python pixel_timeseries_pipeline.py \
+    --scenes-dir ./downloaded_scenes \
+    --date-start 2024-03-01 \
+    --date-end 2024-08-15 \
+    --output-dir output/pixel_timeseries</code></pre>
+
+    <h3>12.3 With AOI clipping (recommended)</h3>
+    <pre><code><span class="comment"># Clip to field boundary before extraction</span>
+python pixel_timeseries_pipeline.py \
+    --scenes-dir ./downloaded_scenes \
+    --date-start 2024-03-01 \
+    --date-end 2024-08-15 \
+    --aoi field_boundary.geojson \
+    --output-dir output/pixel_timeseries</code></pre>
+
+    <h3>12.4 Output files</h3>
+    <table>
+        <tr><th>File</th><th>Rows</th><th>Description</th></tr>
+        <tr><td><span class="inline-code">pixel_timeseries.csv</span></td><td>~28K (field) or ~40M (full)</td><td>Every pixel, every date, all bands + indices</td></tr>
+        <tr><td><span class="inline-code">pixel_phenology.csv</span></td><td>~700 (field) or ~1M (full)</td><td>One row per pixel: peak date, heading, stage</td></tr>
+        <tr><td><span class="inline-code">field_summary.csv</span></td><td>40</td><td>One row per date: field-level mean/std/percentiles</td></tr>
+    </table>
+
+    <!-- ============================================================ -->
+    <h2>13. Verified Output: composite.tif Test Run</h2>
+
+    <p>The pipeline was tested on the available <span class="inline-code">composite.tif</span> (single scene, not clipped to the KML because they are from different locations &mdash; 35 km apart).</p>
+
+    <div class="card">
+        <h3>Test Results</h3>
+        <table>
+            <tr><th>Metric</th><th>Value</th></tr>
+            <tr><td>Valid pixels extracted</td><td>1,041,411</td></tr>
+            <tr><td>NoData pixels excluded</td><td>7,179</td></tr>
+            <tr><td>Raster dimensions</td><td>1146 &times; 915 pixels</td></tr>
+            <tr><td>Output columns</td><td>17</td></tr>
+            <tr><td>CSV file size</td><td>165 MB</td></tr>
+            <tr><td>NDVI range</td><td>-0.2375 to 0.9765</td></tr>
+            <tr><td>NDVI mean</td><td>0.6071</td></tr>
+            <tr><td>NDRE range</td><td>-0.2306 to 0.7904</td></tr>
+            <tr><td>NDRE mean</td><td>0.4432</td></tr>
+        </table>
+    </div>
+
+    <div class="warning">
+        <strong>Geographic mismatch:</strong> The <span class="inline-code">composite.tif</span> covers 81.59&ndash;81.63&deg;E, 20.69&ndash;20.71&deg;N, while the KML field is at 81.76&deg;E, 20.39&deg;N. They are ~35 km apart and do not overlap. The test ran on the full composite without AOI clipping.
+    </div>
+
+    <!-- ============================================================ -->
+    <h2>14. Practical Example: Reading the Outputs</h2>
+
+    <h3>14.1 "What is the NDVI of my field on June 15?"</h3>
+    <p>Open <span class="inline-code">field_summary.csv</span>, find the row where <span class="inline-code">date = 2024-06-15</span>, read <span class="inline-code">NDVI_mean</span>.</p>
+
+    <h3>14.2 "Is the northwest corner of my field stressed?"</h3>
+    <p>Open <span class="inline-code">pixel_timeseries.csv</span>, filter by the (x, y) coordinates of the northwest corner, compare NDVI values to the field mean.</p>
+
+    <h3>14.3 "When did each part of my field reach peak NDVI?"</h3>
+    <p>Open <span class="inline-code">pixel_phenology.csv</span>, look at the <span class="inline-code">peak_ndvi_date</span> column. Map it spatially by (pixel_row, pixel_col) to see which parts peaked early vs late.</p>
+
+    <h3>14.4 "What is the overall season NDVI for my field?"</h3>
+    <p>From <span class="inline-code">field_summary.csv</span>, take the maximum <span class="inline-code">NDVI_mean</span> across all dates (peak canopy NDVI), or compute the mean of all <span class="inline-code">NDVI_mean</span> values (season average).</p>
+
+    <!-- ============================================================ -->
+    <h2>15. Field Phenology Summary (field_phenology.csv)</h2>
+
+    <p>This is the missing link between per-pixel phenology and farmer-facing advisories. It aggregates <span class="inline-code">pixel_phenology.csv</span> into a <strong>single row</strong> summarizing the entire field's season.</p>
+
+    <h3>15.1 How it's computed</h3>
+    <p>The field-level phenology is derived two ways and cross-checked:</p>
+    <ol>
+        <li><strong>From field_summary.csv</strong> &mdash; Smooth the field-mean NDVI time-series (40 values), detect peak and heading date on the smoothed curve.</li>
+        <li><strong>From pixel_phenology.csv</strong> &mdash; Average all pixels' heading dates, peak NDVI, stress flags to get field-level consensus.</li>
+    </ol>
+
+    <h3>15.2 Output columns</h3>
+    <table>
+        <tr><th>Column</th><th>Description</th><th>Source</th></tr>
+        <tr><td>n_pixels</td><td>Total valid pixels in the field</td><td>pixel_phenology</td></tr>
+        <tr><td>n_observations</td><td>Number of scene dates used</td><td>field_summary</td></tr>
+        <tr><td>season_start</td><td>Date NDVI first crosses 0.2 (transplanting proxy)</td><td>field_summary smoothed</td></tr>
+        <tr><td>peak_ndvi_date</td><td>Date of maximum field-mean NDVI</td><td>field_summary smoothed</td></tr>
+        <tr><td>peak_ndvi</td><td>Maximum field-mean NDVI value</td><td>field_summary smoothed</td></tr>
+        <tr><td>heading_date</td><td>Derivative zero-crossing after peak</td><td>field_summary smoothed</td></tr>
+        <tr><td>season_end</td><td>Date NDVI drops below 0.2 post-peak (harvest proxy)</td><td>field_summary smoothed</td></tr>
+        <tr><td>ndvi_amplitude</td><td>peak_ndvi minus season minimum</td><td>field_summary</td></tr>
+        <tr><td>cumulative_ndvi</td><td>Sum of field-mean NDVI across all dates (productivity proxy)</td><td>field_summary</td></tr>
+        <tr><td>heading_date_std_days</td><td>Std deviation of per-pixel heading dates (synchronization measure)</td><td>pixel_phenology</td></tr>
+        <tr><td>stress_pct</td><td>% of pixels with ndvi_drop_post_peak &gt; 0.15</td><td>pixel_phenology</td></tr>
+        <tr><td>spatial_cv</td><td>Coefficient of variation of peak NDVI across pixels</td><td>pixel_phenology</td></tr>
+        <tr><td>dominant_stage</td><td>Most common final_stage across pixels</td><td>pixel_phenology</td></tr>
+    </table>
+
+    <div class="tip">
+        <strong>This is 1 row per field.</strong> For multi-field monitoring, each field gets its own row in field_phenology.csv. This is the file you use for farmer advisory and yield estimation.
+    </div>
+
+    <!-- ============================================================ -->
+    <h2>16. Farmer Advisory &amp; Yield Estimation <span class="badge badge-yellow">TBD</span></h2>
+
+    <p>The following sections describe what is needed to go from satellite-derived phenology to actionable farmer advisories and yield estimates. These are <strong>not yet implemented</strong> in the pipeline.</p>
+
+    <h3>16.1 Field Phenology (from existing pipeline)</h3>
+    <p>The <span class="inline-code">field_phenology.csv</span> provides the foundation:</p>
+    <ul>
+        <li>Smooth <span class="inline-code">field_summary.csv</span>'s NDVI_mean time-series (Savitzky-Golay)</li>
+        <li>Detect peak NDVI date &rarr; <strong>heading date</strong></li>
+        <li>Detect season start (NDVI crosses 0.2 rising) &rarr; <strong>transplanting date</strong></li>
+        <li>Detect season end (NDVI drops below 0.2) &rarr; <strong>harvest readiness</strong></li>
+        <li>Measure peak NDVI value &rarr; <strong>canopy vigor</strong></li>
+    </ul>
+
+    <h3>16.2 Yield Estimation <span class="badge badge-red">Requires Ground Truth</span></h3>
+    <p>NDVI alone does not give yield &mdash; you need a <strong>calibration model</strong>. Three options:</p>
+
+    <div class="card">
+        <h4>Option A: Empirical Regression</h4>
+        <p>Collect actual yield data (kg/ha) from 50&ndash;100 fields over 2&ndash;3 seasons. Regress yield against peak NDVI, cumulative NDVI (sum across season), or NDVI at heading. Typical R&sup2; = 0.5&ndash;0.7 for rice.</p>
+        <div class="formula">Yield (kg/ha) = &beta;<sub>0</sub> + &beta;<sub>1</sub> &times; Peak_NDVI + &beta;<sub>2</sub> &times; Cumulative_NDVI</div>
+    </div>
+
+    <div class="card">
+        <h4>Option B: Crop Simulation Model</h4>
+        <p>Feed NDVI-derived phenology dates (transplanting, heading, maturity) into a crop model like <strong>DSSAT</strong> or <strong>ORYZA</strong>. The model estimates yield based on weather + phenology. Requires daily weather data (temperature, rainfall, solar radiation).</p>
+    </div>
+
+    <div class="card">
+        <h4>Option C: ML Model</h4>
+        <p>Train on historical satellite indices + weather + soil + actual yield. Needs labeled data from multiple seasons. Can use Random Forest, XGBoost, or LSTM for time-series features.</p>
+    </div>
+
+    <div class="danger">
+        <strong>Without ground-truth yield data, you cannot estimate yield.</strong> Satellite indices only correlate with yield &mdash; they don't measure it directly.
+    </div>
+
+    <h3>16.3 Advisory Generation <span class="badge badge-yellow">TBD &mdash; Rule Engine Needed</span></h3>
+    <p>Once you have phenology + yield model, generate per-field advisories based on signal thresholds:</p>
+
+    <table>
+        <tr><th>Signal</th><th>Advisory to Farmer</th></tr>
+        <tr><td>NDVI plateau delayed</td><td>"Crop growth slower than normal &mdash; check nutrient status"</td></tr>
+        <tr><td>NDVI drop mid-season</td><td>"Possible pest/disease stress &mdash; scout field"</td></tr>
+        <tr><td>Heading date late vs neighbors</td><td>"Flowering delayed &mdash; monitor water management"</td></tr>
+        <tr><td>Low peak NDVI (&lt; 0.5)</td><td>"Poor canopy development &mdash; expected yield below average"</td></tr>
+        <tr><td>High spatial variability (std)</td><td>"Uneven growth &mdash; check irrigation uniformity"</td></tr>
+        <tr><td>Predicted yield &lt; threshold</td><td>"Yield risk &mdash; consider crop insurance claim"</td></tr>
+        <tr><td>NDVI declining + NDRE stable</td><td>"Canopy structure changing but chlorophyll OK &mdash; possible water stress"</td></tr>
+        <tr><td>heading_date_std_days &gt; 5</td><td>"Uneven flowering across field &mdash; pollination risk"</td></tr>
+    </table>
+
+    <h3>16.4 What's Missing Today <span class="badge badge-red">Gaps</span></h3>
+    <table>
+        <tr><th>Missing Component</th><th>Why It's Needed</th><th>How to Get It</th></tr>
+        <tr><td>Ground-truth yield data</td><td>Calibrate yield models (most critical gap)</td><td>Partner with extension services, collect 50&ndash;100 field yields over 2&ndash;3 seasons</td></tr>
+        <tr><td>Weather data</td><td>Explain NDVI anomalies (drought, flood, heat)</td><td>Free from IMD, NASA POWER, or Open-Meteo API</td></tr>
+        <tr><td>Soil data</td><td>Normalize across fields with different soil types</td><td>SoilGrids (250m), or NBSS&amp;LUP soil survey data</td></tr>
+        <tr><td>Advisory rule engine</td><td>Convert phenology signals to actionable text</td><td>Build threshold-based rules, validate with agronomists</td></tr>
+        <tr><td>Multi-field framework</td><td>Compare fields against neighborhood baselines</td><td>Process multiple KML files, compute regional statistics</td></tr>
+    </table>
+
+    <div class="warning">
+        <strong>The satellite pipeline gives you the observation layer.</strong> Advisory and yield estimation require calibration data + domain rules on top. Budget 2&ndash;3 seasons of ground truth collection before yield estimates become reliable.
+    </div>
+
+    <!-- ============================================================ -->
+    <h2>17. Summary</h2>
+
+    <div class="card">
+        <table>
+            <tr><th>Question</th><th>Answer</th><th>Source</th></tr>
+            <tr><td>How many bands per pixel?</td><td>8</td><td>PlanetScope SuperDove spec</td></tr>
+            <tr><td>How many NDVI values per scene?</td><td>~700 (field) or ~1M (composite)</td><td>One per valid pixel</td></tr>
+            <tr><td>How many rows for a full season?</td><td>~28K (field) or ~40M (composite)</td><td>pixels &times; scenes</td></tr>
+            <tr><td>How is per-pixel NDVI smoothed?</td><td>Group by (row, col), Savitzky-Golay filter</td><td>pixel_phenology.csv</td></tr>
+            <tr><td>How do I get field-level NDVI?</td><td>Mean of all pixel NDVI values per date</td><td>field_summary.csv</td></tr>
+            <tr><td>How many output files?</td><td>4 CSV files (not 1M files)</td><td>Pipeline output</td></tr>
+            <tr><td>How do I get field phenology?</td><td>Smooth field-mean NDVI, detect peak + heading</td><td>field_phenology.csv</td></tr>
+            <tr><td>Can I estimate yield from NDVI?</td><td>Only with ground-truth calibration data</td><td>TBD &mdash; see Section 16</td></tr>
+        </table>
+    </div>
+
+    <footer style="margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.85rem;">
+        PlanetScope Field-Level Vegetation Analysis Guide &mdash; Generated for the AAI Lab, using PlanetScope SuperDove 8-band imagery.
+    </footer>
+
+</div>
+</body>
+</html>

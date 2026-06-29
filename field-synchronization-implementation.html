@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>field_synchronization.py — Implementation, Design, Deployment &amp; Testing</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --border: #334155;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent: #22c55e;
+            --accent2: #3b82f6;
+            --code-bg: #0d1117;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            padding: 2rem;
+        }
+        .container { max-width: 960px; margin: 0 auto; }
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        h2 {
+            font-size: 1.5rem;
+            color: var(--accent);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.4rem;
+            border-bottom: 2px solid var(--border);
+        }
+        h3 { font-size: 1.15rem; color: var(--accent2); margin: 1.5rem 0 0.5rem; }
+        h4 { font-size: 1rem; color: var(--text); margin: 1rem 0 0.5rem; }
+        p { margin-bottom: 1rem; color: var(--text-muted); }
+        .subtitle { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 2rem; }
+
+        table {
+            width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem;
+            background: var(--surface); border-radius: 8px; overflow: hidden;
+        }
+        th { background: var(--accent); color: var(--bg); padding: 0.75rem 1rem; text-align: left; font-weight: 600; }
+        td { padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: rgba(34, 197, 94, 0.05); }
+
+        pre {
+            background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px;
+            padding: 1.2rem; overflow-x: auto; margin: 0.75rem 0 1.5rem; font-size: 0.9rem; line-height: 1.6;
+        }
+        code { font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace; color: #e2e8f0; }
+        .keyword { color: #c084fc; }
+        .string { color: #fbbf24; }
+        .comment { color: #6b7280; font-style: italic; }
+        .func { color: #60a5fa; }
+        .num { color: #34d399; }
+
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.5rem; margin: 1rem 0; }
+        .card h3 { margin-top: 0; }
+        .formula {
+            background: var(--code-bg); border-left: 3px solid var(--accent); padding: 0.75rem 1rem;
+            margin: 0.5rem 0; font-family: 'SF Mono', monospace; font-size: 0.95rem; border-radius: 0 6px 6px 0;
+        }
+        .badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.8rem; font-weight: 600; margin-right: 0.3rem; }
+        .badge-green { background: rgba(34, 197, 94, 0.2); color: var(--accent); }
+        .badge-blue { background: rgba(59, 130, 246, 0.2); color: var(--accent2); }
+        .badge-yellow { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+        .badge-red { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+        .tip { background: rgba(34, 197, 94, 0.08); border-left: 4px solid var(--accent); padding: 1rem 1.2rem; border-radius: 0 8px 8px 0; margin: 1rem 0; }
+        .tip strong { color: var(--accent); }
+        .warning { background: rgba(245, 158, 11, 0.08); border-left: 4px solid var(--warning); padding: 1rem 1.2rem; border-radius: 0 8px 8px 0; margin: 1rem 0; }
+        .warning strong { color: var(--warning); }
+        .danger { background: rgba(239, 68, 68, 0.08); border-left: 4px solid var(--danger); padding: 1rem 1.2rem; border-radius: 0 8px 8px 0; margin: 1rem 0; }
+        .danger strong { color: var(--danger); }
+
+        .flow-diagram { display: flex; align-items: center; justify-content: center; gap: 0.5rem; flex-wrap: wrap; margin: 1.5rem 0; }
+        .flow-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 0.8rem 1.2rem; text-align: center; min-width: 130px; }
+        .flow-box .label { font-size: 0.75rem; color: var(--text-muted); }
+        .flow-box .value { font-size: 1.0rem; color: var(--accent); font-weight: 600; }
+        .flow-arrow { color: var(--accent2); font-size: 1.5rem; font-weight: bold; }
+
+        ul, ol { margin: 0.5rem 0 1rem 1.5rem; color: var(--text-muted); }
+        li { margin-bottom: 0.4rem; }
+        strong { color: var(--text); }
+        .inline-code { background: var(--code-bg); padding: 0.15rem 0.4rem; border-radius: 4px; font-family: 'SF Mono', monospace; font-size: 0.88rem; }
+
+        .scale { display: flex; border-radius: 8px; overflow: hidden; margin: 1rem 0; font-weight: 600; font-size: 0.85rem; text-align: center; }
+        .scale > div { padding: 0.8rem 0.5rem; flex: 1; }
+        .s-good { background: rgba(34, 197, 94, 0.3); color: var(--accent); }
+        .s-mild { background: rgba(59, 130, 246, 0.3); color: var(--accent2); }
+        .s-mod { background: rgba(251, 191, 36, 0.3); color: var(--warning); }
+        .s-crit { background: rgba(239, 68, 68, 0.3); color: var(--danger); }
+        footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <h1>field_synchronization.py</h1>
+    <p class="subtitle">Implementation, design rationale, deployment, and testing for the Temporal Flowering Synchronization Score (FSS) &mdash; the companion to the PlanetScope Field-Level Vegetation Analysis pipeline</p>
+
+    <div class="tip">
+        <strong>Where this fits:</strong> <span class="inline-code">field-analysis.html</span> documents the <em>upstream</em> pipeline (GeoTIFF &rarr; pixels &rarr; indices &rarr; field-mean curves). <strong>This document covers the downstream synchronization module only.</strong> It assumes the indices already exist and starts from a field-mean-per-date table.
+    </div>
+
+    <!-- ============================================================ -->
+    <h2>1. Scope &amp; Assumptions</h2>
+
+    <table>
+        <tr><th>Aspect</th><th>Decision</th></tr>
+        <tr><td>Input granularity</td><td><strong>Field-mean per date</strong> &mdash; one row per scene date with already-computed indices. No raster / per-pixel work.</td></tr>
+        <tr><td>Indices consumed</td><td>NDVI (required); NDRE and CI_RedEdge (optional but recommended)</td></tr>
+        <tr><td>GDD / weather / sowing dates</td><td><strong>Not available</strong> &mdash; the FSRI "heading deviation" term is intentionally omitted; heading timing is derived from the satellite curve itself</td></tr>
+        <tr><td>What it measures</td><td><strong>Temporal</strong> flowering synchronization of the whole field: a sharp, narrow, smooth flowering peak &rarr; synchronized; a broad, flat, or jagged peak &rarr; staggered / desynchronized</td></tr>
+        <tr><td>Outputs</td><td>A single summary row (printed report + optional one-row CSV). No plots.</td></tr>
+        <tr><td>Season shape handled</td><td>Irregular sampling (e.g. ~80 clear scenes out of ~110 days)</td></tr>
+    </table>
+
+    <div class="danger">
+        <strong>Honest limitation:</strong> With field-mean-only data, this score cannot measure spatial uniformity (which corner lagged) or true male/female-row synchronization &mdash; those need per-pixel data and weather/sowing records. At PlanetScope's 3&nbsp;m resolution the male/female rows (40&ndash;60&nbsp;cm) are sub-pixel and already averaged together. This is a <em>temporal proxy</em>, validated directionally but not against ground-truth seed-set data.
+    </div>
+
+    <!-- ============================================================ -->
+    <h2>2. The FSS Formula</h2>
+
+    <div class="card" style="border: 2px solid var(--accent);">
+        <div class="formula" style="font-size: 1.05rem; border-left-width: 4px;">
+            FSS = w&#8321;&middot;PeakBroadness + w&#8322;&middot;CurveRoughness + w&#8323;&middot;VigorAsymmetry + w&#8324;&middot;StressFlag
+        </div>
+        <p style="margin-bottom:0;">Each component is normalized to <strong>0&ndash;1</strong> (0 = perfectly synchronized, 1 = worst). Default weights: <strong>0.35 / 0.25 / 0.20 / 0.20</strong>. The composite range is 0&ndash;1; lower is better.</p>
+    </div>
+
+    <table>
+        <tr><th>Component</th><th>Plain-English meaning</th><th>How it is computed</th><th>Source</th></tr>
+        <tr>
+            <td><strong>PeakBroadness</strong></td>
+            <td>Did the field bloom in one tight burst, or a drawn-out plateau?</td>
+            <td>Count days where smoothed NDVI &ge; 95% of peak (flowering duration); compare to an ideal 5-day burst:<br><span class="inline-code">clip((duration &minus; 5) / 20, 0, 1)</span></td>
+            <td>rice-flowering-sync.html ("sharp narrow peak = synchronized")</td>
+        </tr>
+        <tr>
+            <td><strong>CurveRoughness</strong></td>
+            <td>Jagged / oscillating growth indicates rows at different stages</td>
+            <td>RMSE of the <strong>raw&minus;smoothed NDVI residual</strong> over the booting&rarr;heading run-up (last ~20 days), normalized by 0.04</td>
+            <td>docx Method 1 (temporal slope/variance)</td>
+        </tr>
+        <tr>
+            <td><strong>VigorAsymmetry</strong></td>
+            <td>Was the canopy at full vigor when it headed?</td>
+            <td><span class="inline-code">1 &minus; NDRE_at_heading / NDRE_season_max</span> (season-max NDRE used as the "expected healthy" proxy)</td>
+            <td>FSRI component 2</td>
+        </tr>
+        <tr>
+            <td><strong>StressFlag</strong></td>
+            <td>A sudden dip (cold snap, heavy rain, missed cloud) during flowering</td>
+            <td>Worst negative <strong>raw&minus;trend residual</strong> within &plusmn;7 days of heading, as a fraction of NDVI at heading</td>
+            <td>FSRI component 3</td>
+        </tr>
+    </table>
+
+    <h3>Supporting Phenology Markers (reported for free)</h3>
+    <ul>
+        <li><strong>Heading date</strong> &mdash; date of maximum smoothed NDVI</li>
+        <li><strong>Booting date</strong> &mdash; date of maximum smoothed CI_RedEdge (only if CI_RedEdge supplied)</li>
+        <li><strong>Flowering duration</strong> &mdash; plateau width at &ge;95% of peak NDVI</li>
+        <li><strong>Peak NDVI, NDRE at heading, NDRE max</strong></li>
+    </ul>
+
+    <!-- ============================================================ -->
+    <h2>3. Processing Pipeline</h2>
+
+    <div class="flow-diagram">
+        <div class="flow-box"><div class="label">Step 1</div><div class="value">Sort by date</div><div class="label">build day axis</div></div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-box"><div class="label">Step 2</div><div class="value">Daily grid</div><div class="label">linear interp</div></div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-box"><div class="label">Step 3</div><div class="value">Savitzky-Golay</div><div class="label">smooth (11d, p3)</div></div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-box"><div class="label">Step 4</div><div class="value">Markers</div><div class="label">heading/booting</div></div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-box"><div class="label">Step 5</div><div class="value">4 components</div><div class="label">+ composite</div></div>
+        <div class="flow-arrow">&rarr;</div>
+        <div class="flow-box"><div class="label">Step 6</div><div class="value">Classify</div><div class="label">+ write row</div></div>
+    </div>
+
+    <ol>
+        <li><strong>Order &amp; day axis</strong> &mdash; sort observations ascending; compute integer days from season start.</li>
+        <li><strong>Daily grid</strong> &mdash; <span class="inline-code">np.interp</span> the irregular observations onto a uniform daily grid so day-based smoothing and derivatives are well defined.</li>
+        <li><strong>Smoothing</strong> &mdash; Savitzky-Golay (window 11 days, polyorder 3); window auto-clamped to be odd and valid for short series.</li>
+        <li><strong>Markers</strong> &mdash; heading = argmax of smoothed NDVI; booting = argmax of smoothed CI_RedEdge; flowering duration = plateau width.</li>
+        <li><strong>Components</strong> &mdash; compute the four 0&ndash;1 terms; combine with (renormalized) weights.</li>
+        <li><strong>Classify &amp; emit</strong> &mdash; map FSS to a band; print report; optionally write a one-row CSV.</li>
+    </ol>
+
+    <!-- ============================================================ -->
+    <h2>4. Design Decisions &amp; Trade-offs Considered</h2>
+
+    <div class="card">
+        <h3>4.1 Residual-based roughness &amp; stress (the key fix)</h3>
+        <p>The first implementation measured CurveRoughness as the standard deviation of the raw day-to-day <em>slope</em>, and StressFlag as the raw NDVI drop relative to the peak value. Both produced <strong>false positives on a clean, synchronized field</strong>:</p>
+        <ul>
+            <li>A well-synchronized field has a <strong>steep, fast rise</strong> &mdash; high slope variance, wrongly read as "jagged."</li>
+            <li>A narrow peak naturally has lower NDVI a few days out &mdash; wrongly read as a "stress drop."</li>
+        </ul>
+        <p>The fix: measure both against the <strong>smoothed trend (residuals)</strong>, not against raw slope or peak value. A legitimately steep, clean rise now scores ~0; only genuine noise/oscillation and anomalous dips raise the score.</p>
+        <pre><code><span class="comment"># raw minus trend isolates noise/anomalies from legitimate growth</span>
+ndvi_s_at_obs = np.<span class="func">interp</span>(days, grid, ndvi_s)
+ndvi_residual = ndvi - ndvi_s_at_obs
+
+<span class="comment"># roughness = scatter about the trend in the run-up to heading</span>
+roughness_rmse = np.<span class="func">sqrt</span>(np.<span class="func">mean</span>(ndvi_residual[run_up] ** <span class="num">2</span>))
+
+<span class="comment"># stress = worst dip below the trend near heading</span>
+worst_dip = <span class="func">max</span>(<span class="num">0.0</span>, -np.<span class="func">min</span>(ndvi_residual[near]))</code></pre>
+    </div>
+
+    <div class="card">
+        <h3>4.2 Interpolate to a daily grid before smoothing</h3>
+        <p>Savitzky-Golay assumes uniform spacing, but PlanetScope yields irregular clear-scene dates (~80 of 110 days). Smoothing on the raw observation index would distort day-based derivatives and the plateau-width measure. Linear interpolation onto a daily grid first makes "days &ge; 95% of peak" and the run-up window physically meaningful. Trade-off: interpolation across long cloud gaps is an approximation &mdash; acceptable for a coarse temporal score, and the residual measures still use the real observations.</p>
+    </div>
+
+    <div class="card">
+        <h3>4.3 Graceful degradation &amp; weight renormalization</h3>
+        <p>NDRE and CI_RedEdge are optional. If NDRE is absent, VigorAsymmetry is dropped and the remaining weights are renormalized to sum to 1, so the FSS stays on a 0&ndash;1 scale. If CI_RedEdge is absent, the booting-date marker is simply reported as <span class="inline-code">None</span>. This lets the same module run whether you supply 1 or 3 indices.</p>
+    </div>
+
+    <div class="card">
+        <h3>4.4 Why NDRE as the vigor reference, and why a 5-day ideal</h3>
+        <p>No historical "expected healthy NDRE" exists in the inputs, so the <strong>season-max smoothed NDRE</strong> is used as the proxy ceiling &mdash; a self-referential but defensible baseline. The 5-day ideal flowering burst comes directly from the literature cited in the sync guide ("97% of florets open before noon in a concentrated 5-day burst"). Both are exposed as constants for later calibration against real seed-set data.</p>
+    </div>
+
+    <div class="card">
+        <h3>4.5 What was deliberately left out</h3>
+        <table>
+            <tr><th>Excluded term</th><th>Why</th><th>What it would need</th></tr>
+            <tr><td>Spatial zone CV (docx Method 2)</td><td>Field-mean input has no spatial dimension</td><td>Per-pixel / zonal index table</td></tr>
+            <tr><td>Per-pixel heading-date spread</td><td>Same &mdash; requires the pixel grid</td><td>pixel_timeseries.csv</td></tr>
+            <tr><td>Red Edge GLCM texture (Method 3)</td><td>Requires the raster image, not a mean curve</td><td>The clipped GeoTIFF</td></tr>
+            <tr><td>FSRI heading-deviation (component 1)</td><td>Needs GDD model inputs</td><td>Daily temperatures + A/R sowing dates + variety GDD thresholds</td></tr>
+        </table>
+        <p>The code is structured (dataclass result, isolated component functions, renormalizing weights) so these slot in later without a rewrite.</p>
+    </div>
+
+    <!-- ============================================================ -->
+    <h2>5. Classification Bands</h2>
+
+    <div class="scale">
+        <div class="s-good">FSS &lt; 0.10<br>Synchronized</div>
+        <div class="s-mild">0.10 &ndash; 0.20<br>Mild Mismatch</div>
+        <div class="s-mod">0.20 &ndash; 0.35<br>Moderate Mismatch</div>
+        <div class="s-crit">&gt; 0.35<br>Critical Mismatch</div>
+    </div>
+    <p>The four tiers mirror the classification framework in the Rice Synchronization Methodology document (Synchronized / Mild / Moderate / Critical). Thresholds are module constants and should be calibrated once ground-truth seed-set data is available.</p>
+
+    <!-- ============================================================ -->
+    <h2>6. Configuration Constants</h2>
+
+    <table>
+        <tr><th>Constant</th><th>Default</th><th>Meaning</th></tr>
+        <tr><td>W_PEAK_BROADNESS / ROUGHNESS / VIGOR / STRESS</td><td>0.35 / 0.25 / 0.20 / 0.20</td><td>Composite weights (sum to 1)</td></tr>
+        <tr><td>SMOOTH_WINDOW_DAYS / SMOOTH_POLYORDER</td><td>11 / 3</td><td>Savitzky-Golay parameters (window forced odd &amp; valid)</td></tr>
+        <tr><td>PLATEAU_FRACTION</td><td>0.95</td><td>Flowering = days with smoothed NDVI &ge; 95% of peak</td></tr>
+        <tr><td>IDEAL_FLOWERING_DAYS / BROADNESS_SCALE_DAYS</td><td>5 / 20</td><td>Ideal burst length; extra days mapping broadness &rarr; 1.0</td></tr>
+        <tr><td>ROUGHNESS_THRESHOLD / ROUGHNESS_SCALE</td><td>0.02 / 0.04</td><td>Method-1 desync threshold; value mapping roughness &rarr; 1.0</td></tr>
+        <tr><td>STRESS_WINDOW_DAYS</td><td>7</td><td>&plusmn; days around heading scanned for a sudden dip</td></tr>
+        <tr><td>BAND_SYNCHRONIZED / MILD / MODERATE</td><td>0.10 / 0.20 / 0.35</td><td>Classification cut-points</td></tr>
+        <tr><td>MIN_OBSERVATIONS</td><td>8</td><td>Minimum scenes required to build a curve</td></tr>
+    </table>
+
+    <!-- ============================================================ -->
+    <h2>7. Deployment</h2>
+
+    <h3>7.1 Dependencies</h3>
+    <pre><code>python -m pip install numpy pandas scipy</code></pre>
+    <p>Pure-Python, no GDAL/rasterio needed (raster work happens upstream). Runs on Python 3.8+.</p>
+
+    <h3>7.2 Input CSV format</h3>
+    <p>One row per scene date. Column names are auto-detected, so any of these variants work:</p>
+    <table>
+        <tr><th>Field</th><th>Accepted column names</th><th>Required?</th></tr>
+        <tr><td>Date</td><td><span class="inline-code">date</span>, <span class="inline-code">Date</span>, <span class="inline-code">scene_date</span>, <span class="inline-code">acquisition_date</span></td><td>Yes</td></tr>
+        <tr><td>NDVI</td><td><span class="inline-code">NDVI</span>, <span class="inline-code">NDVI_mean</span>, <span class="inline-code">ndvi</span></td><td>Yes</td></tr>
+        <tr><td>NDRE</td><td><span class="inline-code">NDRE</span>, <span class="inline-code">NDRE_mean</span>, <span class="inline-code">ndre</span></td><td>Optional</td></tr>
+        <tr><td>CI_RedEdge</td><td><span class="inline-code">CI_RedEdge</span>, <span class="inline-code">CI_RE</span>, <span class="inline-code">CIRE</span>, <span class="inline-code">CI_RedEdge_mean</span></td><td>Optional</td></tr>
+    </table>
+    <pre><code>date,NDVI_mean,NDRE_mean,CI_RedEdge_mean
+<span class="num">2024-06-02</span>,<span class="num">0.21</span>,<span class="num">0.16</span>,<span class="num">0.55</span>
+<span class="num">2024-06-05</span>,<span class="num">0.24</span>,<span class="num">0.18</span>,<span class="num">0.61</span>
+...</code></pre>
+
+    <h3>7.3 Run it (CLI)</h3>
+    <pre><code>python field_synchronization.py \
+    --input your_field_summary.csv \
+    --field-id MY_FIELD \
+    --output field_synchronization.csv</code></pre>
+    <p><span class="inline-code">--output</span> is optional; omit it to only print the report. Exit code is <span class="inline-code">1</span> on input errors (missing column, too few rows, file not found).</p>
+
+    <h3>7.4 Use as a library</h3>
+    <pre><code><span class="keyword">import</span> pandas <span class="keyword">as</span> pd
+<span class="keyword">from</span> field_synchronization <span class="keyword">import</span> compute_synchronization
+
+df = pd.<span class="func">read_csv</span>(<span class="string">"your_field_summary.csv"</span>)
+result = <span class="func">compute_synchronization</span>(
+    dates=df[<span class="string">"date"</span>], ndvi=df[<span class="string">"NDVI_mean"</span>].values,
+    ndre=df[<span class="string">"NDRE_mean"</span>].values, field_id=<span class="string">"MY_FIELD"</span>,
+)
+<span class="func">print</span>(result.fss, result.classification)</code></pre>
+
+    <h3>7.5 Scaling to many fields</h3>
+    <p>Loop over per-field CSVs (or a long table grouped by field id), call <span class="inline-code">compute_synchronization</span> per field, and concatenate the result rows into a multi-field <span class="inline-code">field_synchronization.csv</span> &mdash; one row per field, matching the pattern in the upstream <span class="inline-code">field_phenology.csv</span>.</p>
+
+    <!-- ============================================================ -->
+    <h2>8. Testing</h2>
+
+    <h3>8.1 Synthetic self-test (synchronized vs desynchronized)</h3>
+    <p>Two Gaussian NDVI seasons (110 days, 80 random clear scenes) are generated: a <strong>sharp, clean</strong> peak (width 6, low noise) and a <strong>broad, jagged</strong> peak (width 22, high noise) with an injected dip during flowering.</p>
+    <pre><code><span class="keyword">import</span> numpy <span class="keyword">as</span> np, pandas <span class="keyword">as</span> pd
+<span class="keyword">import</span> field_synchronization <span class="keyword">as</span> fs
+
+rng  = np.random.<span class="func">default_rng</span>(<span class="num">0</span>)
+keep = np.<span class="func">sort</span>(rng.<span class="func">choice</span>(np.<span class="func">arange</span>(<span class="num">0</span>,<span class="num">110</span>), <span class="num">80</span>, replace=<span class="keyword">False</span>))
+base = pd.<span class="func">Timestamp</span>(<span class="string">"2024-06-01"</span>)
+dates = [base + pd.<span class="func">Timedelta</span>(days=<span class="func">int</span>(d)) <span class="keyword">for</span> d <span class="keyword">in</span> keep]
+
+<span class="keyword">def</span> <span class="func">curve</span>(peak, width, noise):
+    ndvi = <span class="num">0.2</span> + <span class="num">0.6</span>*np.<span class="func">exp</span>(-<span class="num">0.5</span>*((keep-peak)/width)**<span class="num">2</span>) + rng.<span class="func">normal</span>(<span class="num">0</span>,noise,keep.size)
+    ndre = <span class="num">0.15</span> + <span class="num">0.45</span>*np.<span class="func">exp</span>(-<span class="num">0.5</span>*((keep-peak)/width)**<span class="num">2</span>)
+    cire = <span class="num">0.5</span> + <span class="num">3.0</span>*np.<span class="func">exp</span>(-<span class="num">0.5</span>*((keep-(peak-<span class="num">7</span>))/width)**<span class="num">2</span>)
+    <span class="keyword">return</span> ndvi, ndre, cire
+
+n1,r1,c1 = <span class="func">curve</span>(<span class="num">60</span>, <span class="num">6</span>,  <span class="num">0.005</span>)            <span class="comment"># synchronized</span>
+n2,r2,c2 = <span class="func">curve</span>(<span class="num">60</span>, <span class="num">22</span>, <span class="num">0.03</span>)             <span class="comment"># desynchronized</span>
+n2[(keep&gt;<span class="num">58</span>)&amp;(keep&lt;<span class="num">63</span>)] -= <span class="num">0.12</span>           <span class="comment"># sudden dip during flowering</span>
+
+fs.<span class="func">_print_result</span>(fs.<span class="func">compute_synchronization</span>(pd.<span class="func">Series</span>(dates), n1, r1, c1, field_id=<span class="string">"SYNC"</span>))
+fs.<span class="func">_print_result</span>(fs.<span class="func">compute_synchronization</span>(pd.<span class="func">Series</span>(dates), n2, r2, c2, field_id=<span class="string">"DESYNC"</span>))</code></pre>
+
+    <h4>Expected result (directional)</h4>
+    <table>
+        <tr><th>Field</th><th>Peak broadness</th><th>Curve roughness</th><th>Vigor asym.</th><th>Stress flag</th><th>FSS</th><th>Class</th></tr>
+        <tr><td>SYNC (sharp, clean)</td><td>0.00</td><td>0.11</td><td>0.00</td><td>0.01</td><td><strong>0.03</strong></td><td><span class="badge badge-green">Synchronized</span></td></tr>
+        <tr><td>DESYNC (broad, jagged, dip)</td><td>0.20</td><td>0.85</td><td>0.02</td><td>0.06</td><td><strong>0.30</strong></td><td><span class="badge badge-yellow">Moderate Mismatch</span></td></tr>
+    </table>
+    <div class="tip"><strong>Pass criterion:</strong> the synchronized field scores near 0 (all components quiet) and the desynchronized field scores materially higher and lands in a worse band. Exact decimals depend on the RNG seed.</div>
+
+    <h3>8.2 CLI / CSV round-trip test</h3>
+    <p>Write a small CSV using <span class="inline-code">*_mean</span> column names to confirm auto-detection, then run the CLI and inspect the one-row output.</p>
+    <pre><code>python field_synchronization.py --input demo_field_summary.csv \
+    --field-id DEMO_FIELD --output field_synchronization.csv
+cat field_synchronization.csv   <span class="comment"># 1 header row + 1 data row, 20 columns</span></code></pre>
+
+    <h3>8.3 Edge cases covered</h3>
+    <table>
+        <tr><th>Case</th><th>Behavior</th></tr>
+        <tr><td>Fewer than 8 observations</td><td>Raises <span class="inline-code">ValueError</span> (CLI exits 1) &mdash; too few to build a curve</td></tr>
+        <tr><td>No NDRE column</td><td>VigorAsymmetry dropped; weights renormalized; FSS stays 0&ndash;1</td></tr>
+        <tr><td>No CI_RedEdge column</td><td>Booting date reported as <span class="inline-code">None</span></td></tr>
+        <tr><td>Unsorted / duplicate dates</td><td>Sorted ascending before processing</td></tr>
+        <tr><td>Short series vs smoothing window</td><td>Savitzky-Golay window auto-clamped to odd &amp; &le; series length</td></tr>
+        <tr><td>Missing required column</td><td>Raises <span class="inline-code">KeyError</span> listing the names it tried</td></tr>
+    </table>
+
+    <h3>8.4 Suggested validation once real data arrives</h3>
+    <ol>
+        <li>Run on a field with a <strong>known good</strong> seed-set season &mdash; confirm FSS &lt; 0.10.</li>
+        <li>Run on a field with a <strong>known poor</strong> season &mdash; confirm a worse band.</li>
+        <li>Sanity-check the detected <strong>heading date</strong> against agronomist records (expect &plusmn;3&ndash;6 days).</li>
+        <li>Once &ge;1&ndash;2 seasons of paired seed-set outcomes exist, recalibrate the weights and band thresholds (or replace the hand-tuned weights with a fitted Random Forest / logistic model).</li>
+    </ol>
+
+    <!-- ============================================================ -->
+    <h2>9. Limitations &amp; Future Extensions</h2>
+    <table>
+        <tr><th>Limitation</th><th>Impact</th><th>Path to improve</th></tr>
+        <tr><td>Temporal proxy only (no spatial)</td><td>Cannot localize which part of the field lagged</td><td>Feed per-pixel index table; add zone CV + per-pixel heading-date std</td></tr>
+        <tr><td>No GDD heading-deviation term</td><td>Cannot compare predicted A-line vs R-line heading</td><td>Add temperatures + sowing dates; restore FSRI component 1</td></tr>
+        <tr><td>Unvalidated weights / thresholds</td><td>Bands are educated guesses (literature-anchored)</td><td>Calibrate against 2&ndash;3 seasons of seed-set ground truth</td></tr>
+        <tr><td>Interpolation across long cloud gaps</td><td>Smoothed curve approximates missing weeks</td><td>Fuse Sentinel-1 SAR to fill gaps before scoring</td></tr>
+        <tr><td>3&nbsp;m sub-pixel mixing of male/female rows</td><td>Row-level sync is physically unobservable here</td><td>VHR (30&nbsp;cm) or UAV (3&ndash;7&nbsp;cm) for flagged fields</td></tr>
+    </table>
+
+    <footer>
+        field_synchronization.py Implementation Guide &mdash; companion to the PlanetScope Field-Level Vegetation Analysis &amp; Rice Flowering Synchronization toolkit.
+    </footer>
+
+</div>
+</body>
+</html>
